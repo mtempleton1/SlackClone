@@ -6,13 +6,13 @@
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
     "noEmit": true,
     "module": "ESNext",
+    "moduleResolution": "bundler",
     "strict": true,
     "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
-    "moduleResolution": "bundler",
     "baseUrl": ".",
     "types": ["node", "vite/client", "jest"],
     "paths": {
@@ -20,5 +20,9 @@
       "@db/*": ["./db/*"],
       "@/*": ["./client/src/*"]
     }
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   }
 }

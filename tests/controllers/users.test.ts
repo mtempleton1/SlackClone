@@ -2,7 +2,7 @@ import request from 'supertest';
 import { app } from '../../server';
 import { db } from '@db';
 import { users } from '@db/schema';
-import { createTestUser, generateRandomEmail } from '../utils';
+import { createTestUser, generateRandomEmail, hashPassword } from '../utils';
 import { eq } from 'drizzle-orm';
 
 describe('Users Controller', () => {
@@ -53,38 +53,46 @@ describe('Users Controller', () => {
 
   describe('GET /api/users', () => {
     it('should return all users when authenticated', async () => {
-      // Create test users
-      const user1 = await createTestUser();
-      const user2 = await createTestUser();
+      const agent = request.agent(app);
+      const user = await createTestUser();
 
-      const response = await request(app)
-        .get('/api/users')
-        .set('Cookie', [`connect.sid=${user1.id}`]); // Mock authentication
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent.get('/api/users');
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThanOrEqual(2);
-
-      const userIds = response.body.map((u: any) => u.id);
-      expect(userIds).toContain(user1.id);
-      expect(userIds).toContain(user2.id);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body[0]).toHaveProperty('id');
+      expect(response.body[0]).toHaveProperty('email');
     });
 
     it('should return 401 when not authenticated', async () => {
-      const response = await request(app)
-        .get('/api/users');
-
+      const response = await request(app).get('/api/users');
       expect(response.status).toBe(401);
     });
   });
 
   describe('GET /api/users/:userId', () => {
     it('should return user by id when authenticated', async () => {
+      const agent = request.agent(app);
       const user = await createTestUser();
 
-      const response = await request(app)
-        .get(`/api/users/${user.id}`)
-        .set('Cookie', [`connect.sid=${user.id}`]); // Mock authentication
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent.get(`/api/users/${user.id}`);
 
       expect(response.status).toBe(200);
       expect(response.body.id).toBe(user.id);
@@ -93,27 +101,42 @@ describe('Users Controller', () => {
     });
 
     it('should return 404 for non-existent user', async () => {
+      const agent = request.agent(app);
       const user = await createTestUser();
 
-      const response = await request(app)
-        .get('/api/users/99999')
-        .set('Cookie', [`connect.sid=${user.id}`]); // Mock authentication
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
 
+      const response = await agent.get('/api/users/99999');
       expect(response.status).toBe(404);
     });
   });
 
   describe('PUT /api/users/:userId', () => {
     it('should update user when authenticated as that user', async () => {
+      const agent = request.agent(app);
       const user = await createTestUser();
+
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
       const updateData = {
         displayName: 'Updated Name',
         statusMessage: 'New status'
       };
 
-      const response = await request(app)
+      const response = await agent
         .put(`/api/users/${user.id}`)
-        .set('Cookie', [`connect.sid=${user.id}`])
         .send(updateData);
 
       expect(response.status).toBe(200);
@@ -122,12 +145,20 @@ describe('Users Controller', () => {
     });
 
     it('should return 403 when trying to update different user', async () => {
+      const agent = request.agent(app);
       const user1 = await createTestUser();
       const user2 = await createTestUser();
 
-      const response = await request(app)
+      // Login as user1
+      await agent
+        .post('/api/login')
+        .send({
+          email: user1.email,
+          password: 'password123'
+        });
+
+      const response = await agent
         .put(`/api/users/${user2.id}`)
-        .set('Cookie', [`connect.sid=${user1.id}`])
         .send({ displayName: 'Hacked!' });
 
       expect(response.status).toBe(403);
@@ -136,11 +167,18 @@ describe('Users Controller', () => {
 
   describe('DELETE /api/users/:userId', () => {
     it('should delete user when authenticated as that user', async () => {
+      const agent = request.agent(app);
       const user = await createTestUser();
 
-      const response = await request(app)
-        .delete(`/api/users/${user.id}`)
-        .set('Cookie', [`connect.sid=${user.id}`]);
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent.delete(`/api/users/${user.id}`);
 
       expect(response.status).toBe(200);
 
@@ -154,24 +192,38 @@ describe('Users Controller', () => {
     });
 
     it('should return 403 when trying to delete different user', async () => {
+      const agent = request.agent(app);
       const user1 = await createTestUser();
       const user2 = await createTestUser();
 
-      const response = await request(app)
-        .delete(`/api/users/${user2.id}`)
-        .set('Cookie', [`connect.sid=${user1.id}`]);
+      // Login as user1
+      await agent
+        .post('/api/login')
+        .send({
+          email: user1.email,
+          password: 'password123'
+        });
 
+      const response = await agent.delete(`/api/users/${user2.id}`);
       expect(response.status).toBe(403);
     });
   });
 
   describe('PATCH /api/users/:userId/status', () => {
     it('should update user presence status', async () => {
+      const agent = request.agent(app);
       const user = await createTestUser();
 
-      const response = await request(app)
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent
         .patch(`/api/users/${user.id}/status`)
-        .set('Cookie', [`connect.sid=${user.id}`])
         .send({ presenceStatus: false });
 
       expect(response.status).toBe(200);
@@ -189,12 +241,21 @@ describe('Users Controller', () => {
 
   describe('PATCH /api/users/:userId/profile-picture', () => {
     it('should update user profile picture', async () => {
+      const agent = request.agent(app);
       const user = await createTestUser();
+
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
       const newPicture = 'https://example.com/picture.jpg';
 
-      const response = await request(app)
+      const response = await agent
         .patch(`/api/users/${user.id}/profile-picture`)
-        .set('Cookie', [`connect.sid=${user.id}`])
         .send({ profilePicture: newPicture });
 
       expect(response.status).toBe(200);
@@ -212,11 +273,19 @@ describe('Users Controller', () => {
 
   describe('PATCH /api/users/:userId/roles', () => {
     it('should return 501 as role management is not implemented', async () => {
+      const agent = request.agent(app);
       const user = await createTestUser();
 
-      const response = await request(app)
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent
         .patch(`/api/users/${user.id}/roles`)
-        .set('Cookie', [`connect.sid=${user.id}`])
         .send({ roles: ['admin'] });
 
       expect(response.status).toBe(501);

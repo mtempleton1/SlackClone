@@ -110,6 +110,25 @@ export const channelsRelations = relations(channels, ({ one, many }) => ({
   users: many(userChannels)
 }));
 
+export const threadMessagesRelations = relations(threadMessages, ({ one }) => ({
+  thread: one(threads, {
+    fields: [threadMessages.threadId],
+    references: [threads.id],
+  }),
+  user: one(users, {
+    fields: [threadMessages.userId],
+    references: [users.id],
+  })
+}));
+
+export const threadsRelations = relations(threads, ({ one, many }) => ({
+  parentMessage: one(messages, {
+    fields: [threads.parentMessageId],
+    references: [messages.id],
+  }),
+  messages: many(threadMessages)
+}));
+
 // Validation Schemas
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
@@ -133,3 +152,5 @@ export type Thread = InferSelectModel<typeof threads>;
 export type File = InferSelectModel<typeof files>;
 export type Emoji = InferSelectModel<typeof emojis>;
 export type MessageReaction = InferSelectModel<typeof messageReactions>;
+export type ThreadMessage = InferSelectModel<typeof threadMessages>;
+export type NewThreadMessage = InferInsertModel<typeof threadMessages>;

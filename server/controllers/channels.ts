@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "@db";
-import { channels, messages, userChannels, type Channel } from "@db/schema";
+import { channels, messages, userChannels } from "@db/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function createChannel(req: Request, res: Response) {
@@ -24,13 +24,12 @@ export async function createChannel(req: Request, res: Response) {
 export async function getChannels(req: Request, res: Response) {
   try {
     const workspaceId = req.query.workspaceId as string;
-    let query = db.select().from(channels);
-    
-    if (workspaceId) {
-      query = query.where(eq(channels.workspaceId, parseInt(workspaceId)));
-    }
+    const baseQuery = db.select().from(channels);
 
-    const allChannels = await query;
+    const allChannels = workspaceId 
+      ? await baseQuery.where(eq(channels.workspaceId, parseInt(workspaceId)))
+      : await baseQuery;
+
     res.json(allChannels);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch channels" });

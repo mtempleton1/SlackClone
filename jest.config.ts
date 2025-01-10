@@ -14,9 +14,12 @@ const config: Config.InitialOptions = {
   verbose: true,
   transform: {
     '^.+\\.ts$': ['ts-jest', {
-      tsconfig: 'tsconfig.json'
+      tsconfig: 'tsconfig.json',
+      useESM: true
     }]
-  }
+  },
+  extensionsToTreatAsEsm: ['.ts'],
+  moduleFileExtensions: ['ts', 'js', 'json', 'node']
 };
 
 export default config;

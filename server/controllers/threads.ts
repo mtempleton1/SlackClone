@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "@db";
-import { threads, threadMessages } from "@db/schema";
+import { threads, threadMessages, type ThreadMessage } from "@db/schema";
 import { eq } from "drizzle-orm";
 
 export async function createThread(req: Request, res: Response) {
@@ -28,7 +28,7 @@ export async function createThread(req: Request, res: Response) {
 export async function getThread(req: Request, res: Response) {
   try {
     const threadId = parseInt(req.params.threadId);
-    
+
     const thread = await db.query.threads.findFirst({
       where: eq(threads.id, threadId),
       with: {
@@ -92,8 +92,8 @@ export async function deleteThreadMessage(req: Request, res: Response) {
 export async function getThreadParticipants(req: Request, res: Response) {
   try {
     const threadId = parseInt(req.params.threadId);
-    
-    const participants = await db.query.threadMessages.findMany({
+
+    const messages = await db.query.threadMessages.findMany({
       where: eq(threadMessages.threadId, threadId),
       with: {
         user: true
@@ -101,9 +101,9 @@ export async function getThreadParticipants(req: Request, res: Response) {
     });
 
     // Get unique participants
-    const uniqueParticipants = [...new Map(
-      participants.map(p => [p.user.id, p.user])
-    ).values()];
+    const uniqueParticipants = Array.from(new Map(
+      messages.map(message => [message.user.id, message.user])
+    ).values());
 
     res.json(uniqueParticipants);
   } catch (error) {
