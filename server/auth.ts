@@ -1,11 +1,11 @@
 import passport from "passport";
 import { IVerifyOptions, Strategy as LocalStrategy } from "passport-local";
-import { type Express } from "express";
+import { type Express, type Request, type Response, type NextFunction } from "express";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { users, type User } from "@db/schema";
+import { users, type User as DbUser } from "@db/schema";
 import { db } from "@db";
 import { eq } from "drizzle-orm";
 
@@ -30,7 +30,8 @@ const crypto = {
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    // Extend the User interface with our database User type
+    interface User extends DbUser {}
   }
 }
 
@@ -100,7 +101,7 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/register", async (req, res, next) => {
+  app.post("/api/register", async (req:Request, res: Response, next: NextFunction) => {
     try {
       const { email, password, displayName } = req.body;
       
@@ -147,7 +148,7 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", (req, res, next) => {
+  app.post("/api/login", (req:Request, res: Response, next: NextFunction) => {
     passport.authenticate("local", (err: any, user: Express.User, info: IVerifyOptions) => {
       if (err) {
         return next(err);
@@ -174,7 +175,7 @@ export function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.post("/api/logout", (req, res) => {
+  app.post("/api/logout", (req:Request, res: Response) => {
     req.logout((err) => {
       if (err) {
         return res.status(500).send("Logout failed");
@@ -183,7 +184,7 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/user", (req, res) => {
+  app.get("/api/user", (req:Request, res: Response) => {
     if (req.isAuthenticated()) {
       return res.json(req.user);
     }
@@ -191,7 +192,7 @@ export function setupAuth(app: Express) {
   });
 }
 
-export const isAuthenticated = (req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
+export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
     return next();
   }
