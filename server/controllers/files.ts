@@ -40,8 +40,11 @@ export async function uploadFile(req: Request, res: Response) {
     }
 
     try {
-      const messageId = req.body.messageId ? parseInt(req.body.messageId) : null;
-      if (req.body.messageId && isNaN(messageId)) {
+      const rawMessageId = req.body.messageId;
+      const messageId = rawMessageId ? Number(rawMessageId) : null;
+
+      // Check if messageId is provided but invalid
+      if (rawMessageId && (Number.isNaN(messageId) || !Number.isInteger(messageId))) {
         await fs.unlink(filePath).catch(console.error);
         return res.status(400).json({ error: "Invalid message ID" });
       }
@@ -169,8 +172,11 @@ export async function updateFile(req: Request, res: Response) {
       return res.status(400).json({ error: "Invalid file ID" });
     }
 
-    const messageId = req.body.messageId ? parseInt(req.body.messageId) : null;
-    if (req.body.messageId && isNaN(messageId)) {
+    const rawMessageId = req.body.messageId;
+    const messageId = rawMessageId ? Number(rawMessageId) : null;
+
+    // Check if messageId is provided but invalid
+    if (rawMessageId && (Number.isNaN(messageId) || !Number.isInteger(messageId))) {
       return res.status(400).json({ error: "Invalid message ID" });
     }
 
