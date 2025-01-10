@@ -1,7 +1,10 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
 
 export const app = express();
 
