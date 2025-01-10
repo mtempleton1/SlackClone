@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 import { WorkspaceNavigation } from "@/components/workspace/WorkspaceNavigation";
+import { ChannelList } from "@/components/workspace/ChannelList";
 
 export default function ChatPage() {
   const [location] = useLocation();
@@ -26,16 +27,14 @@ export default function ChatPage() {
     <div className="flex flex-col h-screen">
       <WorkspaceNavigation />
       <div className="flex flex-1 overflow-hidden">
-        {/* Channel list will go here */}
         <div className="w-64 bg-sidebar border-r border-sidebar-border">
-          {/* Channel list component will be added here */}
+          <ChannelList />
         </div>
 
-        {/* Main chat area */}
         <div className="flex-1 bg-background">
           <div className="p-4">
             <h1 className="text-2xl font-bold">
-              {workspace ? workspace.name : "Default Workspace"}
+              {workspace?.name ?? "Default Workspace"}
             </h1>
           </div>
         </div>
