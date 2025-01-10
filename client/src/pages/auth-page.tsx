@@ -62,12 +62,19 @@ export default function AuthPage() {
       const result = await login(data);
       if (!result.ok) {
         toast({
-          title: "Error",
+          title: "Login Failed",
           description: result.message,
           variant: "destructive",
         });
         return;
       }
+
+      // Successful login
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      });
+
     } catch (error: any) {
       toast({
         title: "Error",
