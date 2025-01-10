@@ -2,11 +2,19 @@ import { relations, type InferSelectModel, type InferInsertModel } from 'drizzle
 import { pgTable, serial, varchar, text, boolean, timestamp, integer, primaryKey } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
+export const organizations = pgTable('organizations', {
+  id: serial('organization_id').primaryKey(),
+  name: varchar('name', { length: 100 }).notNull().unique(),
+  description: text('description'),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
 export const users = pgTable('users', {
   id: serial('user_id').primaryKey(),
+  username: varchar('username', { length: 50 }).notNull().unique(),
   email: varchar('email', { length: 100 }).notNull().unique(),
-  displayName: varchar('display_name', { length: 50 }).notNull(),
   password: text('password').notNull(),
+  displayName: varchar('display_name', { length: 50 }).notNull(),
   profilePicture: varchar('profile_picture', { length: 255 }),
   statusMessage: varchar('status_message', { length: 150 }),
   presenceStatus: boolean('presence_status').default(true),
@@ -15,6 +23,7 @@ export const users = pgTable('users', {
 
 export const workspaces = pgTable('workspaces', {
   id: serial('workspace_id').primaryKey(),
+  organizationId: integer('organization_id').references(() => organizations.id).notNull(),
   name: varchar('name', { length: 100 }).notNull(),
   description: text('description'),
   createdAt: timestamp('created_at').defaultNow()
@@ -87,16 +96,24 @@ export const userChannels = pgTable('user_channels', {
 }));
 
 // Relations
+export const organizationsRelations = relations(organizations, ({ many }) => ({
+  workspaces: many(workspaces)
+}));
+
 export const usersRelations = relations(users, ({ many }) => ({
-  messages: many(messages),
   workspaces: many(userWorkspaces),
   channels: many(userChannels),
+  messages: many(messages),
   reactions: many(messageReactions),
   files: many(files),
   threadMessages: many(threadMessages)
 }));
 
-export const workspacesRelations = relations(workspaces, ({ many }) => ({
+export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [workspaces.organizationId],
+    references: [organizations.id],
+  }),
   channels: many(channels),
   users: many(userWorkspaces)
 }));
@@ -142,6 +159,10 @@ export const selectChannelSchema = createSelectSchema(channels);
 export const insertMessageSchema = createInsertSchema(messages);
 export const selectMessageSchema = createSelectSchema(messages);
 
+export const insertOrganizationSchema = createInsertSchema(organizations);
+export const selectOrganizationSchema = createSelectSchema(organizations);
+
+
 // Types
 export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
@@ -154,3 +175,6 @@ export type Emoji = InferSelectModel<typeof emojis>;
 export type MessageReaction = InferSelectModel<typeof messageReactions>;
 export type ThreadMessage = InferSelectModel<typeof threadMessages>;
 export type NewThreadMessage = InferInsertModel<typeof threadMessages>;
+export type Organization = InferSelectModel<typeof organizations>;
+export type NewOrganization = InferInsertModel<typeof organizations>;
+export type NewWorkspace = InferInsertModel<typeof workspaces>;

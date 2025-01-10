@@ -59,36 +59,31 @@ if (app.get("env") === "development") {
   });
 }
 
-// Only start the server if this file is being run directly
-if (require.main === module) {
-  (async () => {
-    const server = registerRoutes(app);
+const server = registerRoutes(app);
 
-    // Global error handler
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      console.error('Error:', err);
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
+// Global error handler
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('Error:', err);
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
 
-      res.status(status).json({ 
-        error: {
-          message,
-          ...(app.get("env") === "development" ? { stack: err.stack } : {})
-        } 
-      });
-    });
+  res.status(status).json({ 
+    error: {
+      message,
+      ...(app.get("env") === "development" ? { stack: err.stack } : {})
+    } 
+  });
+});
 
-    // Serve static files in production
-    if (app.get("env") === "development") {
-      await setupVite(app, server);
-    } else {
-      serveStatic(app);
-    }
-
-    // ALWAYS serve the app on port 5000
-    const PORT = 5000;
-    server.listen(PORT, "0.0.0.0", () => {
-      log(`Server running on http://0.0.0.0:${PORT}`);
-    });
-  })();
+// Serve static files in production
+if (app.get("env") === "development") {
+  setupVite(app, server);
+} else {
+  serveStatic(app);
 }
+
+// ALWAYS serve the app on port 5000
+const PORT = 5000;
+server.listen(PORT, "0.0.0.0", () => {
+  log(`Server running on http://0.0.0.0:${PORT}`);
+});
