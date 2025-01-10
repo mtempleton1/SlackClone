@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 import { WorkspaceNavigation } from "@/components/workspace/WorkspaceNavigation";
 import { ChannelList } from "@/components/workspace/ChannelList";
+import { MessageArea } from "@/components/workspace/MessageArea";
 
 export default function ChatPage() {
   const [location] = useLocation();
@@ -31,11 +32,14 @@ export default function ChatPage() {
           <ChannelList />
         </div>
 
-        <div className="flex-1 bg-background">
-          <div className="p-4">
-            <h1 className="text-2xl font-bold">
+        <div className="flex-1 bg-background flex flex-col">
+          <div className="border-b border-border px-4 py-3">
+            <h1 className="text-lg font-semibold">
               {workspace?.name ?? "Default Workspace"}
             </h1>
+          </div>
+          <div className="flex-1">
+            <MessageArea />
           </div>
         </div>
       </div>
