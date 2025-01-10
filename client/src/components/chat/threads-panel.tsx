@@ -1,15 +1,20 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
+import { MessageInput } from "./message-input";
 
 interface ThreadsPanelProps {
   onClose: () => void;
 }
 
 export function ThreadsPanel({ onClose }: ThreadsPanelProps) {
+  const handleThreadReply = (content: string, attachments: File[]) => {
+    // Handle thread-specific message submission
+    console.log("Thread reply:", content, attachments);
+  };
+
   return (
     <div className="h-full flex flex-col bg-background border-l">
       {/* Thread Header */}
@@ -56,9 +61,9 @@ export function ThreadsPanel({ onClose }: ThreadsPanelProps) {
 
       {/* Reply Input */}
       <div className="p-4 border-t">
-        <Input
-          placeholder="Reply in thread..."
-          className="w-full"
+        <MessageInput 
+          placeholder="Reply in thread..." 
+          onSubmit={handleThreadReply}
         />
       </div>
     </div>
