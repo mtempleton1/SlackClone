@@ -1,0 +1,164 @@
+console.error
+    Failed to write file: Error: File was not written correctly
+        at /home/runner/workspace/server/controllers/files.ts:42:15
+        at Generator.next (<anonymous>)
+        at fulfilled (/home/runner/workspace/server/controllers/files.ts:5:58)
+
+      43 |       }
+      44 |     } catch (error) {
+    > 45 |       console.error("Failed to write file:", error);
+         |               ^
+      46 |       return res.status(500).json({ error: "Failed to save file to disk" });
+      47 |     }
+      48 |
+
+      at server/controllers/files.ts:45:15
+      at fulfilled (server/controllers/files.ts:5:58)
+
+  console.error
+    Failed to write file: Error: File was not written correctly
+        at /home/runner/workspace/server/controllers/files.ts:42:15
+        at Generator.next (<anonymous>)
+        at fulfilled (/home/runner/workspace/server/controllers/files.ts:5:58)
+
+      43 |       }
+      44 |     } catch (error) {
+    > 45 |       console.error("Failed to write file:", error);
+         |               ^
+      46 |       return res.status(500).json({ error: "Failed to save file to disk" });
+      47 |     }
+      48 |
+
+      at server/controllers/files.ts:45:15
+      at fulfilled (server/controllers/files.ts:5:58)
+
+  console.error
+    Failed to write file: Error: File was not written correctly
+        at /home/runner/workspace/server/controllers/files.ts:42:15
+        at Generator.next (<anonymous>)
+        at fulfilled (/home/runner/workspace/server/controllers/files.ts:5:58)
+
+      43 |       }
+      44 |     } catch (error) {
+    > 45 |       console.error("Failed to write file:", error);
+         |               ^
+      46 |       return res.status(500).json({ error: "Failed to save file to disk" });
+      47 |     }
+      48 |
+
+      at server/controllers/files.ts:45:15
+      at fulfilled (server/controllers/files.ts:5:58)
+
+  console.error
+    Failed to write file: Error: File was not written correctly
+        at /home/runner/workspace/server/controllers/files.ts:42:15
+        at Generator.next (<anonymous>)
+        at fulfilled (/home/runner/workspace/server/controllers/files.ts:5:58)
+
+      43 |       }
+      44 |     } catch (error) {
+    > 45 |       console.error("Failed to write file:", error);
+         |               ^
+      46 |       return res.status(500).json({ error: "Failed to save file to disk" });
+      47 |     }
+      48 |
+
+      at server/controllers/files.ts:45:15
+      at fulfilled (server/controllers/files.ts:5:58)
+
+ FAIL  tests/controllers/files.test.ts (20.349 s)
+  Files Controller
+    POST /api/files
+      ✕ should upload a file when authenticated (1506 ms)
+      ✓ should return 400 when no file is uploaded (1207 ms)
+      ✓ should return 401 when not authenticated (860 ms)
+    GET /api/files/:fileId
+      ✕ should download a file when authenticated (1258 ms)
+      ✓ should return 404 for non-existent file (1264 ms)
+      ✓ should return 401 when not authenticated (859 ms)
+    DELETE /api/files/:fileId
+      ✕ should delete a file when authenticated (1192 ms)
+      ✓ should return 404 for non-existent file (1257 ms)
+      ✓ should return 401 when not authenticated (851 ms)
+    PUT /api/files/:fileId/update
+      ✕ should update file metadata when authenticated (1197 ms)
+      ✓ should return 404 for non-existent file (1255 ms)
+      ✓ should return 401 when not authenticated (849 ms)
+
+  ● Files Controller › POST /api/files › should upload a file when authenticated
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 500
+
+      75 |         .field('messageId', '');
+      76 |
+    > 77 |       expect(response.status).toBe(201);
+         |                               ^
+      78 |       expect(response.body).toHaveProperty('id');
+      79 |       expect(response.body.userId).toBe(user.id);
+      80 |       expect(response.body.filename).toBeTruthy();
+
+      at tests/controllers/files.test.ts:77:31
+      at fulfilled (tests/controllers/files.test.ts:5:58)
+
+  ● Files Controller › GET /api/files/:fileId › should download a file when authenticated
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 500
+
+      150 |         .field('messageId', '');
+      151 |
+    > 152 |       expect(uploadResponse.status).toBe(201);
+          |                                     ^
+      153 |
+      154 |       // Now download the file
+      155 |       const response = await agent
+
+      at tests/controllers/files.test.ts:152:37
+      at fulfilled (tests/controllers/files.test.ts:5:58)
+
+  ● Files Controller › DELETE /api/files/:fileId › should delete a file when authenticated
+
+    Expected status 201 but got 500, Response body: {"error":"Failed to save file to disk"}
+
+      21 |       // Show response body in the error message for better debugging
+      22 |       const bodyInfo = response.body ? `, Response body: ${JSON.stringify(response.body)}` : '';
+    > 23 |       throw new Error(`Expected status ${status} but got ${response.status}${bodyInfo}`);
+         |             ^
+      24 |     }
+      25 |   };
+      26 |
+
+      at expectStatus (tests/controllers/files.test.ts:23:13)
+      at tests/controllers/files.test.ts:216:7
+      at fulfilled (tests/controllers/files.test.ts:5:58)
+
+  ● Files Controller › PUT /api/files/:fileId/update › should update file metadata when authenticated
+
+    Expected status 201 but got 500, Response body: {"error":"Failed to save file to disk"}
+
+      21 |       // Show response body in the error message for better debugging
+      22 |       const bodyInfo = response.body ? `, Response body: ${JSON.stringify(response.body)}` : '';
+    > 23 |       throw new Error(`Expected status ${status} but got ${response.status}${bodyInfo}`);
+         |             ^
+      24 |     }
+      25 |   };
+      26 |
+
+      at expectStatus (tests/controllers/files.test.ts:23:13)
+      at tests/controllers/files.test.ts:289:7
+      at fulfilled (tests/controllers/files.test.ts:5:58)
+
+Test Suites: 1 failed, 1 total
+Tests:       4 failed, 8 passed, 12 total
+Snapshots:   0 total
+Time:        20.397 s, estimated 21 s
+Ran all test suites matching /tests\/controllers\/files.test.ts/i.
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.
+ Environment updated. Reloading shell...
