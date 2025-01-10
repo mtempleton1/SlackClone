@@ -3,9 +3,22 @@ import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-user";
@@ -20,8 +33,14 @@ const signupSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   username: z.string().min(1, "Username is required"),
   displayName: z.string().min(1, "Display name is required"),
-  organizationName: z.string().min(4, "Organization name must be at least 4 characters").optional(),
-  workspaceName: z.string().min(4, "Workspace name must be at least 4 characters").optional(),
+  organizationName: z
+    .string()
+    .min(4, "Organization name must be at least 4 characters")
+    .optional(),
+  workspaceName: z
+    .string()
+    .min(4, "Workspace name must be at least 4 characters")
+    .optional(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -33,7 +52,7 @@ export default function AuthPage() {
   const { toast } = useToast();
   const { login, register } = useUser();
 
-  const workspaceId = location.startsWith("/workspaces/") 
+  const workspaceId = location.startsWith("/workspaces/")
     ? location.split("/workspaces/")[1]
     : null;
 
@@ -122,20 +141,19 @@ export default function AuthPage() {
         <CardHeader>
           <CardTitle>{isLogin ? "Login" : "Create Account"}</CardTitle>
           <CardDescription>
-            {isLogin 
+            {isLogin
               ? "Enter your credentials to access your workspace"
               : workspaceId
                 ? "Create an account to join this workspace"
-                : "Create your organization and workspace"
-            }
+                : "Create your organization and workspace"}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isLogin ? (
             <Form {...loginForm}>
-              <form 
+              <form
                 id="login-form"
-                onSubmit={loginForm.handleSubmit(onLoginSubmit)} 
+                onSubmit={loginForm.handleSubmit(onLoginSubmit)}
                 className="space-y-4"
               >
                 <FormField
@@ -145,9 +163,9 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="email@example.com" 
+                        <Input
+                          type="email"
+                          placeholder="email@example.com"
                           onChange={field.onChange}
                           onBlur={field.onBlur}
                           name={field.name}
@@ -166,9 +184,9 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="password" 
-                          placeholder="••••••" 
+                        <Input
+                          type="password"
+                          placeholder="••••••"
                           onChange={field.onChange}
                           onBlur={field.onBlur}
                           name={field.name}
@@ -187,9 +205,9 @@ export default function AuthPage() {
             </Form>
           ) : (
             <Form {...signupForm}>
-              <form 
+              <form
                 id="signup-form"
-                onSubmit={signupForm.handleSubmit(onSignupSubmit)} 
+                onSubmit={signupForm.handleSubmit(onSignupSubmit)}
                 className="space-y-4"
               >
                 <FormField
@@ -199,9 +217,9 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="email@example.com" 
+                        <Input
+                          type="email"
+                          placeholder="email@example.com"
                           onChange={field.onChange}
                           onBlur={field.onBlur}
                           name={field.name}
@@ -220,9 +238,9 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input
                           type="text"
-                          placeholder="johndoe" 
+                          placeholder="johndoe"
                           onChange={field.onChange}
                           onBlur={field.onBlur}
                           name={field.name}
@@ -241,9 +259,9 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Display Name</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input
                           type="text"
-                          placeholder="John Doe" 
+                          placeholder="John Doe"
                           onChange={field.onChange}
                           onBlur={field.onBlur}
                           name={field.name}
@@ -264,9 +282,9 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Organization Name</FormLabel>
                           <FormControl>
-                            <Input 
+                            <Input
                               type="text"
-                              placeholder="Acme Corp" 
+                              placeholder="Acme Corp"
                               onChange={field.onChange}
                               onBlur={field.onBlur}
                               name={field.name}
@@ -285,9 +303,9 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Workspace Name</FormLabel>
                           <FormControl>
-                            <Input 
+                            <Input
                               type="text"
-                              placeholder="Engineering" 
+                              placeholder="Engineering"
                               onChange={field.onChange}
                               onBlur={field.onBlur}
                               name={field.name}
@@ -308,9 +326,9 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="password" 
-                          placeholder="••••••" 
+                        <Input
+                          type="password"
+                          placeholder="••••••"
                           onChange={field.onChange}
                           onBlur={field.onBlur}
                           name={field.name}
@@ -334,7 +352,9 @@ export default function AuthPage() {
               onClick={toggleForm}
               className="text-primary"
             >
-              {isLogin ? "Need an account? Sign up" : "Already have an account? Login"}
+              {isLogin
+                ? "Need an account? Sign up"
+                : "Already have an account? Login"}
             </Button>
           </div>
         </CardContent>
