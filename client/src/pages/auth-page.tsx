@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -24,14 +24,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-user";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  username: z.string().min(1, "Username is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const signupSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
   username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   displayName: z.string().min(1, "Display name is required"),
   organizationName: z
     .string()
@@ -59,7 +58,7 @@ export default function AuthPage() {
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -67,14 +66,30 @@ export default function AuthPage() {
   const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      email: "",
-      password: "",
       username: "",
+      password: "",
       displayName: "",
       organizationName: "",
       workspaceName: "",
     },
   });
+
+  // Auto-login in development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      // First create the dummy user
+      fetch('/api/create-dummy-user', { method: 'POST' })
+        .then(() => {
+          // Then attempt auto-login
+          loginForm.setValue('username', 'demo');
+          loginForm.setValue('password', 'demo123');
+          loginForm.handleSubmit(onLoginSubmit)();
+        })
+        .catch(error => {
+          console.error('Auto-login failed:', error);
+        });
+    }
+  }, []);
 
   const onLoginSubmit = async (data: LoginFormData) => {
     try {
@@ -158,19 +173,15 @@ export default function AuthPage() {
               >
                 <FormField
                   control={loginForm.control}
-                  name="email"
+                  name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Username</FormLabel>
                       <FormControl>
                         <Input
-                          type="email"
-                          placeholder="email@example.com"
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          value={field.value}
+                          type="text"
+                          placeholder="demo"
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -187,11 +198,7 @@ export default function AuthPage() {
                         <Input
                           type="password"
                           placeholder="••••••"
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          value={field.value}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -212,27 +219,6 @@ export default function AuthPage() {
               >
                 <FormField
                   control={signupForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="email@example.com"
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={signupForm.control}
                   name="username"
                   render={({ field }) => (
                     <FormItem>
@@ -241,11 +227,7 @@ export default function AuthPage() {
                         <Input
                           type="text"
                           placeholder="johndoe"
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          value={field.value}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -262,11 +244,7 @@ export default function AuthPage() {
                         <Input
                           type="text"
                           placeholder="John Doe"
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          value={field.value}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -285,11 +263,7 @@ export default function AuthPage() {
                             <Input
                               type="text"
                               placeholder="Acme Corp"
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                              value={field.value}
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -306,11 +280,7 @@ export default function AuthPage() {
                             <Input
                               type="text"
                               placeholder="Engineering"
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                              value={field.value}
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -329,11 +299,7 @@ export default function AuthPage() {
                         <Input
                           type="password"
                           placeholder="••••••"
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          value={field.value}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />

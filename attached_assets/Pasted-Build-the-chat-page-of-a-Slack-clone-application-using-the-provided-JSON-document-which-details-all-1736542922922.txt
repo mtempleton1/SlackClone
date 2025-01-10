@@ -1,0 +1,81 @@
+Build the chat page of a Slack clone application using the provided JSON document, which details all components, their hierarchical structure, purposes, and locations within their parent components.
+
+---
+
+JSON Document Structure:
+
+- The JSON document contains a list of component objects.
+- Each component object includes:
+  - name: The component's name.
+  - description: The purpose and functionality of the component.
+  - location: The placement of the component within its immediate parent component.
+  - sub: A list of sub-components, each following the same format.
+
+---
+
+Instructions:
+
+1. Structure Alignment:
+   - Ensure the chat page's structure matches the hierarchical structure defined in the JSON document.
+   - Build components according to their specified hierarchy and relationships.
+
+2. Component Implementation:
+   - For each component:
+     - Implement the functionality as described in its description.
+     - Apply the necessary state management and styling.
+     - Place it in the specified location within its parent component.
+
+3. Development Approach:
+   - Start from the top-level components of the hierarchy.
+   - Use a breadth-first traversal:
+     - Instantiate all top-level components first.
+     - Proceed to their sub-components level by level.
+     - Continue this process until all components are created.
+
+---
+
+Minimum Viable Product (MVP) Features:
+
+Your Slack clone application should include the following features:
+
+1. Authentication:
+   - Implement user login mechanisms for accounts and workspaces.
+
+2. Real-time Messaging:
+   - Enable message exchange between users in channels and direct messages.
+   - Support text, file sharing, and image uploads.
+
+3. Organizations and Workspaces:
+   - Create structures that allow users to organize channels within workspaces.
+
+4. Channel & Direct Message Organization:
+   - Develop functionalities specific to managing channels and direct messages.
+
+5. File Sharing & Search:
+   - Allow users to share files within chats.
+   - Implement search functionality to find messages and files.
+
+6. User Presence & Status:
+   - Display user availability and custom status messages.
+
+7. Thread Support:
+   - Enable users to reply to specific messages, creating threads viewable separately from the main conversation.
+
+8. Emoji Reactions:
+   - Allow users to react to messages with emojis.
+
+---
+
+Goal:
+
+Create a fully functional chat page that serves as part of a Slack clone application, incorporating all components and features as specified. Ensure that:
+
+- Each component performs its intended tasks effectively.
+- The overall layout and component placement adhere strictly to the location specifications.
+- The styling is consistent throughout, providing a seamless user experience.
+
+---
+
+Note:
+
+Focus on building a robust foundation that can be expanded upon in the future. Prioritize essential functionalities and ensure that the application is scalable and maintainable.

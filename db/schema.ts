@@ -1,6 +1,7 @@
 import { relations, type InferSelectModel, type InferInsertModel } from 'drizzle-orm';
 import { pgTable, serial, varchar, text, boolean, timestamp, integer, primaryKey } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
 export const organizations = pgTable('organizations', {
   id: serial('organization_id').primaryKey(),

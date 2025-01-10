@@ -9,7 +9,6 @@ type LoginData = {
 type RegisterData = {
   username: string;
   password: string;
-  email: string;
   displayName: string;
   organizationName?: string;
   workspaceName?: string;

@@ -1,0 +1,812 @@
+[
+  {
+    "name": "Navigation Sidebar",
+    "description": "The navigation sidebar provides quick access to the list of all channels, direct messages, and threads. It also includes navigation to settings and user preferences.",
+    "location": "On the left side of the ChatPage",
+    "sub": [
+      {
+        "name": "Channel Navigation",
+        "description": "A section that displays and allows navigation through the list of all channels the user is subscribed to within the current workspace.",
+        "location": "Upper part of the Navigation Sidebar",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Channel Navigation Header",
+            "description": "A header section that contains the title 'Channels' and any controls related to the management of channel visibility or settings.",
+            "location": "At the top of the Channel Navigation section",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Channel Navigation List",
+            "description": "A scrollable list displaying each channel the user is subscribed to, allowing for click-through selection of channels to display in the Main Conversation Area.",
+            "location": "Below the Channel Navigation Header",
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Channel List Item",
+                "description": "Each entry in the list represents a clickable channel, showing the channel name and possibly unread message indicators.",
+                "location": "Within the Channel Navigation List",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "New Channel Button",
+                "description": "A button positioned within the Channel Navigation List to allow users to quickly create a new channel.",
+                "location": "At the top or bottom of the Channel Navigation List",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Direct Message List Item",
+                "description": "Each entry represents a direct message conversation, displaying the contact\u2019s name or group members and possibly unread message indicators.",
+                "location": "Within the Direct Messages Navigation List",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "New Direct Message Button",
+                "description": "Button used to initiate a new direct message conversation from the Direct Messages Navigation List.",
+                "location": "At the top or bottom of the Direct Messages Navigation List",
+                "is_root_component": true,
+                "sub": []
+              }
+            ]
+          },
+          {
+            "name": "Direct Messages Navigation Header",
+            "description": "A header section with the title 'Direct Messages' and any applicable options for starting new conversations or organizing the DM list.",
+            "location": "At the top of the Direct Messages Navigation section",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Direct Messages Navigation List",
+            "description": "A list showing current direct message conversations, allowing users to click through and open these in the Main Conversation Area.",
+            "location": "Below the Direct Messages Navigation Header",
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Channel Icon",
+                "description": "An icon representing each channel type, such as public or private, displayed alongside the channel name.",
+                "location": "Within each Channel List Item",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Channel Unread Badge",
+                "description": "A badge indicating the number of unread messages in a channel.",
+                "location": "Attached or displayed alongside each Channel List Item",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Direct Message Avatar",
+                "description": "An avatar or icon representing the user or users in the direct message conversation.",
+                "location": "Within each Direct Message List Item",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Direct Message Unread Badge",
+                "description": "A badge or counter showing unread messages for direct message conversations.",
+                "location": "Attached to each Direct Message List Item",
+                "is_root_component": true,
+                "sub": []
+              }
+            ]
+          },
+          {
+            "name": "Workspace Switcher",
+            "description": "A dropdown or list element enabling users to switch between different workspaces they have access to.",
+            "location": "Within the Workspace Menu at the top of the Navigation Sidebar",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "User Profile Button",
+            "description": "A button or clickable area displaying the user's profile picture and/or name, offering access to personal settings and status updates.",
+            "location": "Near the bottom or lower section of the Navigation Sidebar",
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Direct Messages Navigation",
+        "description": "A section that shows recent direct message conversations, allowing users to navigate directly to these conversations.",
+        "location": "Below the Channel Navigation in the Navigation Sidebar",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Workspace Name Display",
+            "description": "Displays the current workspace name, used as part of the Workspace Menu for context and navigation.",
+            "location": "Within the Workspace Menu at the top of the Navigation Sidebar",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Workspace Switch Dropdown",
+            "description": "A dropdown menu allowing users to switch between multiple workspaces they are part of.",
+            "location": "Within the Workspace Menu",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "User Status Indicator",
+            "description": "Represents the current status of the user (e.g., online, away) and allows for quick status changes.",
+            "location": "Connected to the User Profile Button at the bottom of the Navigation Sidebar",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Settings Menu Trigger",
+            "description": "A clickable area or button that opens the full settings or preferences menu for user account customization.",
+            "location": "Adjacent to the User Profile Button",
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Threads Navigation",
+        "description": "Provides quick access to threads involving the user, offering a list and navigation feature to jump to these discussions.",
+        "location": "Below the Direct Messages Navigation in the Navigation Sidebar",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Workspace Menu",
+        "description": "Includes navigation options for switching between various workspaces and accessing workspace-related settings.",
+        "location": "At the very top of the Navigation Sidebar",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Thread List",
+            "description": "Displays a list of ongoing threads that the user is part of or interested in, allowing for quick navigation to specific thread discussions.",
+            "location": "Below the Threads Navigation Header in the Navigation Sidebar",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Profile Picture",
+            "description": "Displays the user's profile picture in the sidebar, usually as part of the User Profile Button, used for account and status access.",
+            "location": "Within the User Profile Button at the bottom of the Navigation Sidebar",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Sign Out Button",
+            "description": "Provides the functionality to sign out of the current session, often located within the settings menu or user preferences.",
+            "location": "Within the Settings Menu accessed by the Settings Menu Trigger",
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Settings & Preferences Access",
+        "description": "A section that includes links or buttons to access user account settings, preferences, and other personal settings.",
+        "location": "At the bottom of the Navigation Sidebar",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Add Channel/DM Trigger",
+        "description": "A button or link used to create new channels or direct messages, facilitating the creation of new conversations.",
+        "location": "Typically near the top of the Channel Navigation or Direct Messages Navigation",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Channel List",
+    "description": "Displays all the channels the user is a part of within their workspace. This list allows users to switch channels to view respective conversations.",
+    "location": "Within the Navigation Sidebar",
+    "sub": [
+      {
+        "name": "Public Channel Item",
+        "description": "An individual channel item representing a public channel within the Channel List, allowing users to access conversations visible to the entire workspace.",
+        "location": "Within the Channel Navigation List",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Private Channel Item",
+        "description": "An individual channel item representing a private channel within the Channel List, accessible only to specific members.",
+        "location": "Within the Channel Navigation List",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Channel Sort Options",
+        "description": "Options for sorting or organizing channels in the list, such as alphabetically or by activity.",
+        "location": "At the top of the Channel Navigation List",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Direct Messages List",
+    "description": "Shows a log of all direct message conversations the user is engaged in, ordered typically by recent activity.",
+    "location": "Below the Channel List in the Navigation Sidebar",
+    "sub": [
+      {
+        "name": "Direct Message List Header",
+        "description": "The header section of the Direct Messages List, which may include options for managing direct messages.",
+        "location": "At the top of the Direct Messages List",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Recent Conversation Item",
+        "description": "An individual item representing a recent direct message conversation between users.",
+        "location": "Within the Direct Messages List",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Active Conversation Indicator",
+        "description": "Visual indicator highlighting the currently active or selected direct message conversation.",
+        "location": "Within the Recent Conversation Item, emphasizing the current selection",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Message Input Area",
+    "description": "A text input field where users can compose and send messages, attach files, or add emojis to a conversation.",
+    "location": "At the bottom of the main conversation area",
+    "sub": [
+      {
+        "name": "TextInputField",
+        "description": "The main input area where users can compose messages before sending.",
+        "location": "Central part of the Message Input Area",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "InputFieldPlaceholder",
+            "description": "Displays a placeholder text within the TextInputField when it's empty, guiding the user on what to type.",
+            "location": "Inside the TextInputField when there is no user input",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "AttachmentPreviewArea",
+            "description": "A section that displays previews of attached files or images before the message is sent.",
+            "location": "Above or within the TextInputField area",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "EmojiSearchBar",
+            "description": "A search bar within the EmojiPicker to find specific emojis quickly.",
+            "location": "At the top of the EmojiPicker",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "EmojiCategoryTabs",
+            "description": "Tabs that categorize emojis into groups such as 'Recent', 'Smileys', 'Animals', etc.",
+            "location": "Within the EmojiPicker, usually at the top or bottom",
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "SendButton",
+        "description": "Button used to send the composed message in the TextInputField to the chat.",
+        "location": "Immediately adjacent to the TextInputField",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "AttachFileButton",
+        "description": "Button that allows users to attach files to their message. Clicking it opens a file selector.",
+        "location": "Adjacent to the TextInputField, usually on the left or right",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "EmojiPicker",
+        "description": "A tool that allows users to select and insert emojis into their message.",
+        "location": "Within the Message Input Area, accessible via a button or icon near the TextInputField",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Main Conversation Area",
+    "description": "The primary area for real-time interaction, displaying the ongoing conversation in the selected channel or direct message.",
+    "location": "Central part of the ChatPage",
+    "sub": [
+      {
+        "name": "MessageBubble",
+        "description": "Individual container for each message within the conversation, displaying text, images, or attached files, alongside metadata such as sender and timestamp.",
+        "location": "Scattered throughout the Main Conversation Area in chronological order",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "MessageContent",
+            "description": "Displays the main content of the message, be it text, image, or file attachments.",
+            "location": "Within each MessageBubble",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "SenderAvatar",
+            "description": "An avatar or profile picture representing the sender of each message, allowing users to easily identify who sent the message.",
+            "location": "Aligned to the left of each MessageBubble",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "ReactionBar",
+            "description": "Component allowing users to view and add emoji reactions to each message, providing quick feedback mechanisms.",
+            "location": "Below or adjacent to each MessageBubble",
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "ConversationHeader",
+        "description": "Displays the name of the channel or the contact(s) in a direct message thread, along with options for channel info or starting a call.",
+        "location": "Top section of the Main Conversation Area",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "ScrollToLatestButton",
+        "description": "A button that, when pressed, quickly scrolls to the most recent messages in the conversation.",
+        "location": "Overlayed at the lower edge or corner of the Main Conversation Area when there are unread messages off-screen",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "ThreadReplyButton",
+        "description": "Button located on each message bubble that allows users to initiate or view a thread discussion related to a specific message.",
+        "location": "Within or beside each MessageBubble",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "TimestampLabel",
+        "description": "Displays the time a message was sent or delivered, important for contextualizing message order and discussion.",
+        "location": "Alongside or below each MessageBubble",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "User Presence & Status Indicator",
+    "description": "Displays the current online status of users in the conversation, such as online, away, or offline.",
+    "location": "Next to user names in the direct message and member list",
+    "sub": [
+      {
+        "name": "StatusIcon",
+        "description": "A visual representation of the user\u2019s status, such as a green dot for 'online', yellow for 'away', and red for 'busy'.",
+        "location": "Next to the user's name or avatar",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "StatusDropdown",
+        "description": "A dropdown menu that allows users to manually set their status as online, away, or offline.",
+        "location": "Accessible from the user\u2019s profile or settings panel",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "CustomStatusMessage",
+        "description": "An optional text message set by the user to inform others of their current status or availability.",
+        "location": "Displayed alongside the StatusIcon in the user\u2019s profile view",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Threads Panel",
+    "description": "The panel shows the threads related to the selected channel or direct message, allowing users to engage in or view ongoing thread discussions.",
+    "location": "Right side of the Main Conversation Area when a thread is opened",
+    "sub": [
+      {
+        "name": "ThreadList",
+        "description": "A list view of all threads related to the selected channel or direct message, sortable by recent activity or other criteria.",
+        "location": "Within the main viewport of the Threads Panel",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "IndividualThread",
+            "description": "Represents a single thread within the ThreadList, allowing users to see the initial message and a summary of replies.",
+            "location": "Within the ThreadList in the Threads Panel",
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "IndividualThreadCard",
+                "description": "A condensed representation of a thread with the initial message and latest reply displayed, allowing quick overview and navigation.",
+                "location": "Inside the ThreadList within the Threads Panel",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "NewReplyButton",
+                "description": "A button to quickly open the ReplyTextInput for a thread, encouraging user interaction and response.",
+                "location": "Within each IndividualThreadCard or ThreadMessageBubble in the Threads Panel",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "ThreadTimestamp",
+                "description": "Displays the most recent activity time or the time since the thread started, providing a time context for the conversation.",
+                "location": "Within each IndividualThreadCard, usually aligned to the side or bottom",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "ThreadExpansionToggle",
+                "description": "Allows users to expand or collapse a thread to view more or fewer details directly within the Threads Panel.",
+                "location": "Within each IndividualThreadCard or at the header of a thread view",
+                "is_root_component": true,
+                "sub": []
+              }
+            ]
+          },
+          {
+            "name": "ThreadActivityIndicator",
+            "description": "Indicator showing recent activity within a thread, such as the number of new replies since last viewed.",
+            "location": "Adjacent to each IndividualThread entry in the ThreadList",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "ThreadReplyForm",
+            "description": "Provides a user interface for writing and submitting replies to a thread, similar to the main Message Input Area.",
+            "location": "Below the ThreadMessageBubble in an opened IndividualThread",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "ThreadParticipantList",
+            "description": "Lists the participants involved in a thread conversation, providing context about who is in the discussion.",
+            "location": "Top or within the IndividualThread view",
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "ThreadHeader",
+        "description": "Displays the title or main message of the selected thread, along with options to perform actions such as closing or following the thread.",
+        "location": "At the top of the Threads Panel",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "ReplyTextInput",
+        "description": "Text input field where users can type their replies to the thread discussion.",
+        "location": "At the bottom of the Threads Panel",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "ThreadMessageBubble",
+        "description": "Individual messages or replies within the specific thread, similar to MessageBubble but specific to the thread context.",
+        "location": "Within the ThreadList in the Threads Panel",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "ThreadInteractionArea",
+            "description": "The section where users can interact with specific thread options such as following the thread or marking it as read.",
+            "location": "Within each IndividualThreadCard in the Threads Panel",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "ThreadSummaryView",
+            "description": "Provides a quick snapshot of the thread, showing the most recent replies or user activity.",
+            "location": "Inside the IndividualThreadCard in the ThreadList",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "ThreadActionButton",
+            "description": "Button for actions such as opening the thread in full view or jumping to the original message in the Main Conversation Area.",
+            "location": "Aligned with or at the bottom of the IndividualThreadCard",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "ThreadMuteToggle",
+            "description": "An option to mute or unmute notifications for updates or replies within the thread.",
+            "location": "Within the IndividualThreadCard interface, often in the interaction area",
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "CollapseButton",
+        "description": "Button that allows users to collapse the Threads Panel to focus back on the main conversation area without losing the current thread context.",
+        "location": "Top-right corner of the Threads Panel",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "File Sharing Module",
+    "description": "A section dedicated to displaying shared files or facilitating the sharing of files within the conversation.",
+    "location": "Accessible via the Message Input Area or within conversations",
+    "sub": [
+      {
+        "name": "FilePreview",
+        "description": "A thumbnail or representation of the shared file, providing a quick glance of the file type and content.",
+        "location": "Within each file entry in the File Sharing Module",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "FileUploadButton",
+        "description": "A button used to initiate the process of uploading and sharing a new file within the conversation.",
+        "location": "At the top or bottom of the File Sharing Module",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "FileSearchBar",
+        "description": "A search bar allowing users to locate shared files quickly by typing keywords related to file names or contents.",
+        "location": "At the top of the File Sharing Module",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "FileMetadata",
+        "description": "Displays additional information about the file, such as upload date, uploader\u2019s name, and file size.",
+        "location": "Next to or below the FilePreview in each file entry",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "FileActionMenu",
+        "description": "Provides options for actions that can be performed on files, such as downloading, sharing externally, or deleting.",
+        "location": "Adjacent to FilePreview or FileMetadata within each file entry",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Profile & Preferences Overlay",
+    "description": "An overlay window where users can access and modify account settings, preferences, themes or profile data.",
+    "location": "Invoked by clicking on the user's own profile picture or name",
+    "sub": [
+      {
+        "name": "ProfileInfoSection",
+        "description": "Displays the user's profile information including avatar, display name, and email address, allowing users to edit their info.",
+        "location": "Top portion of the Profile & Preferences Overlay",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "PreferencesMenu",
+        "description": "Contains various options for modifying application preferences such as notification settings, themes, and language.",
+        "location": "Central area within the Profile & Preferences Overlay",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "AccountSettingsSection",
+        "description": "Provides controls for advanced account settings including security options like changing the password.",
+        "location": "Lower portion of the Profile & Preferences Overlay",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "SaveChangesButton",
+        "description": "Button to save any changes made within the overlay, ensuring that user preferences are updated.",
+        "location": "Bottom section of the Profile & Preferences Overlay",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "CloseOverlayButton",
+        "description": "Button that closes the overlay, discarding any unsaved changes and returning to the main interface.",
+        "location": "Top-right corner of the Profile & Preferences Overlay",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Emoji Reactions",
+    "description": "Allows users to react to messages using emojis, providing quick feedback without posting a follow-up message.",
+    "location": "Below each message in the Main Conversation Area",
+    "sub": [
+      {
+        "name": "EmojiReactionItem",
+        "description": "Represents a single emoji reaction added to a message, displaying the emoji and the number of users who reacted.",
+        "location": "Clustered below or next to the message content in the Emoji Reactions area",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "ReactionEmoji",
+            "description": "The emoji itself, representing a reaction added to a message, typically displayed alongside the count of users who reacted.",
+            "location": "Within each EmojiReactionItem, central element",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "ReactionCountLabel",
+            "description": "Displays the number of users who have selected this specific emoji reaction for a message.",
+            "location": "Adjacent to or below the ReactionEmoji within each EmojiReactionItem",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "EmojiPickerOverlay",
+            "description": "An overlay allowing users to select from an array of emojis to add as a reaction to a message.",
+            "location": "Expands from the EmojiReactionPopup when initiated",
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "EmojiSelectorGrid",
+                "description": "Grid or list of available emojis that users can choose from to add a reaction to a message.",
+                "location": "Within the EmojiPickerOverlay when opened",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "SelectedEmojiHighlight",
+                "description": "Visual cue or highlight indicating an emoji that the user has chosen for reacting to a particular message.",
+                "location": "Overlayed or adjacent to a ReactionEmoji within the EmojiReactionPopup",
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "RecentEmojiList",
+                "description": "A section displaying the most recently used emojis for quick selection and reuse in reactions.",
+                "location": "Top section of the EmojiPickerOverlay for easy access",
+                "is_root_component": true,
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AddReactionButton",
+        "description": "A button allowing users to open a menu and add new emoji reactions to a message.",
+        "location": "Adjacent to existing EmojiReactionItems on a message",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "EmojiReactionPopup",
+        "description": "Popup that appears showing available emojis for users to add as reactions to a message.",
+        "location": "Expands from the AddReactionButton when clicked",
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "EmojiCategoryLabel",
+            "description": "Label for emoji categories (e.g., smileys, animals) to help users navigate and find specific emojis easily.",
+            "location": "Within the EmojiSelectorGrid, usually at the top or sidebar",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "EmojiSearchInput",
+            "description": "Input field where users can type to search for specific emojis to react with quickly.",
+            "location": "Top of the EmojiPickerOverlay, providing search functionality",
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "EmojiFavorites",
+            "description": "A section displaying user's favorite or most-used emojis for quicker selection when reacting.",
+            "location": "Top area or a dedicated section of the EmojiPickerOverlay",
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "ReactionUserList",
+        "description": "Displays a list of users who have added a specific emoji reaction to a message.",
+        "location": "Inline with or accessible from each EmojiReactionItem",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Search Bar",
+    "description": "A search component that enables users to locate messages, files, or channels quickly by inputting keywords.",
+    "location": "At the top of the ChatPage",
+    "sub": [
+      {
+        "name": "SearchInputField",
+        "description": "The primary input area where users can type their search queries to locate messages, files, or channels.",
+        "location": "Central part of the Search Bar",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "SearchButton",
+        "description": "Button to initiate the search based on the query in the SearchInputField.",
+        "location": "Adjacent to the SearchInputField",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "SearchFilterDropdown",
+        "description": "Dropdown menu that allows users to apply filters to their search, such as by type of content or date range.",
+        "location": "Aligned with or next to the SearchInputField",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "SearchSuggestions",
+        "description": "Real-time suggestions that appear based on the current input in the SearchInputField, offering possible search terms or autocompletions.",
+        "location": "Below the SearchInputField as a dynamic dropdown",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "ClearSearchButton",
+        "description": "Button to quickly clear the current search input, allowing users to start a new search fresh.",
+        "location": "Inside or next to the SearchInputField, typically to the far right",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "New Channel/Group DM Overlay",
+    "description": "An overlay that allows users to create new channels or initiate new group direct message conversations by inviting other users.",
+    "location": "Appears as an overlay when the respective option is chosen",
+    "sub": []
+  },
+  {
+    "name": "Notifications & Mentions",
+    "description": "Displays alerts when users are mentioned or when there are new messages in starred channels or direct conversations.",
+    "location": "Within the Navigation Sidebar or as pop-ups on the page",
+    "sub": [
+      {
+        "name": "MentionAlertItem",
+        "description": "An alert item indicating a new mention of the user in a channel or message.",
+        "location": "Listed within the Notifications & Mentions area, typically in chronological order",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "StarredChannelAlert",
+        "description": "A notification item indicating new activity or messages in channels that the user has starred.",
+        "location": "Within the Notifications & Mentions area, emphasized for important channels",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "NotificationsSettingsLink",
+        "description": "A link or button that directs the user to detailed notification settings to adjust preferences.",
+        "location": "Bottom or as a sidebar option within the Notifications & Mentions area",
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "GroupMentionHighlight",
+        "description": "Special highlight or indicator for mentions that include group notifications or tags.",
+        "location": "Among MentionAlertItems, but with additional emphasis",
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  }
+]
