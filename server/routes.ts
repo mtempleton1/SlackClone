@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth, isAuthenticated } from "./auth";
-import { setupWebSocketServer } from "./lib/socket";
+import { WebSocketServer } from "ws";
 
 // Controllers
 import * as usersController from "./controllers/users";
@@ -46,6 +46,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/channels/:channelId/members", isAuthenticated, channelsController.getChannelMembers);
   app.post("/api/channels/:channelId/members", isAuthenticated, channelsController.addChannelMember);
   app.delete("/api/channels/:channelId/members/:userId", isAuthenticated, channelsController.removeChannelMember);
+  app.get("/api/channels/:channelId/messages", isAuthenticated, messagesController.getChannelMessages);
 
   // Messages endpoints
   app.post("/api/messages", isAuthenticated, messagesController.createMessage);
@@ -55,7 +56,6 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/messages/:messageId/reactions", isAuthenticated, messagesController.getMessageReactions);
   app.post("/api/messages/:messageId/reactions", isAuthenticated, messagesController.addMessageReaction);
   app.delete("/api/messages/:messageId/reactions/:emojiId", isAuthenticated, messagesController.removeMessageReaction);
-  app.get("/api/channels/:channelId/messages", isAuthenticated, messagesController.getChannelMessages);
 
   // Threads endpoints
   app.post("/api/threads", isAuthenticated, threadsController.createThread);
@@ -77,8 +77,43 @@ export function registerRoutes(app: Express): Server {
   app.delete("/api/files/:fileId", isAuthenticated, filesController.deleteFile);
   app.put("/api/files/:fileId/update", isAuthenticated, filesController.updateFile);
 
+  // Create HTTP server
   const httpServer = createServer(app);
-  setupWebSocketServer(httpServer);
+
+  // Set up WebSocket server
+  const wss = new WebSocketServer({ 
+    server: httpServer,
+    path: '/ws',
+    verifyClient: (info, cb) => {
+      // Here you can add authentication verification
+      // For now, we'll accept all connections
+      cb(true);
+    }
+  });
+
+  // WebSocket connection handling
+  wss.on('connection', (ws) => {
+    console.log('Client connected');
+
+    ws.on('message', (data) => {
+      try {
+        const message = JSON.parse(data.toString());
+
+        // Broadcast the message to all connected clients
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocketServer.OPEN) {
+            client.send(JSON.stringify(message));
+          }
+        });
+      } catch (error) {
+        console.error('Error processing message:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      console.log('Client disconnected');
+    });
+  });
 
   return httpServer;
 }
