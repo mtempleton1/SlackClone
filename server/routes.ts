@@ -8,9 +8,6 @@ import * as usersController from "./controllers/users";
 import * as workspacesController from "./controllers/workspaces";
 import * as channelsController from "./controllers/channels";
 import * as messagesController from "./controllers/messages";
-import * as threadsController from "./controllers/threads";
-import * as emojisController from "./controllers/emojis";
-import * as filesController from "./controllers/files";
 
 export function registerRoutes(app: Express): Server {
   // Auth routes
@@ -48,14 +45,11 @@ export function registerRoutes(app: Express): Server {
   app.delete("/api/channels/:channelId/members/:userId", isAuthenticated, channelsController.removeChannelMember);
   app.get("/api/channels/:channelId/messages", isAuthenticated, messagesController.getChannelMessages);
 
-  // Messages endpoints
+  // Messages endpoints - only keeping the essential ones for now
   app.post("/api/messages", isAuthenticated, messagesController.createMessage);
   app.get("/api/messages/:messageId", isAuthenticated, messagesController.getMessage);
   app.put("/api/messages/:messageId", isAuthenticated, messagesController.updateMessage);
   app.delete("/api/messages/:messageId", isAuthenticated, messagesController.deleteMessage);
-  app.get("/api/messages/:messageId/reactions", isAuthenticated, messagesController.getMessageReactions);
-  app.post("/api/messages/:messageId/reactions", isAuthenticated, messagesController.addMessageReaction);
-  app.delete("/api/messages/:messageId/reactions/:emojiId", isAuthenticated, messagesController.removeMessageReaction);
 
   // Create HTTP server
   const httpServer = createServer(app);
@@ -78,34 +72,47 @@ export function registerRoutes(app: Express): Server {
     ws.on('message', async (data) => {
       try {
         const message = JSON.parse(data.toString());
+        console.log('Received message:', message); // Debug log
 
         if (message.type === 'message') {
-          // Save the message to the database
           const { channelId, content } = message;
-          const savedMessage = await messagesController.createMessage({
-            body: { channelId, content },
-            user: { id: 1 }, // TODO: Replace with actual user from session
-          } as any, {
-            json: (data: any) => data,
-            status: () => ({ json: (data: any) => data })
-          } as any);
+          console.log('Attempting to save message:', { channelId, content }); // Debug log
 
-          // Broadcast the saved message to all clients
-          const broadcastMessage = {
-            type: 'message',
-            message: {
-              ...savedMessage,
-              sender: "User", // TODO: Get actual user info
-              timestamp: new Date().toLocaleTimeString(),
-              avatar: "https://github.com/shadcn.png" // TODO: Get actual user avatar
-            }
-          };
+          try {
+            const savedMessage = await messagesController.createMessage({
+              body: { channelId, content },
+              user: { id: 1 } // TODO: Replace with actual user from session
+            } as any, {
+              json: (data: any) => data,
+              status: () => ({ json: (data: any) => data }),
+            } as any);
 
-          wss.clients.forEach((client) => {
-            if (client.readyState === WebSocketServer.OPEN) {
-              client.send(JSON.stringify(broadcastMessage));
-            }
-          });
+            console.log('Message saved successfully:', savedMessage); // Debug log
+
+            // Broadcast the saved message to all clients
+            const broadcastMessage = {
+              type: 'message',
+              message: {
+                ...savedMessage,
+                sender: savedMessage.sender || "Unknown User",
+                timestamp: savedMessage.timestamp || new Date().toLocaleTimeString(),
+                avatar: savedMessage.avatar || "https://github.com/shadcn.png"
+              }
+            };
+
+            wss.clients.forEach((client) => {
+              if (client.readyState === WebSocketServer.OPEN) {
+                client.send(JSON.stringify(broadcastMessage));
+              }
+            });
+          } catch (error) {
+            console.error('Error saving message:', error);
+            // Send error back to the client
+            ws.send(JSON.stringify({
+              type: 'error',
+              error: 'Failed to save message'
+            }));
+          }
         }
       } catch (error) {
         console.error('Error processing message:', error);

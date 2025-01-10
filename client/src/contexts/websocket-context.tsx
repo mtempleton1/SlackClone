@@ -6,13 +6,13 @@ interface Message {
   sender: string;
   timestamp: string;
   avatar: string;
-  reactions?: { emoji: string; count: number; users: string[] }[];
+  channelId: number;
+  userId: number;
 }
 
 interface WebSocketContextType {
   messages: Message[];
-  sendMessage: (content: string, channelId: number) => void;
-  addReaction: (messageId: number, emoji: string) => void;
+  sendMessage: (content: string, channelId: number) => Promise<void>;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
@@ -31,20 +31,17 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     };
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "message") {
-        setMessages((prev) => [...prev, data.message]);
-      } else if (data.type === "reaction") {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === data.messageId
-              ? {
-                  ...msg,
-                  reactions: [...(msg.reactions || []), data.reaction],
-                }
-              : msg
-          )
-        );
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Received websocket message:", data); // Debug log
+
+        if (data.type === "message") {
+          setMessages((prev) => [...prev, data.message]);
+        } else if (data.type === "error") {
+          console.error("WebSocket error:", data.error);
+        }
+      } catch (error) {
+        console.error("Error processing WebSocket message:", error);
       }
     };
 
@@ -65,37 +62,33 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const sendMessage = useCallback(
-    (content: string, channelId: number) => {
-      if (socket?.readyState === WebSocket.OPEN) {
-        socket.send(
-          JSON.stringify({
-            type: "message",
-            channelId,
-            content,
-          })
-        );
-      }
-    },
-    [socket]
-  );
+    async (content: string, channelId: number) => {
+      if (!content.trim()) return;
 
-  const addReaction = useCallback(
-    (messageId: number, emoji: string) => {
       if (socket?.readyState === WebSocket.OPEN) {
-        socket.send(
-          JSON.stringify({
-            type: "reaction",
-            messageId,
-            emoji,
-          })
-        );
+        try {
+          console.log("Sending message:", { content, channelId }); // Debug log
+          socket.send(
+            JSON.stringify({
+              type: "message",
+              channelId,
+              content,
+            })
+          );
+        } catch (error) {
+          console.error("Error sending message:", error);
+          throw error;
+        }
+      } else {
+        console.error("WebSocket is not open");
+        throw new Error("WebSocket connection is not open");
       }
     },
     [socket]
   );
 
   return (
-    <WebSocketContext.Provider value={{ messages, sendMessage, addReaction }}>
+    <WebSocketContext.Provider value={{ messages, sendMessage }}>
       {children}
     </WebSocketContext.Provider>
   );
