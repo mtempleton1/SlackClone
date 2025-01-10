@@ -1,0 +1,82 @@
+Build the chat page of a Slack clone application using the provided JSON document, which details all components, their hierarchical structure, purposes, and locations within their parent components.
+
+---
+
+JSON Document Structure:
+
+- The JSON document contains a list of component objects.
+- Each component object includes:
+  - name: The component's name.
+  - description: The purpose and functionality of the component.
+  - location: The placement of the component within its immediate parent component.
+  - user_interactions: list of ways in which users interact with this element and what happens when they do (e.g. '_ overlay appears on click.', 'message is submitting to the backend on enter (or submit, or click)', etc... 
+  - sub: A list of sub-components, each following the same format.
+  - is_root_component: boolean indicating whether this component is at the bottom of our component tree
+
+---
+
+To make the component tree more managable, I have removed sub components that are nested at a depth of greater than 2. You'll be able to tell which ones have been truncated because they will have a is_root_component=false and also have no sub components. We will implement these components later on.
+
+Instructions:
+
+1. Structure Alignment:
+   - Ensure the chat page's structure matches the hierarchical structure defined in the JSON document.
+   - Build components according to their specified hierarchy and relationships.
+
+2. Component Implementation:
+   - For each component:
+     - Implement the functionality as described in its description.
+     - Apply the necessary state management and styling.
+     - Place it in the specified location within its parent component.
+
+3. Development Approach:
+   - Start from the top-level components of the hierarchy.
+   - Use a breadth-first traversal:
+     - Instantiate all top-level components first.
+     - Proceed to their sub-components level by level.
+     - Continue this process until all components are created.
+   - Reusable components: Ensure that any components that can reasonably be reused in multiple locations throughout the application written as reusable components. If slight differences exist between how it will be used in one location vs another then do your best to still make it reuable but with whatever conditional logic you need for it to work in both places.
+
+---
+
+Minimum Viable Product (MVP) Features:
+
+Your Slack clone application should include the following features:
+
+1. Authentication:
+   - Implement user login mechanisms for accounts and workspaces.
+
+2. Real-time Messaging:
+   - Enable message exchange between users in channels and direct messages.
+   - Support text, file sharing, and image uploads.
+
+3. Organizations and Workspaces:
+   - Create structures that allow users to organize channels within workspaces.
+
+4. Channel & Direct Message Organization:
+   - Develop functionalities specific to managing channels and direct messages.
+
+5. File Sharing & Search:
+   - Allow users to share files within chats.
+   - Implement search functionality to find messages and files.
+
+6. User Presence & Status:
+   - Display user availability and custom status messages.
+
+7. Thread Support:
+   - Enable users to reply to specific messages, creating threads viewable separately from the main conversation.
+
+8. Emoji Reactions:
+   - Allow users to react to messages with emojis.
+
+---
+
+Goal:
+
+Create a fully functional chat page that serves as part of a Slack clone application, incorporating all components and features as specified. Ensure that:
+
+- Each component performs its intended tasks effectively.
+- The overall layout and component placement adhere strictly to the location specifications.
+- The styling is consistent throughout, providing a seamless user experience.
+
+---

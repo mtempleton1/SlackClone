@@ -1,0 +1,2649 @@
+[
+  {
+    "name": "Workspace Navigation",
+    "description": "A component that allows users to switch between different workspaces they are a part of. It provides an overview of the existing workspaces and facilitates quick navigation between them.",
+    "location": "Located at the top of the sidebar, often presented in a dropdown format or as a dedicated section for workspace selection.",
+    "sub": [
+      {
+        "name": "Workspace Selector",
+        "description": "Displays a dropdown or list for users to select between different workspaces they are signed into.",
+        "location": "Top of the Workspace Navigation component.",
+        "user_interactions": [
+          "Dropdown displays on click.",
+          "Switch workspace command sent on selection."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Workspace Dropdown Button",
+            "description": "The button that activates the dropdown menu, allowing users to see and select available workspaces.",
+            "location": "Upper part of the Workspace Navigation section, often aligned to the left.",
+            "user_interactions": [
+              "Dropdown menu appears on click.",
+              "Visually indicates the current workspace."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Workspace List Item",
+            "description": "Individual items within the dropdown menu that represent each accessible workspace. Users can click to switch to a selected workspace.",
+            "location": "Within the dropdown menu of the Workspace Selector.",
+            "user_interactions": [
+              "Workspace selection action on click.",
+              "Highlighted on hover."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Create Workspace Overlay",
+            "description": "Full-page overlay guiding the user through creating a new workspace, including name, details, and initial setup steps.",
+            "location": "Activated through the 'Create Workspace' button within the Workspace Navigation.",
+            "user_interactions": [
+              "Wizard steps appear sequentially on submit.",
+              "New workspace data submitted on final step."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Workspace Dropdown",
+                "description": "The entire dropdown component that appears when users click on the Workspace Dropdown Button, showing all available workspaces.",
+                "location": "Directly beneath the Workspace Dropdown Button.",
+                "user_interactions": [
+                  "Dropdown expands on button click.",
+                  "Collapses on outside click."
+                ],
+                "is_root_component": false
+              },
+              {
+                "name": "Create Workspace Wizard",
+                "description": "The step-by-step interface that guides the user through the process of creating a new workspace.",
+                "location": "Overlay covers the main section of the screen when activated.",
+                "user_interactions": [
+                  "Next step appears on button click.",
+                  "Workspace data submission on final submit."
+                ],
+                "is_root_component": false
+              },
+              {
+                "name": "Workspace Name Display",
+                "description": "Text showing the name of the current workspace to which the user is logged in, acting as a label for the Workspace Navigation component.",
+                "location": "Horizontally aligned within the Workspace Navigation, next to the current workspace banner.",
+                "user_interactions": [
+                  "Non-interactive display component."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Settings Menu",
+                "description": "A menu appearing upon activating the Workspace Settings Icon, offering settings options such as notifications and integrations.",
+                "location": "Adjacent to the Workspace Settings Icon when clicked.",
+                "user_interactions": [
+                  "Menu expands on icon click.",
+                  "Settings adjusted in modal overlay."
+                ],
+                "is_root_component": false
+              },
+              {
+                "name": "New Workspace Notification",
+                "description": "Notification element indicating successful creation of a new workspace or any issues encountered.",
+                "location": "Heads-up notification area, typically at the top or bottom of the screen.",
+                "user_interactions": [
+                  "Appears automatically on certain actions.",
+                  "Dismissible on click."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "Workspace Settings Icon",
+            "description": "Icon or button that users click to access their workspace settings menu.",
+            "location": "Typically located near the Workspace Dropdown button.",
+            "user_interactions": [
+              "Settings menu expand on click.",
+              "Available as a gear or menu icon."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Current Workspace Banner",
+            "description": "A small banner or title indicating the currently active workspace, helping users keep track of their current context.",
+            "location": "Integrated within or around the Workspace Dropdown Button, ensuring visibility.",
+            "user_interactions": [
+              "Visual cue, not interactive."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Create Workspace Button",
+        "description": "Allows users to create a new workspace, guiding them through a setup wizard.",
+        "location": "Adjacent to the Workspace Selector, often presented as a plus icon or button.",
+        "user_interactions": [
+          "Wizard overlay opens on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Workspace List",
+        "description": "Lists all the workspaces available to the user for selection.",
+        "location": "Part of the overlay or dropdown from the Workspace Selector.",
+        "user_interactions": [
+          "Workspace list item focus changes on hover.",
+          "Workspace switches on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Workspace Settings",
+        "description": "Provides access to settings related to the workspace, such as notifications, integrations, and members.",
+        "location": "Accessible via a settings icon or menu within the Workspace Navigation or dropdown.",
+        "user_interactions": [
+          "Settings overlay opens on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Current Workspace Indicator",
+        "description": "Visually indicates which workspace is currently active.",
+        "location": "Integrated within the Workspace Selector.",
+        "user_interactions": [
+          "None, purely visual."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Channel List",
+    "description": "Displays a list of all channels the user has access to within a selected workspace. This includes public channels, private channels, and any group chats.",
+    "location": "Typically situated on the left sidebar of the main page interface, providing easy navigation to engage in various channels.",
+    "sub": [
+      {
+        "name": "Channel Header",
+        "description": "Displays the name and important information about a channel, such as its purpose and description.",
+        "location": "Topmost section of each channel within the Channel List.",
+        "user_interactions": [
+          "Channel details expand on click.",
+          "Settings or channel options are accessible from here."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Channel Header Title",
+            "description": "The main title of the channel in the header section, showing the channel name prominently.",
+            "location": "Within the Channel Header component, at the center or left alignment.",
+            "user_interactions": [
+              "Non-interactive display component."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Channel Header Icons",
+            "description": "A set of icons for quick actions or information, such as notifications, settings, or members.",
+            "location": "Inside the Channel Header, typically aligned to the right.",
+            "user_interactions": [
+              "Open respective settings or views on click."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Channel Details Tooltip",
+                "description": "A tooltip providing more information about the channel when hovering over its name or icon.",
+                "location": "Appears next to the Channel Name or Channel Icon when hovered.",
+                "user_interactions": [
+                  "Tooltip displays on hover.",
+                  "Tooltip hides when hover ends."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Channel Header Action Button",
+                "description": "Button within the Channel Header to join or leave a channel quickly.",
+                "location": "Aligned within the Channel Header Icons on the right side.",
+                "user_interactions": [
+                  "Executes join/leave action on click."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Unread Message Counter",
+                "description": "Numerical display indicating the number of unread messages in a channel.",
+                "location": "Overlaid on the Unread Messages Indicator component.",
+                "user_interactions": [
+                  "Counter resets to zero on channel open."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Channel Settings Modal",
+                "description": "A modal overlay providing channel-specific settings when accessing settings from the Channel Settings Gear.",
+                "location": "Covers main content when accessed, appearing centered on screen.",
+                "user_interactions": [
+                  "Settings adjustments are applied on save.",
+                  "Modal closes on outside click or cancel."
+                ],
+                "is_root_component": false
+              },
+              {
+                "name": "Create Channel Form Field",
+                "description": "Input field within the Create Channel Wizard allowing users to enter the channel name and other initial details.",
+                "location": "Within the Create Channel Wizard component.",
+                "user_interactions": [
+                  "Validates input on form step completion.",
+                  "Displays error message for invalid input."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Channel List Section Divider",
+                "description": "Visual divider separating different groups of channels, such as starred or regularly used.",
+                "location": "Between channel groupings within the Channel List.",
+                "user_interactions": [
+                  "Non-interactive, purely visual."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "Channel Header Divider",
+            "description": "Visual divider below the channel header to separate it from the list of messages or content within the channel.",
+            "location": "Directly beneath the Channel Header section.",
+            "user_interactions": [
+              "Non-interactive, decorative only."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Channel Notification Icon",
+            "description": "Icon indicating the type of notifications enabled for the channel (all, mentions only, etc.).",
+            "location": "Next to the Channel Name within the Channel Notification Settings.",
+            "user_interactions": [
+              "Opens notification settings on click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Channel Settings Gear",
+            "description": "A small gear icon that provides quick access to the channel's settings page when clicked.",
+            "location": "Located within the Channel Notification Settings or alongside Channel Header Icons.",
+            "user_interactions": [
+              "Settings panel or overlay appears on click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Create Channel Wizard",
+            "description": "An interactive overlay or modal guiding users through the steps of creating a new channel, including name, members, and permissions.",
+            "location": "Launched from the Create Channel Button.",
+            "user_interactions": [
+              "Progresses through wizard steps on continue click.",
+              "New channel is created on final confirmation."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Sorting Indicator Icon",
+                "description": "Visual representation of the sorting criteria currently applied to the channel list.",
+                "location": "Next to the Channel List Sorting Button at the top of the Channel List.",
+                "user_interactions": [
+                  "Changes based on selected sorting option."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Star Visual Feedback Animation",
+                "description": "Animation effect that provides user feedback when a channel's starred status is toggled.",
+                "location": "Engages within the Starred Channel Indicator section next to a channel name.",
+                "user_interactions": [
+                  "Plays when a channel is starred or unstarred."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Pin Interaction Tooltip",
+                "description": "Tooltip that displays guidance or confirmation when a channel is pinned or unpinned.",
+                "location": "Anchored next to the Channel Pin Icon.",
+                "user_interactions": [
+                  "Appears on pin action."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Group Collapse Animation",
+                "description": "Animation sequence for visually transitioning channel group states between expanded and collapsed.",
+                "location": "Triggers within the Channel Collapse/Expand Button actions.",
+                "user_interactions": [
+                  "Engages on group toggle."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Loading Spinner for Channel Addition",
+                "description": "Spinner indicating the process is underway for adding a channel to the user's list.",
+                "location": "Displays in the Add Channel Confirmation Dialog after confirming addition.",
+                "user_interactions": [
+                  "Activated on confirm click."
+                ],
+                "is_root_component": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Channel Name",
+        "description": "Clickable text representing the name of a channel, used for identifying and navigating to a channel.",
+        "location": "Within each entry in the Channel List section.",
+        "user_interactions": [
+          "Channel opens on click.",
+          "Can be edited in channel settings."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Channel Icon",
+        "description": "An icon adjacent to the channel name which provides a visually distinct indicator for different channel types (public, private, etc.).",
+        "location": "Left of the Channel Name in each channel entry.",
+        "user_interactions": [
+          "Tooltip with channel info on hover."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Unread Messages Indicator",
+        "description": "Displays a badge or highlight to indicate unread messages in the channel.",
+        "location": "Overlaying or next to the Channel Name for channels with unseen messages.",
+        "user_interactions": [
+          "Indicator resets on channel open."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Channel Notification Settings",
+        "description": "Settings option to adjust notification preferences for a particular channel.",
+        "location": "Accessible from each channel entry in the Channel List or from the Channel Header.",
+        "user_interactions": [
+          "Opens settings menu on click.",
+          "Settings saved on confirmation."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Channel List Header",
+            "description": "The header area of the channel list, typically including sorting buttons and indicators for starred or pinned channels.",
+            "location": "At the top of the Channel List component, above the list of individual channels.",
+            "user_interactions": [
+              "Opens sorting options on button click."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Header Sorting Controls",
+                "description": "Controls for sorting channels in different orders like A-Z or based on activity.",
+                "location": "Located at the top of the Channel List Header.",
+                "user_interactions": [
+                  "Opens sorting options on click.",
+                  "Changes sorting order on selection."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Channel Entry Name",
+                "description": "Displays the name of the channel for identification within the entry.",
+                "location": "Central part of the Channel Entry, prominently displayed.",
+                "user_interactions": [
+                  "Navigates to channel on click."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Channel Entry Notification Icon",
+                "description": "Icon indicating if there are any notifications or unread messages in the channel.",
+                "location": "Adjacent to the Channel Entry Name.",
+                "user_interactions": [
+                  "Non-interactive, purely indicative."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Starred Channel List",
+                "description": "A section for listing channels that are marked as starred by the user.",
+                "location": "Within the Starred Channel Section, typically at the beginning of Channel List.",
+                "user_interactions": [
+                  "Starred status is toggled on icon click."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Channel Group Header",
+                "description": "Title or label for a group of channels, distinguishing separate sections in the list.",
+                "location": "Above the grouped channels within the Channel List.",
+                "user_interactions": [
+                  "Collapse or expand the group on click."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Overlay New Channel Creation",
+                "description": "Interface allowing users to input details and initiate a new channel creation.",
+                "location": "Appears centrally on the interface when called from the Channel Creation Overlay.",
+                "user_interactions": [
+                  "Processes creation on submit click."
+                ],
+                "is_root_component": false
+              }
+            ]
+          },
+          {
+            "name": "Channel Entry",
+            "description": "Individual entry within the channel list, representing a specific channel with its name and status indicators.",
+            "location": "Within the main body of the Channel List component.",
+            "user_interactions": [
+              "Opens channel on name click.",
+              "Displays tooltip on icon hover."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Sorting Selection Panel",
+                "description": "Panel for selecting sorting options for the channels list, such as alphabetical or by activity.",
+                "location": "Adjacent to the Header Sorting Controls in the Channel List Header.",
+                "user_interactions": [
+                  "Opens on interaction with Header Sorting Controls.",
+                  "Applies selected sorting method."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Channel Description Tooltip",
+                "description": "Tooltip displaying a brief description or topic of the channel on hover over the Channel Entry Name.",
+                "location": "Appears near the Channel Entry Name",
+                "user_interactions": [
+                  "Tooltip appears on hover."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Notification Icon Pulse Animation",
+                "description": "Animation effect for the notification icon to draw attention to unread messages.",
+                "location": "Around the Channel Entry Notification Icon.",
+                "user_interactions": [
+                  "Repeats at intervals until interacted with."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Star Entry Animation",
+                "description": "Visual animation effect applied to a channel entry upon being 'starred' by the user.",
+                "location": "Initiates within the Starred Channel List when a channel is starred.",
+                "user_interactions": [
+                  "Activates on star toggle."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Group Header Collapse Animation",
+                "description": "Animation providing visual transition during toggling of expanded/collapsed group states.",
+                "location": "Within the Group Header Toggle Button actions.",
+                "user_interactions": [
+                  "Plays upon group collapse/expand."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Channel Creation Input Validator",
+                "description": "Functionality within Overlay New Channel Creation ensuring input fields meet standard requirements.",
+                "location": "Embedded within the Overlay New Channel Creation form inputs.",
+                "user_interactions": [
+                  "Validates inputs in real-time on typing."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "Channel Group Divider",
+            "description": "Dividers that separate different groups of channels, such as those for different projects or purposes.",
+            "location": "Between groups of channels within the list.",
+            "user_interactions": [
+              "Non-interactive, purely visual."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Channel List Scrollbar",
+            "description": "Scrollbar allowing users to navigate through a long list of channels.",
+            "location": "On the edge of the Channel List component, typically the right side.",
+            "user_interactions": [
+              "Scrolls the list on drag or arrow clicks."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Starred Channel Section",
+            "description": "Specific section within the Channel List dedicated to channels marked as starred by the user.",
+            "location": "Within the Channel List, typically at the top for easy access.",
+            "user_interactions": [
+              "Toggle star status on icon click."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Sorting Control Dropdown",
+                "description": "Dropdown menu that provides different sorting options for channel organization.",
+                "location": "Appears below Header Sorting Controls in the Channel List Header.",
+                "user_interactions": [
+                  "Appears on sorting control click.",
+                  "Applies selected option."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Tooltip Content Display",
+                "description": "Area within the tooltip that shows dynamic content such as channel descriptions.",
+                "location": "Inside the Channel Description Tooltip",
+                "user_interactions": [
+                  "Displays content on hover."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Notification Pulse Effect",
+                "description": "Visual effect indicating unread messages, adding emphasis via a pulsing animation.",
+                "location": "Overlays the Notification Icon Pulse Animation.",
+                "user_interactions": [
+                  "Continues pulse until acknowledged."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Star Animation Sequencing",
+                "description": "The sequence of visual effects applied during the starring transition.",
+                "location": "Within the Star Entry Animation.",
+                "user_interactions": [
+                  "Triggers on star action."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Group Expansion Transition",
+                "description": "Smooth transition effect for expanding a group of channels in the list.",
+                "location": "Handled by Group Header Collapse Animation.",
+                "user_interactions": [
+                  "Executed on expand toggle."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Validator Error Display",
+                "description": "Displays error messages related to invalid input within the Channel Creation Input Validator.",
+                "location": "Below the Channel Creation Input Fields within Overlay New Channel Creation.",
+                "user_interactions": [
+                  "Errors shown on invalid input."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "Channel Creation Overlay",
+            "description": "Overlay that prompts and guides users through creating a new channel.",
+            "location": "Accessed from the Create Channel Button and appears as an overlay on top of the channel list.",
+            "user_interactions": [
+              "New channel is created on submit."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Dropdown Sorting Interaction Zone",
+                "description": "Interactive area that engages sorting dropdown actions within the Channel List Header.",
+                "location": "Located directly below the Sorting Control Dropdown.",
+                "user_interactions": [
+                  "Dropdown appears on interaction."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Tooltip Display Mechanism",
+                "description": "Core functionality facilitating the display of dynamic tooltip content.",
+                "location": "Embedded within the Tooltip Content Display.",
+                "user_interactions": [
+                  "Activated on hover, shows content."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Pulse Animation Trigger",
+                "description": "Event mechanism that initiates pulse animation to notify unread messages.",
+                "location": "Triggered from the Notification Pulse Effect.",
+                "user_interactions": [
+                  "Begins on message reception."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Animation Effect Timing",
+                "description": "Coordinates the timing and sequence of animations in the Star Animation Sequencing.",
+                "location": "Within Star Entry Animation processes.",
+                "user_interactions": [
+                  "Ensures smooth animation during star toggle."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Expansion Animation Dynamics",
+                "description": "Manages the physical properties of group expansion, like duration and easing.",
+                "location": "Applies within Group Expansion Transition.",
+                "user_interactions": [
+                  "Activated during toggling actions."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Error Messaging Display Zone",
+                "description": "Designated area for presenting input validation errors visibly.",
+                "location": "Part of Validator Error Display within Overlay New Channel Creation.",
+                "user_interactions": [
+                  "Shown in response to invalid inputs."
+                ],
+                "is_root_component": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Create Channel Button",
+        "description": "Button to initiate creation of a new channel, leading to a setup wizard.",
+        "location": "Usually at the top or bottom of the Channel List component.",
+        "user_interactions": [
+          "New Channel overlay appears on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Direct Messages List",
+    "description": "Shows a list of ongoing direct message conversations with other users. This is crucial for one-on-one communication outside of channels.",
+    "location": "Located under the channel list on the left sidebar of the main interface.",
+    "sub": [
+      {
+        "name": "DM List Header",
+        "description": "The top section of the direct messages list, providing options for sorting and managing direct message interactions.",
+        "location": "At the top of the Direct Messages List component.",
+        "user_interactions": [
+          "Initiates sorting on button click.",
+          "Opens management options on selection."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "DM Header Sorting Controls",
+            "description": "Controls for sorting DMs in different orders such as by latest or frequently contacted.",
+            "location": "Located within the DM List Header.",
+            "user_interactions": [
+              "Opens sorting options on click.",
+              "Changes sorting order on selection."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Direct Message User Avatar",
+            "description": "User avatar representing the contact in a DM entry, providing visual identification.",
+            "location": "Integrated within the DM Entry, adjacent to the contact name.",
+            "user_interactions": [
+              "Enlarges or shows details tooltip on hover."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "DM Starred Indicator",
+            "description": "Indicates whether a DM is marked as starred for quick access.",
+            "location": "Next to the name in each DM Entry.",
+            "user_interactions": [
+              "Toggles star status on click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "DM Notification Icon",
+            "description": "Icon indicating unread messages or notifications within a DM Entry.",
+            "location": "Overlaying the DM Entry, typically on the right side.",
+            "user_interactions": [
+              "Non-interactive, purely indicative."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "New DM Overlay",
+            "description": "Overlay that provides an interface for selecting users and starting a new DM.",
+            "location": "Activated from the New DM Button.",
+            "user_interactions": [
+              "Opens on button click.",
+              "Starts DM on submission."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "DM Sorting Dropdown",
+                "description": "Dropdown menu providing options to sort the DM list by criteria such as latest activity or alphabetical order.",
+                "location": "Located within the DM Header Sorting Controls.",
+                "user_interactions": [
+                  "Opens on interaction with sorting controls.",
+                  "Applies selected sorting method."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "User Avatar Tooltip",
+                "description": "Tooltip that appears with additional user information when hovering over a DM user avatar.",
+                "location": "Displayed upon hover over the Direct Message User Avatar.",
+                "user_interactions": [
+                  "Appears on hover.",
+                  "Hides when hover ends."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Starred DM Indicator",
+                "description": "Animation applied when a DM's starred status is toggled, indicating current state.",
+                "location": "Within the DM Starred Indicator in the DM Entry.",
+                "user_interactions": [
+                  "Activates on star toggle click."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "DM Notification Animation",
+                "description": "Animation applied to highlight unread DM notifications visually.",
+                "location": "Surrounding the DM Notification Icon.",
+                "user_interactions": [
+                  "Plays in a loop until message is read."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "User Selection Modal",
+                "description": "Modal interface allowing the selection of users to start a new DM conversation.",
+                "location": "Launched from the New DM Overlay.",
+                "user_interactions": [
+                  "Opens on new DM action.",
+                  "Starts conversation on submit."
+                ],
+                "is_root_component": false
+              },
+              {
+                "name": "Unread DM Count Badge",
+                "description": "A badge indicator showing the number of unread messages in a DM Entry.",
+                "location": "Overlaying the DM Notification Count area.",
+                "user_interactions": [
+                  "Resets to zero when DM is accessed."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "DM Notification Count",
+            "description": "Badge displaying the number of unread messages or notifications for a DM Entry.",
+            "location": "Overlaying the DM Notification Icon.",
+            "user_interactions": [
+              "Resets counter when DM is opened."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "DM Entry",
+        "description": "Individual entry within the direct messages list, representing a conversation with another user or group.",
+        "location": "Within the main body of the Direct Messages List component.",
+        "user_interactions": [
+          "Opens DM conversation on name click.",
+          "Displays tooltip on user avatar hover."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Sorting Icon Rotation",
+            "description": "Animated rotation effect when the sorting criteria is changed visually.",
+            "location": "Within the Sorting Icon Indicator of the DM Sorting Dropdown.",
+            "user_interactions": [
+              "Rotates to show change in sorting criteria."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Profile Tooltip Expansion",
+            "description": "Animation for expanding the profile tooltip displaying user data on hover.",
+            "location": "Contained within the User Profile Tooltip Extension.",
+            "user_interactions": [
+              "Animation triggers on hover."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Star Visual Feedback Animation",
+            "description": "Visual feedback via animation to confirm toggling of star status in DM entries.",
+            "location": "Part of the Visual Feedback for Star Toggle feature.",
+            "user_interactions": [
+              "Activates on star click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Urgency Pulse Animation Style",
+            "description": "Styling and pacing for the pulse effect indicating urgent notifications.",
+            "location": "Managed within the Highlight Urgency Pulse section.",
+            "user_interactions": [
+              "Displays periodically until interacted with."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Selection Grid Mechanics",
+            "description": "Underlying mechanics for smoothly operating the user selection grid interface.",
+            "location": "Implemented within the Grid User Selection Interface area.",
+            "user_interactions": [
+              "Facilitates selection through grid items."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Reset Logic Execution",
+            "description": "Runs logic for resetting unread message badges when a user engages a DM.",
+            "location": "Executed by the Reset Mechanism for Unread Badge.",
+            "user_interactions": [
+              "Executes reset process on DM access."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "DM Group Header",
+        "description": "Organizes and labels groups of DMs within the list, such as unread or starred messages.",
+        "location": "Between groups of DMs within the list.",
+        "user_interactions": [
+          "Toggles group expand/collapse on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "DM List Scrollbar",
+        "description": "Scrollbar allowing users to navigate through a long list of direct messages.",
+        "location": "On the edge of the Direct Messages List component, typically the right side.",
+        "user_interactions": [
+          "Scrolls the list on drag or arrow clicks."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "New DM Button",
+        "description": "A button for starting a new direct message conversation by selecting one or multiple users.",
+        "location": "Typically found at the top or bottom of the Direct Messages List.",
+        "user_interactions": [
+          "Opens a new DM overlay for creating conversations."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "DM Notification Badge",
+        "description": "Displays a badge indicating unread messages for each DM entry within the list.",
+        "location": "Overlaying the DM Entry within the Direct Messages List.",
+        "user_interactions": [
+          "Badge disappears when DM is opened."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Message Input Box",
+    "description": "A text input area where users can type their messages, upload files, and send emojis. It is a primary interaction point for sending messages.",
+    "location": "Found at the bottom of the main chat area for the active channel or direct message.",
+    "sub": [
+      {
+        "name": "Text Input Area",
+        "description": "The main area where users type their messages before sending.",
+        "location": "Central section of the Message Input Box.",
+        "user_interactions": [
+          "Text is entered by typing.",
+          "Message sent on Enter key pressed."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "File Upload Button",
+        "description": "Button that allows users to upload files to a conversation.",
+        "location": "Typically positioned to the left or right of the Text Input Area.",
+        "user_interactions": [
+          "File selection dialog opened on click.",
+          "File uploaded on selection."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Emoji Picker",
+        "description": "A feature that allows users to browse and insert emojis into messages.",
+        "location": "Activated from a button near the Text Input Area.",
+        "user_interactions": [
+          "Opens emoji selection menu on click.",
+          "Emoji inserted into message on selection."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Text Input Placeholder",
+            "description": "Placeholder text within the Text Input Area that guides users on what to type.",
+            "location": "Inside the Text Input Area when empty.",
+            "user_interactions": [
+              "Disappears when user begins typing.",
+              "Reappears when input area is cleared."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "File Upload Tooltip",
+            "description": "Tooltip providing additional information or instructions for the File Upload Button.",
+            "location": "Appears when hovering over the File Upload Button.",
+            "user_interactions": [
+              "Displays on hover.",
+              "Hides when hover ends."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Emoji Search Bar",
+            "description": "Search bar within the Emoji Picker allowing users to quickly find specific emojis.",
+            "location": "Top section of the Emoji Picker interface.",
+            "user_interactions": [
+              "Filters emojis as text is entered."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Formatting Option Button",
+            "description": "Individual buttons within the Formatting Toolbar for selecting text formatting options.",
+            "location": "Across the Formatting Toolbar.",
+            "user_interactions": [
+              "Applies formatting to selected text on click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Send Button Tooltip",
+            "description": "Tooltip providing sending instructions or shortcuts related to the Send Button.",
+            "location": "Appears when hovering over the Send Button.",
+            "user_interactions": [
+              "Displays sending info on hover.",
+              "Disappears when hover ends."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Autocomplete Suggestion",
+            "description": "Dynamic dropdown suggesting usernames or channel names while typing mentions.",
+            "location": "Below the text cursor within the Mentions Autocomplete feature.",
+            "user_interactions": [
+              "Appears on mention symbol (@) detection.",
+              "Suggestion selected on enter key."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Input Placeholder Animation",
+                "description": "Animation guiding the appearance and disappearance of placeholder text within the Text Input Area.",
+                "location": "Within the Text Input Placeholder in the Text Input Area.",
+                "user_interactions": [
+                  "Triggers when typing begins.",
+                  "Reactivates when input is cleared."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Tooltip Appearance Effect",
+                "description": "Visual effect managing the showing and hiding of tooltips throughout the Message Input Box.",
+                "location": "Used within elements like File Upload Tooltip and Send Button Tooltip.",
+                "user_interactions": [
+                  "Displays on hover.",
+                  "Hides on hover out."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Emoji Search Filter",
+                "description": "Filter mechanism to refine emoji search results in real-time as users type.",
+                "location": "Operational within the Emoji Search Bar in the Emoji Picker.",
+                "user_interactions": [
+                  "Filters emojis as keywords are typed."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Format Toggle Button",
+                "description": "Toggle buttons within the Formatting Option Button set for activating and deactivating text formatting.",
+                "location": "Within the Formatting Option Button section.",
+                "user_interactions": [
+                  "Activates formatting on click.",
+                  "Deactivates when toggled off."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Send Confirmation Feedback",
+                "description": "Feedback indicating a message has been queued or sent successfully when using the Send Button.",
+                "location": "Triggered by interactions with the Send Button.",
+                "user_interactions": [
+                  "Displays on successful message send."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Mention Suggestion Selection",
+                "description": "Mechanism for selecting from autocomplete suggestions during mention typing.",
+                "location": "Operating within the Autocomplete Suggestion feature.",
+                "user_interactions": [
+                  "Selection via arrow keys and enter."
+                ],
+                "is_root_component": false
+              }
+            ]
+          },
+          {
+            "name": "Command Highlight",
+            "description": "Visual highlight for recognized commands as they are typed in the Shortcut Commands area.",
+            "location": "Within the Text Input Area.",
+            "user_interactions": [
+              "Highlight engages as command is typed.",
+              "Executed on command selection."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Formatting Toolbar",
+        "description": "A toolbar that provides text formatting options such as bold, italics, and lists.",
+        "location": "Above or around the Text Input Area.",
+        "user_interactions": [
+          "Formats selected text on option selection.",
+          "Multiple formatting options can be applied."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Text Entry Field",
+            "description": "The area where users input their text messages directly.",
+            "location": "Within the Text Input Area of the Message Input Box.",
+            "user_interactions": [
+              "Text is entered as the user types.",
+              "Message is sent on pressing Enter."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Emoji Picker Interface",
+            "description": "Graphical interface enabling users to browse and select emojis.",
+            "location": "Accessed from the Emoji Picker, typically adjacent to the Text Input Area.",
+            "user_interactions": [
+              "Emoji options are browsed by user.",
+              "Emoji is inserted into the message on click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "File Integration Module",
+            "description": "Backend interface ensuring smooth integration of uploaded files into messages.",
+            "location": "Operates behind the File Upload Button.",
+            "user_interactions": [
+              "Files are uploaded and ready for attachment."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Formatting Options Interface",
+            "description": "User interface allowing selection and combination of formatting options.",
+            "location": "Connected to the Format Toggle Button and Formatting Toolbar.",
+            "user_interactions": [
+              "Multiple formats are applied as selected."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Send Action Confirmation",
+            "description": "Displays a confirmation message or icon once a message has been sent.",
+            "location": "Near or within the Send Button area.",
+            "user_interactions": [
+              "Triggered when the Send Button is pressed."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Mention Selection Dropdown",
+            "description": "Dropdown that appears displaying possible usernames or channels as a mention is initiated.",
+            "location": "Below the text cursor during use of the Mentions Autocomplete.",
+            "user_interactions": [
+              "Selections update as typing continues.",
+              "Enter key finalizes the choice."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Send Button",
+        "description": "Button used to send the composed message to the current conversation.",
+        "location": "Adjacent to the Text Input Area.",
+        "user_interactions": [
+          "Message sent on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Mentions Autocomplete",
+        "description": "Feature that suggests users or channels to mention as the user types an '@' symbol.",
+        "location": "Integrated dynamically within the Text Input Area.",
+        "user_interactions": [
+          "Suggestions appear on typing '@'.",
+          "Selection made with enter key."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Shortcut Commands",
+        "description": "Allows users to execute Slack commands by typing '/' followed by the command name.",
+        "location": "Initiated within the Text Input Area.",
+        "user_interactions": [
+          "List of available commands shows after typing '/'.",
+          "Command executed on selection."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Text Entry Display",
+            "description": "The user interface showing the message being typed for visibility.",
+            "location": "Inside the Text Entry Field within the Message Input Box.",
+            "user_interactions": [
+              "Displays text as typed.",
+              "Clears upon message send."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Emoji Selection Panel",
+            "description": "Panel within the Emoji Picker Interface displaying available emojis for selection.",
+            "location": "Part of the Emoji Picker Interface.",
+            "user_interactions": [
+              "Emojis are selected by clicking.",
+              "Panel scrollable for more options."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "File Selection Dialog",
+            "description": "Interface that lets users choose files from their system to attach to a message.",
+            "location": "Activated via the File Integration Module.",
+            "user_interactions": [
+              "Opens file chooser on click.",
+              "Files added to the message upload list."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Formatting Action Buttons",
+            "description": "UI components allowing users to apply or remove formatting tags within the input field.",
+            "location": "Aligned along the Formatting Options Interface.",
+            "user_interactions": [
+              "Formats text as button is clicked.",
+              "Removes format using the same button."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Sent Message Confirmation",
+            "description": "Message or icon showing that a message has been successfully dispatched.",
+            "location": "Near the Send Action Confirmation component.",
+            "user_interactions": [
+              "Confirmation appears on message send."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Mention Autocomplete List",
+            "description": "Dropdown menu that populates with potential mentions as the user types.",
+            "location": "Below where the text cursor is placed in the message.",
+            "user_interactions": [
+              "List updates as new characters are typed.",
+              "Option selected on pressing enter."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Chat Area",
+    "description": "Displays all the conversation history of the currently selected channel or direct message. Includes messages, threads, and media shared.",
+    "location": "Central section of the interface, displaying the active channel or conversation.",
+    "sub": [
+      {
+        "name": "Message Display Area",
+        "description": "The main section where messages sent within a channel or direct message are displayed, including text and media.",
+        "location": "Centrally located within the Chat Area parent component.",
+        "user_interactions": [
+          "Scrolls to view message history.",
+          "Clickable links and media."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Thread Viewer",
+        "description": "Interface for viewing and interacting with threads linked to specific messages.",
+        "location": "Pops out as a sidebar or overlay when a thread is accessed.",
+        "user_interactions": [
+          "Opens thread view on message click.",
+          "Scrolls through thread replies."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Message Content Section",
+            "description": "The section within the Message Display Area where individual message content is displayed including text, images, and files.",
+            "location": "Within the Message Display Area, appearing as user scrolls through messages.",
+            "user_interactions": [
+              "Clickable links or images.",
+              "File previews on hover."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Thread Interaction Pane",
+            "description": "Detailed view where users can interact with threads, add new replies, or view existing responses.",
+            "location": "Accessible through the Thread Viewer as a slide-out pane.",
+            "user_interactions": [
+              "Reply to thread using input box.",
+              "Like or react to thread messages."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Message Bubble",
+                "description": "Encapsulated area for individual messages displayed within the Chat Area, showing text, sender, and time.",
+                "location": "Appears sequentially as part of the Message Content Section.",
+                "user_interactions": [
+                  "Hover highlights message.",
+                  "Reacts to message clicked."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Thread Interaction Panel",
+                "description": "Interface to engage specifically with message threads, allowing users to add replies or review message history.",
+                "location": "Activated as part of a thread interaction via the Thread Interaction Pane.",
+                "user_interactions": [
+                  "Add to thread on text input and send.",
+                  "Scroll through message history."
+                ],
+                "is_root_component": false
+              },
+              {
+                "name": "Highlight Feature for Pinned Items",
+                "description": "Emphasizes pinned messages or items within the main chat for better visibility.",
+                "location": "Functional within the Pinned Item Highlighter.",
+                "user_interactions": [
+                  "Item details appear on hover.",
+                  "Access origin via click."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Reaction Icon Display",
+                "description": "Interactive element allowing users to add and view emoji reactions to messages.",
+                "location": "Visible when hovering over a message.",
+                "user_interactions": [
+                  "Reacts added on icon click.",
+                  "Icon view expanded during selection."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Bookmark Configuration Panel",
+                "description": "Options panel allowing users to add, remove, or edit bookmarks.",
+                "location": "Integrated within the Bookmark Management Interface.",
+                "user_interactions": [
+                  "Bookmarks rearranged on user action.",
+                  "Entries modified through interface."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Advanced Search Toolbar",
+                "description": "Toolbar facilitating advanced search queries and applying filters within the Search Modal Overlay.",
+                "location": "Part of the Search Modal Overlay interface.",
+                "user_interactions": [
+                  "Search by message type or user.",
+                  "Apply search filters through toolbar."
+                ],
+                "is_root_component": false
+              }
+            ]
+          },
+          {
+            "name": "Pinned Item Highlighter",
+            "description": "Highlights pinned items for easy visibility within the Pinned Items Panel.",
+            "location": "Within the Pinned Items Panel, visually distinguishing highlighted items.",
+            "user_interactions": [
+              "View full message on click.",
+              "Unpin from quick menu."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Emoji Reaction Selection",
+            "description": "Provides tooltips and selection options for emoji reactions when hovering over messages.",
+            "location": "Part of the Emoji Reaction Toolbar.",
+            "user_interactions": [
+              "Tooltip appears on hover.",
+              "Reactions added on emoji click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Bookmark Management Interface",
+            "description": "Allows users to manage bookmarks from the Bookmark Sidebar, including adding, removing, or organizing bookmarks.",
+            "location": "Accessed within the Bookmark Sidebar.",
+            "user_interactions": [
+              "Add bookmark to sidebar.",
+              "Remove bookmark from list."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "URL Content Tooltip",
+                "description": "Tooltip showing a brief description or image of a linked URL when hovered over.",
+                "location": "Above or beside the link in the Message Text Content.",
+                "user_interactions": [
+                  "Tooltip appears on hover.",
+                  "Facilitates link understanding."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Media Zoom Tool",
+                "description": "Tool within the Interactive Media Tools that allows users to zoom into media for a closer view.",
+                "location": "Within the Interactive Media Tools of the Media Viewer Modal.",
+                "user_interactions": [
+                  "Click or slide to zoom media.",
+                  "Media refocuses on movement."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Read Receipt Indicator",
+                "description": "Icon or text showing that a participant in the thread has read the message.",
+                "location": "Displayed within the Read Confirmation Notice.",
+                "user_interactions": [
+                  "Read receipt updates on opening."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Pin Action Menu",
+                "description": "Menu providing action buttons for managing pin status, accessible from Pin Management Dropdown.",
+                "location": "Located within the Pin Management Dropdown.",
+                "user_interactions": [
+                  "Buttons activate pin/unpin.",
+                  "Reorder pins within menu."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Reaction Distribution Tooltip",
+                "description": "Shows the distribution of reactions when users hover over the Emoji Reaction Stats.",
+                "location": "Appears near the Reaction Stats section.",
+                "user_interactions": [
+                  "Shows reaction details on hover."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Bookmark Field Editor",
+                "description": "Input fields enabling changes to bookmark properties like name or tag.",
+                "location": "Part of the Bookmark Attribute Editor.",
+                "user_interactions": [
+                  "Edit fields on user action.",
+                  "Updates on saving changes."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Filter Management Chips",
+                "description": "Chips representing active filters with management capabilities, embedded in the Filter Chip Controls.",
+                "location": "Within the Filter Chip Controls section.",
+                "user_interactions": [
+                  "Remove filter by clicking.",
+                  "Details shown on hover."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "Search Modal Overlay",
+            "description": "Full screen or modal overlay facilitating detailed searches within the chat.",
+            "location": "Part of the Search Interface, displaying search results.",
+            "user_interactions": [
+              "Narrow results using filters.",
+              "Navigate directly to selected result."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "URL Summary Card",
+                "description": "Card displayed when a URL is included in a message, showing a brief preview of the link content.",
+                "location": "Embedded within the Message Text Content area.",
+                "user_interactions": [
+                  "Card expands on hover.",
+                  "Navigates to link on click."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Full Media Viewer",
+                "description": "Provides an interface for full viewing of media with options like full-screen and downloadable buttons.",
+                "location": "Accessible through the Interactive Media Tools section.",
+                "user_interactions": [
+                  "Switches media to full-screen on click.",
+                  "Media downloadable via button press."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Reply Read Notification",
+                "description": "Notification that informs users when their reply has been read in threads.",
+                "location": "Located in the Read Confirmation Notice section.",
+                "user_interactions": [
+                  "Notification appears post-read confirmation."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Pin Options Menu",
+                "description": "Menu to manage pinned items, offering controls like pinning or unpinning and item organization.",
+                "location": "Exists within the Pin Action Menu.",
+                "user_interactions": [
+                  "Select pin options from menu.",
+                  "Reorder or unpin from menu list."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Emoji Reaction Breakdown Tooltip",
+                "description": "Detailed breakdown tooltip providing specifics on who reacted and what emoji reaction was used.",
+                "location": "Related to the Reaction Distribution Tooltip.",
+                "user_interactions": [
+                  "Tooltip with details shows on hover."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Bookmark Attribute Field",
+                "description": "Fields for editing the attributes of bookmarks, such as name or URL.",
+                "location": "Part of the Bookmark Field Editor.",
+                "user_interactions": [
+                  "Field changes are saved on confirmation.",
+                  "Editable via input fields."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Search Filter Chip Management",
+                "description": "Management tools for handling search filter chips, facilitating operations like filter change or removal.",
+                "location": "Within Filter Management Chips.",
+                "user_interactions": [
+                  "Activate or deactivate filters via chips.",
+                  "Remove chips on action."
+                ],
+                "is_root_component": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Pinned Items Panel",
+        "description": "Displays messages or items that have been pinned for quick access.",
+        "location": "Accessed through a toggle within the Chat Area.",
+        "user_interactions": [
+          "Shows pinned content on activation.",
+          "Navigates to the original message on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Emoji Reaction Toolbar",
+        "description": "Toolbar allowing users to add emoji reactions to messages for a quick response.",
+        "location": "Adjacent to each message within the Chat Area.",
+        "user_interactions": [
+          "Opens emoji selection on click.",
+          "Adds reaction to message."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Bookmark Sidebar",
+        "description": "Sidebar showing all bookmarks created by the user for quick reference.",
+        "location": "Located alongside the main Chat Area on user command.",
+        "user_interactions": [
+          "Displays bookmarked items.",
+          "Provides navigation to bookmarked messages."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Search Interface",
+        "description": "Interface to search for messages, files, or users within the Chat Area.",
+        "location": "Accessible from a search bar in the Chat Area.",
+        "user_interactions": [
+          "Initiates search on input.",
+          "Filters results by type."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Snippet View Thumbnail",
+            "description": "Thumbnail view that gives a visual snippet of the URL content when hovered over a link.",
+            "location": "Part of the URL Content Tooltip within the URL Summary Card.",
+            "user_interactions": [
+              "Displays thumbnail on hover.",
+              "Thumbnail redirects on click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Zoom Interaction Buttons",
+            "description": "Buttons enabling users to zoom in and out within the Full Media Viewer.",
+            "location": "Within the Full Media Viewer interface.",
+            "user_interactions": [
+              "Press button to zoom in.",
+              "Hold for continuous zoom action."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Notification Display Element",
+            "description": "Element indicating read statuses across conversation replies and threads.",
+            "location": "Displayed in the Reply Read Notification section.",
+            "user_interactions": [
+              "Updates on read action.",
+              "Visual confirmation of read messages."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Pin Interactions Manager",
+            "description": "Manager allowing users to pin or unpin messages and manage their order visually.",
+            "location": "Accessible within the Pin Options Menu.",
+            "user_interactions": [
+              "Pin options selected via button.",
+              "Messages reordered by drag and drop."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Reaction Summary Indicator",
+            "description": "Indicator providing a summary count of how many and what type of emoji reactions a message has received.",
+            "location": "Adjacent to the Emoji Reaction Breakdown Tooltip.",
+            "user_interactions": [
+              "View summary on hover.",
+              "Details displayed by category."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Bookmark Edit Field",
+            "description": "Fields enabling users to add or adjust information related to their bookmarks.",
+            "location": "Located within the Bookmark Attribute Field.",
+            "user_interactions": [
+              "Enter and modify field content.",
+              "Save updates to bookmarks."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Filter Operation Chips",
+            "description": "Chips allowing active management of search filters, handling operations like activation, deactivation, or deletion.",
+            "location": "Related to the Search Filter Chip Management section.",
+            "user_interactions": [
+              "Activate or deactivate chips.",
+              "Delete chips with click action."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Threads Panel",
+    "description": "A component showing all active threads started in a channel, offering users a focused view of specific discussions separate from the main chat flow.",
+    "location": "Generally appears on the right side of the chat area when a message thread is opened.",
+    "sub": [
+      {
+        "name": "Thread List",
+        "description": "Displays a list of all active threads that the user is involved in, sorted by recent activity.",
+        "location": "Left section of the Threads Panel parent component.",
+        "user_interactions": [
+          "Thread is opened when clicked.",
+          "Unreads are marked as read on thread open."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Thread List Entry",
+            "description": "Individual entry in the thread list representing each active thread with summary details.",
+            "location": "Within the Thread List section.",
+            "user_interactions": [
+              "Opens specific thread on click.",
+              "Highlights unread with badge."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Thread Preview Tile",
+                "description": "Compact overview of each thread in the list, showing recent interactions and activity summary.",
+                "location": "Within the Thread List Entry of Thread List.",
+                "user_interactions": [
+                  "Expand detailed thread on click.",
+                  "Shows quick summary hover info."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Thread Content Display",
+                "description": "Extended view of all replies and messages within a selected thread.",
+                "location": "Main area of Thread Detail View.",
+                "user_interactions": [
+                  "Add new reply input at bottom.",
+                  "React to each message."
+                ],
+                "is_root_component": false
+              },
+              {
+                "name": "Thread Interaction Controls",
+                "description": "Buttons and options for replying to, reacting to, and managing thread notifications.",
+                "location": "Within the Thread Actions section.",
+                "user_interactions": [
+                  "Open menu for emoji reactions.",
+                  "Access notification settings."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "Thread Detail View",
+            "description": "Detailed view of a selected thread showing full message content and interactions.",
+            "location": "Occupies the main area of the Selected Thread Viewer.",
+            "user_interactions": [
+              "Replies are added at the bottom.",
+              "Messages can be reacted to."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Thread Card Action Icons",
+                "description": "Set of icons providing quick actions for threads such as muting notifications or marking the thread as important.",
+                "location": "Visible in the Thread Card Hover Actions.",
+                "user_interactions": [
+                  "Icons appear on hover.",
+                  "Action taken on icon click."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Message Interaction Layer",
+                "description": "Layer enabling users to interact with individual messages through reactions, bookmarks, or sharing.",
+                "location": "Overlay within the Full Message History.",
+                "user_interactions": [
+                  "Access on message hover.",
+                  "React or share with quick actions."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Reply Text Entry",
+                "description": "Text area for entering replies to be posted into a thread.",
+                "location": "Part of the Reply Input Field.",
+                "user_interactions": [
+                  "Type message using keyboard.",
+                  "Submit reply on enter key."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "Thread Actions",
+            "description": "Set of actions available for threads such as reacting, replying, and managing notifications.",
+            "location": "Positioned within the Thread Action Toolbar.",
+            "user_interactions": [
+              "Open reaction options.",
+              "Modify notification settings."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Scroll Navigation",
+            "description": "Component facilitating vertical movement through threads and thread messages.",
+            "location": "On the edge of both Thread List and Selected Thread Viewer.",
+            "user_interactions": [
+              "Drag to navigate content.",
+              "New messages auto-scroll."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Unread Notification Badge",
+            "description": "Badge indicating the presence of unread messages in threads.",
+            "location": "Attached to entries in the Thread List.",
+            "user_interactions": [
+              "Updates with new unread messages."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Selected Thread Viewer",
+        "description": "Displays the detailed view of a selected thread, including all replies and interactions within that thread.",
+        "location": "Main section of the Threads Panel parent component.",
+        "user_interactions": [
+          "Replies to the thread are added upon submission.",
+          "Reactions can be added to messages within the thread."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Quick Action Buttons",
+            "description": "Buttons allowing for immediate actions such as pinning, sharing, or muting the thread.",
+            "location": "Visible within the Thread Card Action Icons.",
+            "user_interactions": [
+              "Click to perform quick actions.",
+              "Visible on thread card hover."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Message Interaction Options",
+            "description": "Options for interacting with messages, including selection of replies, reactions, and other functionalities.",
+            "location": "Overlay from the Message Interaction Layer.",
+            "user_interactions": [
+              "Appears on hover over message.",
+              "Select option to interact."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Text Input Mechanism",
+            "description": "Mechanism enabling users to input and send text replies within threads.",
+            "location": "Embedded in the Reply Text Entry field.",
+            "user_interactions": [
+              "Type text into the field.",
+              "Send with enter or send button."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Thread Action Toolbar",
+        "description": "Provides options such as adding a reaction, replying to the thread, and managing notifications for the thread.",
+        "location": "Top section within the Selected Thread Viewer.",
+        "user_interactions": [
+          "Reaction menu opens on button click.",
+          "Notification settings open on icon click."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Action Shortcut Buttons",
+            "description": "Buttons providing shortcuts for common thread actions, like saving or exporting a thread.",
+            "location": "Part of the Quick Action Buttons component.",
+            "user_interactions": [
+              "Action executed on button click.",
+              "Hover reveals tooltip info."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Message Reply Options",
+            "description": "Options for replying to messages, including direct reply or quoting previous messages.",
+            "location": "Within the Message Interaction Options layer.",
+            "user_interactions": [
+              "Select to engage reply options.",
+              "Click for quote selection."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Reply Input Box",
+            "description": "Interface for the input and submission of thread replies directly.",
+            "location": "Located within the Text Input Mechanism.",
+            "user_interactions": [
+              "Enter reply via text input.",
+              "Send using keyboard command."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Scroll Bar",
+        "description": "Allows the user to navigate through the thread list or the messages within a selected thread.",
+        "location": "Right side of both the Thread List and Selected Thread Viewer sections.",
+        "user_interactions": [
+          "Page scrolled vertically on drag.",
+          "Auto-scrolls to new messages."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Notification Badge",
+        "description": "Displays the count of unread messages across all threads the user follows.",
+        "location": "Overlay on the Thread List section.",
+        "user_interactions": [
+          "Updates dynamically on new messages."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "File Sharing Overlay",
+    "description": "An interface to allow users to upload and share files with others in a channel or direct message. Users can attach documents, images, and other files.",
+    "location": "Can be accessed from the message input box or a dedicated button within the chat area.",
+    "sub": [
+      {
+        "name": "File Upload Interface",
+        "description": "The main interface for selecting and uploading files to be shared in a channel or message.",
+        "location": "Central area of the File Sharing Overlay.",
+        "user_interactions": [
+          "Open file selection dialog on click.",
+          "Displays selected files list."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "File Input Dialog",
+            "description": "Dialog offering interface for selecting files from the local system to upload and share.",
+            "location": "Part of the File Upload Interface component.",
+            "user_interactions": [
+              "Open dialog on button click.",
+              "Choose files for upload."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "File Attribute Details",
+            "description": "Displays detailed file attributes like size and type, enabling renaming and removal.",
+            "location": "Within the File Details Display section.",
+            "user_interactions": [
+              "Attributes shown on file select.",
+              "Modify attributes with click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Upload Action Buttons",
+            "description": "Buttons for executing or cancelling file uploads, controlling the session flow.",
+            "location": "Contained within Upload Control Buttons area.",
+            "user_interactions": [
+              "Confirm or cancel uploads with a button."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Recipient Selector",
+            "description": "Interface allowing selection of multiple recipients or channels for file sharing.",
+            "location": "Housed within the Recipient Selection Panel area.",
+            "user_interactions": [
+              "Search and choose recipients.",
+              "Confirm choices to proceed."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "File Selection Interface",
+                "description": "Main interface for choosing files, either by browsing directories or drag-and-drop mechanisms.",
+                "location": "Central portion within the File Input Dialog.",
+                "user_interactions": [
+                  "Launch dialog on interface activation.",
+                  "Select files from system to upload."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "File Edit Feature",
+                "description": "Allows users to modify file attributes such as name or choose to remove files.",
+                "location": "Located under File Attribute Details area.",
+                "user_interactions": [
+                  "Rename file attribute clicking.",
+                  "Remove file from list on command."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Control Menu Options",
+                "description": "Menu offering commands like 'Upload All' or 'Cancel Uploads' for better task management.",
+                "location": "Accessible within the Upload Action Buttons.",
+                "user_interactions": [
+                  "Execute action by selecting an option."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Recipient Filter Tool",
+                "description": "Tool for filtering and selecting recipients based on criteria like recent or favorite contacts.",
+                "location": "Part of the Recipient Selector panel.",
+                "user_interactions": [
+                  "Search and filter through contacts.",
+                  "Select to add to recipient list."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Progress Tracking Visualization",
+                "description": "Graphical interface displaying upload status and metrics including speed, and estimated time left.",
+                "location": "Positioned within Upload Progress Tracker section.",
+                "user_interactions": [
+                  "Real-time updates on upload status."
+                ],
+                "is_root_component": false
+              }
+            ]
+          },
+          {
+            "name": "File Transfer Zone",
+            "description": "Zone enabling drag-and-drop action for quicker file selection for upload.",
+            "location": "Overlaying the primary interface, accessible from Drag and Drop Zone.",
+            "user_interactions": [
+              "Drop files here to add them."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Upload Progress Tracker",
+            "description": "Tracker displaying real-time progression and status of file uploads.",
+            "location": "Jointly located with File Details Display or Upload Control Buttons.",
+            "user_interactions": [
+              "Progress is updated live."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "File Details Display",
+        "description": "Section showing details about files to be uploaded, such as file name, size, and type.",
+        "location": "Below the File Upload Interface.",
+        "user_interactions": [
+          "Displays file properties.",
+          "Edit file names directly."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Upload Control Buttons",
+        "description": "Buttons for controlling uploads, such as confirming uploads or cancelling.",
+        "location": "At the bottom of the File Sharing Overlay.",
+        "user_interactions": [
+          "Start upload with confirm button.",
+          "Cancel all with cancel button."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Recipient Selection Panel",
+        "description": "Panel allowing users to choose recipients for shared files, including channels or direct messages.",
+        "location": "Side or bottom of the overlay.",
+        "user_interactions": [
+          "Select or search for recipients.",
+          "Confirm selection of channels/users."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Navigator Panel",
+            "description": "Panel allowing users to explore local directories and select files for sharing.",
+            "location": "Part of the File Navigator in the File Selection Interface.",
+            "user_interactions": [
+              "Browse and select files.",
+              "Navigate directories for selection."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Attribute Adjustment Options",
+            "description": "Options enabling users to rename or alter the properties of files in the upload list.",
+            "location": "Located within File Modification Options.",
+            "user_interactions": [
+              "Click to activate renaming.",
+              "Save changes or revert actions."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Session Command Menu",
+            "description": "Menu used for executing commands to control upload sessions, pause, cancel, etc.",
+            "location": "Situated in the Session Control Commands.",
+            "user_interactions": [
+              "Select command to initiate session control."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Filter Criteria Tool",
+            "description": "Tool facilitating filtering of recipients based on selectable criteria.",
+            "location": "Located within the Contact Selection Filter.",
+            "user_interactions": [
+              "Choose criteria to refine list.",
+              "Confirm criteria to apply."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Upload Progress Display",
+            "description": "Displays progress of file uploads with visual indicators and data such as time and speed.",
+            "location": "Within Progress Visualization Bars.",
+            "user_interactions": [
+              "Live update of upload speed and time."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Drag and Drop Zone",
+        "description": "Area for drag-and-dropping files to initiate upload actions quickly.",
+        "location": "Overlaid on the File Upload Interface.",
+        "user_interactions": [
+          "Drop files to add to upload list."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Upload Status Indicator",
+        "description": "Indicator showing the status of file uploads, including progress and completion.",
+        "location": "Within the File Details Display or Upload Control Buttons area.",
+        "user_interactions": [
+          "Shows upload progress bar.",
+          "Updates status in real time."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Search Bar",
+    "description": "Enables users to search across messages, files, and users to quickly find relevant information. Often includes filters to narrow search queries.",
+    "location": "Located at the top of the main interface, typically integrated into the header section.",
+    "sub": [
+      {
+        "name": "Search Input Field",
+        "description": "Primary field where users can enter their search queries.",
+        "location": "Central component of the Search Bar.",
+        "user_interactions": [
+          "Accepts text input as search queries.",
+          "Initiates search on enter key."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Search Filter Dropdown",
+        "description": "Dropdown providing filter options to refine search results.",
+        "location": "Adjacent to the Search Input Field.",
+        "user_interactions": [
+          "Expands to show filters on click.",
+          "Apply filters to narrow results."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Text Input Area",
+            "description": "Area where the user can type their search query keywords.",
+            "location": "Within the Search Input Field on the Search Bar.",
+            "user_interactions": [
+              "Users type keywords to search.",
+              "Search initiates on enter key press."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Filter Options Selector",
+            "description": "List of selectable filters that allow users to narrow their search results.",
+            "location": "Inside the Search Filter Dropdown next to the input field.",
+            "user_interactions": [
+              "Expand list on click.",
+              "Select filters to apply to search."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Keyword Input Segment",
+                "description": "Section dedicated to capturing user's search keywords for query execution.",
+                "location": "Core area within the Text Input Area.",
+                "user_interactions": [
+                  "Users input search keywords.",
+                  "Text is processed on enter."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Filtering Options Dialog",
+                "description": "Dialog listing available filters to refine search results.",
+                "location": "Within the Filter Options Selector panel.",
+                "user_interactions": [
+                  "Open dialog with mouse click.",
+                  "Select and apply relevant filters."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Suggestion Generation Layer",
+                "description": "Layer generating real-time search suggestions based on input data.",
+                "location": "Populates under the Autocomplete Dropdown.",
+                "user_interactions": [
+                  "Suggestions dynamically appear.",
+                  "Users choose suggestion to auto-fill."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Search Trigger Icon",
+                "description": "Icon functioning as a button to initiate the search process.",
+                "location": "Occupies edge of Execution Button.",
+                "user_interactions": [
+                  "Search executes on icon click.",
+                  "Feedback rendered on action."
+                ],
+                "is_root_component": true
+              },
+              {
+                "name": "Input Clear Button",
+                "description": "Button associated with clearing the input field and any search parameters.",
+                "location": "Positioned in Clear Search Icon.",
+                "user_interactions": [
+                  "Erase content with button press.",
+                  "Reset initialized on interaction."
+                ],
+                "is_root_component": true
+              }
+            ]
+          },
+          {
+            "name": "Autocomplete Dropdown",
+            "description": "Dropdown displaying predictive text suggestions as the user types.",
+            "location": "Dropdown below the text input area.",
+            "user_interactions": [
+              "Updates with suggestions as text is entered.",
+              "Users can click on a suggestion to auto-fill."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Execution Button",
+            "description": "Icon/button used to initiate the search process with a click.",
+            "location": "Located at the far end of the Search Bar.",
+            "user_interactions": [
+              "Initiates search on click.",
+              "Provides visual feedback on activation."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Clear Search Icon",
+            "description": "Icon to clear the current search input and filters.",
+            "location": "Insight of the Search Input Area.",
+            "user_interactions": [
+              "Clear text box on click.",
+              "Resets search parameters."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Search Suggestions List",
+        "description": "Displays suggested searches based on user input.",
+        "location": "Below the Search Input Field as a dropdown.",
+        "user_interactions": [
+          "Updates suggestions as typing occurs.",
+          "Select suggestion with mouse or keys."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Search Icon Button",
+        "description": "Button that executes the search operation when clicked.",
+        "location": "Right end of the Search Bar.",
+        "user_interactions": [
+          "Click to initiate search.",
+          "Provides feedback when clicked."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Search Reset Button",
+        "description": "Button for clearing the current search query and resetting the search bar.",
+        "location": "Inside the Search Input Field.",
+        "user_interactions": [
+          "Click to clear input field.",
+          "Resets any applied filters."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "User Presence Indicator",
+    "description": "Displays the online/offline status of users. Often shown as a small colored circle next to user icons or names.",
+    "location": "Present next to user avatars in the direct messages list and user profiles.",
+    "sub": [
+      {
+        "name": "Status Icon",
+        "description": "Displays a color-coded status icon indicating whether a user is online or offline.",
+        "location": "Next to user avatars or names in the User Presence Indicator.",
+        "user_interactions": [
+          "Hover to see status details.",
+          "Changes color based on user status."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Status Tooltip",
+        "description": "Displays additional presence information such as 'Do not disturb' status on hover.",
+        "location": "Displayed near the Status Icon.",
+        "user_interactions": [
+          "Appears when hovering over the status icon."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "User Interaction Icon",
+        "description": "An icon signifying if the user is actively interacting or away.",
+        "location": "Overlay within the Status Icon area.",
+        "user_interactions": [
+          "Visible near user action status.",
+          "Changes based on active interactions."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Presence Notification",
+        "description": "Provides subtle alerts or notifications when user's presence changes.",
+        "location": "Associated function within the User Presence Indicator.",
+        "user_interactions": [
+          "Triggered on status change.",
+          "Notifies user of presence updates."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "User Status Update Overlay",
+    "description": "Interface for users to set or change their status, including away or busy notes and emoji status updates.",
+    "location": "Accessed by clicking on the user's profile picture or status icon, typically in the header or sidebar.",
+    "sub": [
+      {
+        "name": "Status Input Field",
+        "description": "Field for users to type their status message or update.",
+        "location": "Central area within the User Status Update Overlay.",
+        "user_interactions": [
+          "Click to activate typing.",
+          "Submit message on enter."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Status Emoji Selector",
+        "description": "Allows users to add an emoji to their status message.",
+        "location": "Adjacent to the Status Input Field.",
+        "user_interactions": [
+          "Opens emoji picker on click.",
+          "Insert emoji with selection."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Predefined Status Options",
+        "description": "List of common status options users can quickly select from.",
+        "location": "Below the Status Input Field for quick access.",
+        "user_interactions": [
+          "Select predefined status entry.",
+          "Applies status update instantly."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Status Visibility Toggle",
+        "description": "Toggle allowing users to decide who can see their status.",
+        "location": "Located in the lower section of the overlay.",
+        "user_interactions": [
+          "Click to change visibility settings."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Status Duration Timer",
+        "description": "Set the duration or expiration for the status update.",
+        "location": "Found beside or below the Status Input Field.",
+        "user_interactions": [
+          "Set duration time with input.",
+          "Starts countdown upon setting."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Emoji Reaction Picker",
+    "description": "A component providing a selection of emojis for users to react to messages, helping express sentiments or acknowledge messages without typing.",
+    "location": "Activated by clicking an emoji icon next to any message in the chat area.",
+    "sub": [
+      {
+        "name": "Emoji Category Tabs",
+        "description": "Tabs for navigating through different categories of emojis.",
+        "location": "Top section of the Emoji Reaction Picker.",
+        "user_interactions": [
+          "Switch emoji category on tab click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Emoji Search Field",
+        "description": "Field for users to type and search specific emojis.",
+        "location": "Above the emoji selection grid inside the picker.",
+        "user_interactions": [
+          "Type to search for emojis.",
+          "Filters emoji list based on input."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Emoji Grid Display",
+        "description": "Displays emojis available for selection within the current category.",
+        "location": "Central part of the Emoji Reaction Picker.",
+        "user_interactions": [
+          "Click on an emoji to select."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Emoji Category Selector",
+            "description": "Tabs enabling users to navigate through different emoji categories.",
+            "location": "Top section of the Emoji Reaction Picker.",
+            "user_interactions": [
+              "Switch categories by clicking tabs."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Emoji Search Bar",
+            "description": "Input field for searching emojis by name or keyword.",
+            "location": "Located at the top of the Emoji Reaction Picker beneath the category tabs.",
+            "user_interactions": [
+              "Type text to filter emojis.",
+              "Results update as typing occurs."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Emoji Display Grid",
+            "description": "Grid showing all available emojis within the selected category.",
+            "location": "Main area of the Emoji Reaction Picker.",
+            "user_interactions": [
+              "Select emoji by clicking."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Frequently Used Emojis",
+            "description": "Section listing the emojis most frequently used by the user.",
+            "location": "Displayed initially before all other categories.",
+            "user_interactions": [
+              "Displays frequently used emojis.",
+              "Select quickly from list."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Selected Emoji Highlight",
+            "description": "Highlight indicating the emoji selected for a reaction.",
+            "location": "Overlay appearing on the emoji grid item.",
+            "user_interactions": [
+              "Visual indication of selection."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "name": "Recently Used Emojis",
+        "description": "Section displaying emojis recently used by the user.",
+        "location": "Before other emoji categories in the picker.",
+        "user_interactions": [
+          "Shows most recently used emojis.",
+          "Quickly select from recent list."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Emoji Selection Indicator",
+        "description": "Visual cue indicating the selected emoji for reaction.",
+        "location": "Overlay that appears on the selected emoji.",
+        "user_interactions": [
+          "Highlights selected emoji on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "Preferences Overlay",
+    "description": "A detailed settings interface allowing users to configure preferences like notification settings, themes, and account details.",
+    "location": "Opened via a settings or profile menu option available in the header or user profile section.",
+    "sub": [
+      {
+        "name": "Notification Settings",
+        "description": "Section allowing users to customize notification preferences.",
+        "location": "Upper section of the Preferences Overlay.",
+        "user_interactions": [
+          "Toggle notifications on/off.",
+          "Set notification sounds.",
+          "Choose types of notifications (e.g., mention, direct message)."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Theme Selection",
+        "description": "Options for users to select interface themes such as light or dark mode.",
+        "location": "Middle section of the Preferences Overlay.",
+        "user_interactions": [
+          "Select theme from options.",
+          "Preview theme changes in real-time."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Account Management",
+        "description": "Provides options for users to view and manage their account details.",
+        "location": "Lower section of the Preferences Overlay.",
+        "user_interactions": [
+          "Update personal information.",
+          "Manage linked accounts.",
+          "Change password."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Language Preferences",
+        "description": "Settings to select the preferred language for the interface.",
+        "location": "Bottom section of the Preferences Overlay.",
+        "user_interactions": [
+          "Select language from a dropdown.",
+          "Apply language setting changes."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Privacy Controls",
+        "description": "Settings for adjusting privacy and data-sharing options.",
+        "location": "Lower section of the Preferences Overlay, adjacent to Account Management.",
+        "user_interactions": [
+          "Toggle data sharing options.",
+          "Control visibility settings."
+        ],
+        "is_root_component": true,
+        "sub": []
+      }
+    ]
+  },
+  {
+    "name": "New Channel/Group Creation Overlay",
+    "description": "Interface for creating new channels, inviting members, and setting initial permissions and details for a new chat group.",
+    "location": "Accessed through a dedicated button or option within the channel list or workspace navigation area.",
+    "sub": []
+  }
+]
