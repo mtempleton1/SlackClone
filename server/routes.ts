@@ -57,26 +57,6 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/messages/:messageId/reactions", isAuthenticated, messagesController.addMessageReaction);
   app.delete("/api/messages/:messageId/reactions/:emojiId", isAuthenticated, messagesController.removeMessageReaction);
 
-  // Threads endpoints
-  app.post("/api/threads", isAuthenticated, threadsController.createThread);
-  app.get("/api/threads/:threadId", isAuthenticated, threadsController.getThread);
-  app.post("/api/threads/:threadId/messages", isAuthenticated, threadsController.createThreadMessage);
-  app.delete("/api/threads/:threadId/messages/:messageId", isAuthenticated, threadsController.deleteThreadMessage);
-  app.get("/api/threads/:threadId/participants", isAuthenticated, threadsController.getThreadParticipants);
-
-  // Emojis endpoints
-  app.get("/api/emojis", isAuthenticated, emojisController.getEmojis);
-  app.post("/api/emojis", isAuthenticated, emojisController.createEmoji);
-  app.delete("/api/emojis/:emojiId", isAuthenticated, emojisController.deleteEmoji);
-  app.get("/api/emojis/:emojiId", isAuthenticated, emojisController.getEmoji);
-
-  // Files endpoints
-  app.post("/api/files", isAuthenticated, filesController.uploadFile);
-  app.get("/api/files/:fileId", isAuthenticated, filesController.getFile);
-  app.get("/api/files/:fileId/metadata", isAuthenticated, filesController.getFileMetadata);
-  app.delete("/api/files/:fileId", isAuthenticated, filesController.deleteFile);
-  app.put("/api/files/:fileId/update", isAuthenticated, filesController.updateFile);
-
   // Create HTTP server
   const httpServer = createServer(app);
 
@@ -95,16 +75,38 @@ export function registerRoutes(app: Express): Server {
   wss.on('connection', (ws) => {
     console.log('Client connected');
 
-    ws.on('message', (data) => {
+    ws.on('message', async (data) => {
       try {
         const message = JSON.parse(data.toString());
 
-        // Broadcast the message to all connected clients
-        wss.clients.forEach((client) => {
-          if (client.readyState === WebSocketServer.OPEN) {
-            client.send(JSON.stringify(message));
-          }
-        });
+        if (message.type === 'message') {
+          // Save the message to the database
+          const { channelId, content } = message;
+          const savedMessage = await messagesController.createMessage({
+            body: { channelId, content },
+            user: { id: 1 }, // TODO: Replace with actual user from session
+          } as any, {
+            json: (data: any) => data,
+            status: () => ({ json: (data: any) => data })
+          } as any);
+
+          // Broadcast the saved message to all clients
+          const broadcastMessage = {
+            type: 'message',
+            message: {
+              ...savedMessage,
+              sender: "User", // TODO: Get actual user info
+              timestamp: new Date().toLocaleTimeString(),
+              avatar: "https://github.com/shadcn.png" // TODO: Get actual user avatar
+            }
+          };
+
+          wss.clients.forEach((client) => {
+            if (client.readyState === WebSocketServer.OPEN) {
+              client.send(JSON.stringify(broadcastMessage));
+            }
+          });
+        }
       } catch (error) {
         console.error('Error processing message:', error);
       }

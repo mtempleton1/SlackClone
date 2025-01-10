@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "@db";
-import { messages, messageReactions, threads, threadMessages } from "@db/schema";
+import { messages, messageReactions, threads, threadMessages, users } from "@db/schema";
 import { and, eq, asc } from "drizzle-orm";
 
 export async function createMessage(req: Request, res: Response) {
@@ -11,13 +11,59 @@ export async function createMessage(req: Request, res: Response) {
       .values({
         channelId,
         content,
-        userId: req.user!.id
+        userId: req.user?.id || 1, // Fallback to user 1 for now
+        timestamp: new Date()
       })
       .returning();
 
-    res.status(201).json(message);
+    // Get user information to include in response
+    const [user] = await db.select({
+      username: users.username,
+      displayName: users.displayName,
+      profilePicture: users.profilePicture
+    })
+    .from(users)
+    .where(eq(users.id, message.userId))
+    .limit(1);
+
+    const enrichedMessage = {
+      ...message,
+      sender: user?.displayName || "Unknown User",
+      avatar: user?.profilePicture || "https://github.com/shadcn.png"
+    };
+
+    res.status(201).json(enrichedMessage);
   } catch (error) {
+    console.error('Error creating message:', error);
     res.status(500).json({ error: "Failed to create message" });
+  }
+}
+
+export async function getChannelMessages(req: Request, res: Response) {
+  try {
+    const channelId = parseInt(req.params.channelId);
+
+    const channelMessages = await db.select({
+      ...messages,
+      sender: users.displayName,
+      avatar: users.profilePicture
+    })
+    .from(messages)
+    .leftJoin(users, eq(messages.userId, users.id))
+    .where(eq(messages.channelId, channelId))
+    .orderBy(asc(messages.timestamp));
+
+    const enrichedMessages = channelMessages.map(msg => ({
+      ...msg,
+      sender: msg.sender || "Unknown User",
+      avatar: msg.avatar || "https://github.com/shadcn.png",
+      timestamp: new Date(msg.timestamp).toLocaleTimeString()
+    }));
+
+    res.json(enrichedMessages);
+  } catch (error) {
+    console.error('Error fetching channel messages:', error);
+    res.status(500).json({ error: "Failed to fetch channel messages" });
   }
 }
 
@@ -166,20 +212,5 @@ export async function removeMessageReaction(req: Request, res: Response) {
     res.json({ message: "Reaction removed successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to remove reaction" });
-  }
-}
-
-export async function getChannelMessages(req: Request, res: Response) {
-  try {
-    const channelId = parseInt(req.params.channelId);
-
-    const channelMessages = await db.select()
-      .from(messages)
-      .where(eq(messages.channelId, channelId))
-      .orderBy(asc(messages.id)); // Order by id asc to get oldest messages first
-
-    res.json(channelMessages);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch channel messages" });
   }
 }

@@ -6,12 +6,14 @@ import { useWebSocket } from "@/contexts/websocket-context";
 
 interface MessageInputProps {
   placeholder?: string;
+  channelId?: number;
   onSubmit?: (content: string, attachments: File[]) => void;
   className?: string;
 }
 
 export function MessageInput({ 
   placeholder = "Type a message...", 
+  channelId = 1, // TODO: Get actual channel ID from context
   onSubmit,
   className = ""
 }: MessageInputProps) {
@@ -29,7 +31,7 @@ export function MessageInput({
         onSubmit(message, attachments);
       } else {
         // Otherwise use the default WebSocket handler
-        await sendMessage(message);
+        await sendMessage(message, channelId);
       }
 
       // Clear the input after successful send

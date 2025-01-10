@@ -11,7 +11,7 @@ interface Message {
 
 interface WebSocketContextType {
   messages: Message[];
-  sendMessage: (content: string) => void;
+  sendMessage: (content: string, channelId: number) => void;
   addReaction: (messageId: number, emoji: string) => void;
 }
 
@@ -65,11 +65,12 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const sendMessage = useCallback(
-    (content: string) => {
+    (content: string, channelId: number) => {
       if (socket?.readyState === WebSocket.OPEN) {
         socket.send(
           JSON.stringify({
             type: "message",
+            channelId,
             content,
           })
         );
