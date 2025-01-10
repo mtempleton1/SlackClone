@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "@db";
-import { threads, threadMessages, type ThreadMessage } from "@db/schema";
+import { threads, threadMessages } from "@db/schema";
 import { eq } from "drizzle-orm";
 
 export async function createThread(req: Request, res: Response) {
@@ -100,10 +100,17 @@ export async function getThreadParticipants(req: Request, res: Response) {
       }
     });
 
-    // Get unique participants
-    const uniqueParticipants = Array.from(new Map(
-      messages.map(message => [message.user.id, message.user])
-    ).values());
+    // Get unique participants using Set
+    const uniqueParticipantIds = new Set();
+    const uniqueParticipants = messages
+      .filter(message => {
+        if (uniqueParticipantIds.has(message.user.id)) {
+          return false;
+        }
+        uniqueParticipantIds.add(message.user.id);
+        return true;
+      })
+      .map(message => message.user);
 
     res.json(uniqueParticipants);
   } catch (error) {

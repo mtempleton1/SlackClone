@@ -7,6 +7,16 @@ export async function createUser(req: Request, res: Response) {
   try {
     const { email, displayName, password } = req.body;
 
+    // Check if user already exists
+    const [existingUser] = await db.select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
     const [user] = await db.insert(users)
       .values({
         email,
@@ -22,6 +32,10 @@ export async function createUser(req: Request, res: Response) {
       displayName: user.displayName
     });
   } catch (error) {
+    // Check for unique constraint violation as a fallback
+    if (error instanceof Error && error.message.includes('unique constraint')) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
     res.status(500).json({ error: "Failed to create user" });
   }
 }

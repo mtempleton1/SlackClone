@@ -1,8 +1,8 @@
 import request from 'supertest';
-import { app } from '../../server';
+import { app } from '../test-app';
 import { db } from '@db';
 import { users } from '@db/schema';
-import { createTestUser, generateRandomEmail, hashPassword } from '../utils';
+import { createTestUser, generateRandomEmail } from '../utils';
 import { eq } from 'drizzle-orm';
 
 describe('Users Controller', () => {
