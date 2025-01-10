@@ -11,14 +11,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-user";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const signupSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
   email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  username: z.string().min(1, "Username is required"),
   displayName: z.string().min(1, "Display name is required"),
   organizationName: z.string().min(4, "Organization name must be at least 4 characters").optional(),
   workspaceName: z.string().min(4, "Workspace name must be at least 4 characters").optional(),
@@ -32,7 +32,7 @@ export default function AuthPage() {
   const [location] = useLocation();
   const { toast } = useToast();
   const { login, register } = useUser();
-  
+
   const workspaceId = location.startsWith("/workspaces/") 
     ? location.split("/workspaces/")[1]
     : null;
@@ -40,7 +40,7 @@ export default function AuthPage() {
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -48,9 +48,9 @@ export default function AuthPage() {
   const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      username: "",
-      password: "",
       email: "",
+      password: "",
+      username: "",
       displayName: "",
       organizationName: "",
       workspaceName: "",
@@ -68,10 +68,10 @@ export default function AuthPage() {
         });
         return;
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
     }
@@ -79,11 +79,14 @@ export default function AuthPage() {
 
   const onSignupSubmit = async (data: SignupFormData) => {
     try {
-      const result = await register({
+      // If we're in a specific workspace, add the workspaceId
+      const signupData = {
         ...data,
         workspaceId: workspaceId ? parseInt(workspaceId) : undefined,
-      });
-      
+      };
+
+      const result = await register(signupData);
+
       if (!result.ok) {
         toast({
           title: "Error",
@@ -92,10 +95,15 @@ export default function AuthPage() {
         });
         return;
       }
-    } catch (error) {
+
+      toast({
+        title: "Success",
+        description: "Account created successfully!",
+      });
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
     }
@@ -121,12 +129,12 @@ export default function AuthPage() {
               <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                 <FormField
                   control={loginForm.control}
-                  name="username"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input type="email" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -155,12 +163,12 @@ export default function AuthPage() {
               <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-4">
                 <FormField
                   control={signupForm.control}
-                  name="username"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input type="email" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -168,12 +176,12 @@ export default function AuthPage() {
                 />
                 <FormField
                   control={signupForm.control}
-                  name="email"
+                  name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
