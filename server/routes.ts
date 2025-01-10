@@ -55,6 +55,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/messages/:messageId/reactions", isAuthenticated, messagesController.getMessageReactions);
   app.post("/api/messages/:messageId/reactions", isAuthenticated, messagesController.addMessageReaction);
   app.delete("/api/messages/:messageId/reactions/:emojiId", isAuthenticated, messagesController.removeMessageReaction);
+  app.get("/api/channels/:channelId/messages", isAuthenticated, messagesController.getChannelMessages);
 
   // Threads endpoints
   app.post("/api/threads", isAuthenticated, threadsController.createThread);

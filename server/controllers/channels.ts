@@ -1,11 +1,24 @@
 import { Request, Response } from "express";
 import { db } from "@db";
-import { channels, messages, userChannels } from "@db/schema";
+import { channels, messages, userChannels, userWorkspaces, users } from "@db/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function createChannel(req: Request, res: Response) {
   try {
     const { workspaceId, name, topic } = req.body;
+
+    // Check if user is a member of the workspace
+    const [membership] = await db.select()
+      .from(userWorkspaces)
+      .where(and(
+        eq(userWorkspaces.workspaceId, workspaceId),
+        eq(userWorkspaces.userId, req.user!.id)
+      ))
+      .limit(1);
+
+    if (!membership) {
+      return res.status(403).json({ error: "Not a member of this workspace" });
+    }
 
     const [channel] = await db.insert(channels)
       .values({ workspaceId, name, topic })
@@ -80,7 +93,7 @@ export async function deleteChannel(req: Request, res: Response) {
 
     // Delete all messages in channel first
     await db.delete(messages).where(eq(messages.channelId, channelId));
-    
+
     // Delete channel memberships
     await db.delete(userChannels).where(eq(userChannels.channelId, channelId));
 
@@ -102,16 +115,17 @@ export async function deleteChannel(req: Request, res: Response) {
 export async function getChannelMembers(req: Request, res: Response) {
   try {
     const channelId = parseInt(req.params.channelId);
-    
-    const members = await db.query.userChannels.findMany({
-      where: eq(userChannels.channelId, channelId),
-      with: {
-        user: true
-      }
-    });
+
+    const members = await db.select({
+      user: users
+    })
+    .from(userChannels)
+    .where(eq(userChannels.channelId, channelId))
+    .innerJoin(users, eq(userChannels.userId, users.id));
 
     res.json(members.map(m => m.user));
   } catch (error) {
+    console.error('Error in getChannelMembers:', error);
     res.status(500).json({ error: "Failed to fetch channel members" });
   }
 }

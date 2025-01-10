@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "@db";
 import { messages, messageReactions, threads, threadMessages } from "@db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, asc } from "drizzle-orm";
 
 export async function createMessage(req: Request, res: Response) {
   try {
@@ -24,7 +24,7 @@ export async function createMessage(req: Request, res: Response) {
 export async function getMessage(req: Request, res: Response) {
   try {
     const messageId = parseInt(req.params.messageId);
-    
+
     const [message] = await db.select()
       .from(messages)
       .where(eq(messages.id, messageId))
@@ -45,17 +45,24 @@ export async function updateMessage(req: Request, res: Response) {
     const messageId = parseInt(req.params.messageId);
     const { content } = req.body;
 
+    // First check if message exists and user is author
+    const [message] = await db.select()
+      .from(messages)
+      .where(eq(messages.id, messageId))
+      .limit(1);
+
+    if (!message) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    if (message.userId !== req.user!.id) {
+      return res.status(403).json({ error: "Not authorized to update this message" });
+    }
+
     const [updatedMessage] = await db.update(messages)
       .set({ content })
-      .where(and(
-        eq(messages.id, messageId),
-        eq(messages.userId, req.user!.id)
-      ))
+      .where(eq(messages.id, messageId))
       .returning();
-
-    if (!updatedMessage) {
-      return res.status(404).json({ error: "Message not found or unauthorized" });
-    }
 
     res.json(updatedMessage);
   } catch (error) {
@@ -66,6 +73,20 @@ export async function updateMessage(req: Request, res: Response) {
 export async function deleteMessage(req: Request, res: Response) {
   try {
     const messageId = parseInt(req.params.messageId);
+
+    // First check if message exists and user is author
+    const [message] = await db.select()
+      .from(messages)
+      .where(eq(messages.id, messageId))
+      .limit(1);
+
+    if (!message) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    if (message.userId !== req.user!.id) {
+      return res.status(403).json({ error: "Not authorized to delete this message" });
+    }
 
     // Delete reactions
     await db.delete(messageReactions)
@@ -84,16 +105,8 @@ export async function deleteMessage(req: Request, res: Response) {
     }
 
     // Delete the message
-    const [deletedMessage] = await db.delete(messages)
-      .where(and(
-        eq(messages.id, messageId),
-        eq(messages.userId, req.user!.id)
-      ))
-      .returning();
-
-    if (!deletedMessage) {
-      return res.status(404).json({ error: "Message not found or unauthorized" });
-    }
+    await db.delete(messages)
+      .where(eq(messages.id, messageId));
 
     res.json({ message: "Message deleted successfully" });
   } catch (error) {
@@ -104,7 +117,7 @@ export async function deleteMessage(req: Request, res: Response) {
 export async function getMessageReactions(req: Request, res: Response) {
   try {
     const messageId = parseInt(req.params.messageId);
-    
+
     const reactions = await db.query.messageReactions.findMany({
       where: eq(messageReactions.messageId, messageId),
       with: {
@@ -153,5 +166,20 @@ export async function removeMessageReaction(req: Request, res: Response) {
     res.json({ message: "Reaction removed successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to remove reaction" });
+  }
+}
+
+export async function getChannelMessages(req: Request, res: Response) {
+  try {
+    const channelId = parseInt(req.params.channelId);
+
+    const channelMessages = await db.select()
+      .from(messages)
+      .where(eq(messages.channelId, channelId))
+      .orderBy(asc(messages.id)); // Order by id asc to get oldest messages first
+
+    res.json(channelMessages);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch channel messages" });
   }
 }
