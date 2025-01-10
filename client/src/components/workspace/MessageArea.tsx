@@ -1,16 +1,18 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Paperclip, Send, Smile, MessageCircle, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { io, Socket } from "socket.io-client";
 
 interface Message {
   id: string;
@@ -36,14 +38,80 @@ export function MessageArea() {
   const [messageInput, setMessageInput] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const channelId = 1; // TODO: Get from route or props
+
+  // Set up socket connection
+  useEffect(() => {
+    const newSocket = io(window.location.origin);
+
+    newSocket.on("connect", () => {
+      console.log("Connected to WebSocket server");
+      newSocket.emit("joinChannel", channelId);
+    });
+
+    newSocket.on("message", (message: Message) => {
+      queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
+        if (!oldMessages) return [message];
+        return [...oldMessages, message];
+      });
+    });
+
+    setSocket(newSocket); //Corrected this line
+
+    return () => {
+      if (newSocket) { //Corrected this line
+        newSocket.emit("leaveChannel", channelId);
+        newSocket.disconnect();
+      }
+    };
+  }, [channelId, queryClient]);
 
   const { data: messages } = useQuery<Message[]>({
     queryKey: ["/api/messages"],
   });
 
-  const handleSendMessage = () => {
+  const sendMessageMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content,
+          channelId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      return response.json();
+    },
+    onSuccess: (newMessage) => {
+      socket?.emit("sendMessage", newMessage);
+      queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
+        if (!oldMessages) return [newMessage];
+        return [...oldMessages, newMessage];
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to send message",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSendMessage = async () => {
     if (!messageInput.trim()) return;
-    // TODO: Implement message sending
+    await sendMessageMutation.mutateAsync(messageInput.trim());
     setMessageInput("");
   };
 
@@ -134,7 +202,7 @@ export function MessageArea() {
           <Input
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
             placeholder="Type a message..."
             className="flex-1"
           />
@@ -152,7 +220,7 @@ export function MessageArea() {
             variant="default"
             size="icon"
             onClick={handleSendMessage}
-            disabled={!messageInput.trim()}
+            disabled={!messageInput.trim() || sendMessageMutation.isPending}
             className="shrink-0"
           >
             <Send className="h-5 w-5" />
