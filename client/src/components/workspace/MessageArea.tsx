@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Paperclip, Send, Smile } from "lucide-react";
+import { Paperclip, Send, Smile, MessageCircle, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Message {
   id: string;
@@ -20,11 +26,17 @@ interface Message {
     count: number;
     users: string[];
   }>;
+  thread?: {
+    count: number;
+    lastReply?: string;
+  };
 }
 
 export function MessageArea() {
   const [messageInput, setMessageInput] = useState("");
-  
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
   const { data: messages } = useQuery<Message[]>({
     queryKey: ["/api/messages"],
   });
@@ -33,6 +45,15 @@ export function MessageArea() {
     if (!messageInput.trim()) return;
     // TODO: Implement message sending
     setMessageInput("");
+  };
+
+  const handleOpenThread = (message: Message) => {
+    setSelectedMessage(message);
+  };
+
+  const handleAddReaction = (message: Message) => {
+    // TODO: Implement reaction adding
+    setShowEmojiPicker(true);
   };
 
   return (
@@ -46,7 +67,7 @@ export function MessageArea() {
                   {message.sender.name[0]}
                 </div>
               </Avatar>
-              
+
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">{message.sender.name}</span>
@@ -54,24 +75,50 @@ export function MessageArea() {
                     {new Date(message.timestamp).toLocaleTimeString()}
                   </span>
                 </div>
-                
+
                 <p className="mt-1">{message.content}</p>
-                
-                {message.reactions && message.reactions.length > 0 && (
-                  <div className="flex gap-1 mt-2">
-                    {message.reactions.map((reaction, index) => (
-                      <Button
-                        key={index}
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 px-2 text-xs gap-1"
-                      >
-                        <span>{reaction.emoji}</span>
-                        <span>{reaction.count}</span>
-                      </Button>
-                    ))}
+
+                <div className="flex items-center gap-2 mt-2">
+                  {message.reactions && message.reactions.length > 0 && (
+                    <div className="flex gap-1">
+                      {message.reactions.map((reaction, index) => (
+                        <Button
+                          key={index}
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-xs gap-1"
+                          onClick={() => handleAddReaction(message)}
+                        >
+                          <span>{reaction.emoji}</span>
+                          <span>{reaction.count}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2"
+                      onClick={() => handleAddReaction(message)}
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2"
+                      onClick={() => handleOpenThread(message)}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      {message.thread?.count && (
+                        <span className="ml-1 text-xs">{message.thread.count}</span>
+                      )}
+                    </Button>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           ))}
@@ -83,7 +130,7 @@ export function MessageArea() {
           <Button variant="ghost" size="icon" className="shrink-0">
             <Paperclip className="h-5 w-5" />
           </Button>
-          
+
           <Input
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
@@ -91,11 +138,16 @@ export function MessageArea() {
             placeholder="Type a message..."
             className="flex-1"
           />
-          
-          <Button variant="ghost" size="icon" className="shrink-0">
+
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="shrink-0"
+            onClick={() => setShowEmojiPicker(true)}
+          >
             <Smile className="h-5 w-5" />
           </Button>
-          
+
           <Button 
             variant="default"
             size="icon"
@@ -107,6 +159,26 @@ export function MessageArea() {
           </Button>
         </div>
       </div>
+
+      {/* Thread Dialog */}
+      <Dialog open={!!selectedMessage} onOpenChange={() => setSelectedMessage(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Thread</DialogTitle>
+          </DialogHeader>
+          {/* TODO: Implement thread view */}
+        </DialogContent>
+      </Dialog>
+
+      {/* Emoji Picker Dialog */}
+      <Dialog open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Reaction</DialogTitle>
+          </DialogHeader>
+          {/* TODO: Implement emoji picker */}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
