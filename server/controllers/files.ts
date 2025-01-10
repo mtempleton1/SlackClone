@@ -6,9 +6,8 @@ import path from "path";
 import fs from "fs/promises";
 import { randomBytes } from "crypto";
 import { UploadedFile } from "express-fileupload";
-import "../types";
 
-const UPLOAD_DIR = path.join(process.cwd(), "uploads");
+const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
 // Ensure upload directory exists
 async function ensureUploadDir() {
@@ -19,6 +18,7 @@ async function ensureUploadDir() {
   }
 }
 
+// Ensure uploads directory exists on startup
 ensureUploadDir();
 
 export async function uploadFile(req: Request, res: Response) {
@@ -32,19 +32,36 @@ export async function uploadFile(req: Request, res: Response) {
     const uniqueFilename = `${randomBytes(16).toString("hex")}${fileExtension}`;
     const filePath = path.join(UPLOAD_DIR, uniqueFilename);
 
-    await fs.writeFile(filePath, file.data);
+    try {
+      await fs.writeFile(filePath, file.data);
+    } catch (error) {
+      console.error('Failed to write file:', error);
+      return res.status(500).json({ error: "Failed to save file to disk" });
+    }
 
-    const [uploadedFile] = await db.insert(files)
-      .values({
-        userId: req.user!.id,
-        messageId: req.body.messageId ? parseInt(req.body.messageId) : null,
-        filename: uniqueFilename,
-        fileType: file.mimetype
-      })
-      .returning();
+    try {
+      const messageId = req.body.messageId ? parseInt(req.body.messageId) : null;
+      if (req.body.messageId && isNaN(messageId)) {
+        await fs.unlink(filePath).catch(console.error);
+        return res.status(400).json({ error: "Invalid message ID" });
+      }
 
-    res.status(201).json(uploadedFile);
+      const [uploadedFile] = await db.insert(files)
+        .values({
+          userId: req.user!.id,
+          messageId,
+          filename: uniqueFilename,
+          fileType: file.mimetype
+        })
+        .returning();
+
+      res.status(201).json(uploadedFile);
+    } catch (error) {
+      await fs.unlink(filePath).catch(console.error);
+      throw error;
+    }
   } catch (error) {
+    console.error('Upload error:', error);
     res.status(500).json({ error: "Failed to upload file" });
   }
 }
@@ -52,6 +69,9 @@ export async function uploadFile(req: Request, res: Response) {
 export async function getFile(req: Request, res: Response) {
   try {
     const fileId = parseInt(req.params.fileId);
+    if (isNaN(fileId)) {
+      return res.status(400).json({ error: "Invalid file ID" });
+    }
 
     const [fileRecord] = await db.select()
       .from(files)
@@ -63,8 +83,16 @@ export async function getFile(req: Request, res: Response) {
     }
 
     const filePath = path.join(UPLOAD_DIR, fileRecord.filename);
+
+    try {
+      await fs.access(filePath);
+    } catch {
+      return res.status(404).json({ error: "File not found on disk" });
+    }
+
     res.sendFile(filePath);
   } catch (error) {
+    console.error('Get file error:', error);
     res.status(500).json({ error: "Failed to fetch file" });
   }
 }
@@ -72,6 +100,9 @@ export async function getFile(req: Request, res: Response) {
 export async function getFileMetadata(req: Request, res: Response) {
   try {
     const fileId = parseInt(req.params.fileId);
+    if (isNaN(fileId)) {
+      return res.status(400).json({ error: "Invalid file ID" });
+    }
 
     const [fileRecord] = await db.select()
       .from(files)
@@ -84,6 +115,7 @@ export async function getFileMetadata(req: Request, res: Response) {
 
     res.json(fileRecord);
   } catch (error) {
+    console.error('Get metadata error:', error);
     res.status(500).json({ error: "Failed to fetch file metadata" });
   }
 }
@@ -91,6 +123,9 @@ export async function getFileMetadata(req: Request, res: Response) {
 export async function deleteFile(req: Request, res: Response) {
   try {
     const fileId = parseInt(req.params.fileId);
+    if (isNaN(fileId)) {
+      return res.status(400).json({ error: "Invalid file ID" });
+    }
 
     const [fileRecord] = await db.select()
       .from(files)
@@ -101,16 +136,28 @@ export async function deleteFile(req: Request, res: Response) {
       return res.status(404).json({ error: "File not found" });
     }
 
-    // Delete file from filesystem
     const filePath = path.join(UPLOAD_DIR, fileRecord.filename);
-    await fs.unlink(filePath);
 
-    // Delete database record
-    await db.delete(files)
-      .where(eq(files.id, fileId));
+    // Delete the database record first
+    const [deletedFile] = await db.delete(files)
+      .where(eq(files.id, fileId))
+      .returning();
+
+    if (!deletedFile) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // Then try to delete the file from disk
+    try {
+      await fs.unlink(filePath);
+    } catch (error) {
+      console.error('Failed to delete file from disk:', error);
+      // Don't fail the request if file deletion fails
+    }
 
     res.json({ message: "File deleted successfully" });
   } catch (error) {
+    console.error('Delete error:', error);
     res.status(500).json({ error: "Failed to delete file" });
   }
 }
@@ -118,19 +165,34 @@ export async function deleteFile(req: Request, res: Response) {
 export async function updateFile(req: Request, res: Response) {
   try {
     const fileId = parseInt(req.params.fileId);
-    const { messageId } = req.body;
+    if (isNaN(fileId)) {
+      return res.status(400).json({ error: "Invalid file ID" });
+    }
 
+    const messageId = req.body.messageId ? parseInt(req.body.messageId) : null;
+    if (req.body.messageId && isNaN(messageId)) {
+      return res.status(400).json({ error: "Invalid message ID" });
+    }
+
+    // Check if file exists
+    const [existingFile] = await db.select()
+      .from(files)
+      .where(eq(files.id, fileId))
+      .limit(1);
+
+    if (!existingFile) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // Update the file metadata
     const [updatedFile] = await db.update(files)
       .set({ messageId })
       .where(eq(files.id, fileId))
       .returning();
 
-    if (!updatedFile) {
-      return res.status(404).json({ error: "File not found" });
-    }
-
     res.json(updatedFile);
   } catch (error) {
+    console.error('Update error:', error);
     res.status(500).json({ error: "Failed to update file" });
   }
 }
