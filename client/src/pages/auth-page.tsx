@@ -79,14 +79,14 @@ export default function AuthPage() {
 
   const onSignupSubmit = async (data: SignupFormData) => {
     try {
-      // If we're in a specific workspace, add the workspaceId
-      const signupData = {
-        ...data,
-        workspaceId: workspaceId ? parseInt(workspaceId) : undefined,
-      };
+      const signupData = workspaceId
+        ? {
+            ...data,
+            workspaceId: parseInt(workspaceId),
+          }
+        : data;
 
       const result = await register(signupData);
-
       if (!result.ok) {
         toast({
           title: "Error",
@@ -168,7 +168,7 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} />
+                        <Input placeholder="email@example.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -181,7 +181,7 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input placeholder="johndoe" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -194,7 +194,7 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Display Name</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input placeholder="John Doe" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -209,7 +209,7 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Organization Name</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Input placeholder="Acme Corp" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -222,7 +222,7 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Workspace Name</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Input placeholder="Engineering" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -237,7 +237,7 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <Input type="password" placeholder="••••••" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
