@@ -1,13 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth, isAuthenticated } from "./auth";
-import { WebSocketServer } from "ws";
+import { setupWebSocketServer } from "./lib/socket";
 
 // Controllers
 import * as usersController from "./controllers/users";
 import * as workspacesController from "./controllers/workspaces";
 import * as channelsController from "./controllers/channels";
 import * as messagesController from "./controllers/messages";
+import * as threadsController from "./controllers/threads";
+import * as emojisController from "./controllers/emojis";
+import * as filesController from "./controllers/files";
 
 export function registerRoutes(app: Express): Server {
   // Auth routes
@@ -43,86 +46,39 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/channels/:channelId/members", isAuthenticated, channelsController.getChannelMembers);
   app.post("/api/channels/:channelId/members", isAuthenticated, channelsController.addChannelMember);
   app.delete("/api/channels/:channelId/members/:userId", isAuthenticated, channelsController.removeChannelMember);
-  app.get("/api/channels/:channelId/messages", isAuthenticated, messagesController.getChannelMessages);
 
-  // Messages endpoints - only keeping the essential ones for now
+  // Messages endpoints
   app.post("/api/messages", isAuthenticated, messagesController.createMessage);
   app.get("/api/messages/:messageId", isAuthenticated, messagesController.getMessage);
   app.put("/api/messages/:messageId", isAuthenticated, messagesController.updateMessage);
   app.delete("/api/messages/:messageId", isAuthenticated, messagesController.deleteMessage);
+  app.get("/api/messages/:messageId/reactions", isAuthenticated, messagesController.getMessageReactions);
+  app.post("/api/messages/:messageId/reactions", isAuthenticated, messagesController.addMessageReaction);
+  app.delete("/api/messages/:messageId/reactions/:emojiId", isAuthenticated, messagesController.removeMessageReaction);
+  app.get("/api/channels/:channelId/messages", isAuthenticated, messagesController.getChannelMessages);
 
-  // Create HTTP server
+  // Threads endpoints
+  app.post("/api/threads", isAuthenticated, threadsController.createThread);
+  app.get("/api/threads/:threadId", isAuthenticated, threadsController.getThread);
+  app.post("/api/threads/:threadId/messages", isAuthenticated, threadsController.createThreadMessage);
+  app.delete("/api/threads/:threadId/messages/:messageId", isAuthenticated, threadsController.deleteThreadMessage);
+  app.get("/api/threads/:threadId/participants", isAuthenticated, threadsController.getThreadParticipants);
+
+  // Emojis endpoints
+  app.get("/api/emojis", isAuthenticated, emojisController.getEmojis);
+  app.post("/api/emojis", isAuthenticated, emojisController.createEmoji);
+  app.delete("/api/emojis/:emojiId", isAuthenticated, emojisController.deleteEmoji);
+  app.get("/api/emojis/:emojiId", isAuthenticated, emojisController.getEmoji);
+
+  // Files endpoints
+  app.post("/api/files", isAuthenticated, filesController.uploadFile);
+  app.get("/api/files/:fileId", isAuthenticated, filesController.getFile);
+  app.get("/api/files/:fileId/metadata", isAuthenticated, filesController.getFileMetadata);
+  app.delete("/api/files/:fileId", isAuthenticated, filesController.deleteFile);
+  app.put("/api/files/:fileId/update", isAuthenticated, filesController.updateFile);
+
   const httpServer = createServer(app);
-
-  // Set up WebSocket server
-  const wss = new WebSocketServer({ 
-    server: httpServer,
-    path: '/ws',
-    verifyClient: (info, cb) => {
-      // Here you can add authentication verification
-      // For now, we'll accept all connections
-      cb(true);
-    }
-  });
-
-  // WebSocket connection handling
-  wss.on('connection', (ws) => {
-    console.log('Client connected');
-
-    ws.on('message', async (data) => {
-      try {
-        const message = JSON.parse(data.toString());
-        console.log('Received message:', message); // Debug log
-
-        if (message.type === 'message') {
-          const { channelId, content } = message;
-          console.log('Attempting to save message:', { channelId, content }); // Debug log
-
-          try {
-            const savedMessage = await messagesController.createMessage({
-              body: { channelId, content },
-              user: { id: 1 } // TODO: Replace with actual user from session
-            } as any, {
-              json: (data: any) => data,
-              status: () => ({ json: (data: any) => data }),
-            } as any);
-
-            console.log('Message saved successfully:', savedMessage); // Debug log
-
-            // Broadcast the saved message to all clients
-            const broadcastMessage = {
-              type: 'message',
-              message: {
-                ...savedMessage,
-                sender: savedMessage.sender || "Unknown User",
-                timestamp: savedMessage.timestamp || new Date().toLocaleTimeString(),
-                avatar: savedMessage.avatar || "https://github.com/shadcn.png"
-              }
-            };
-
-            wss.clients.forEach((client) => {
-              if (client.readyState === WebSocketServer.OPEN) {
-                client.send(JSON.stringify(broadcastMessage));
-              }
-            });
-          } catch (error) {
-            console.error('Error saving message:', error);
-            // Send error back to the client
-            ws.send(JSON.stringify({
-              type: 'error',
-              error: 'Failed to save message'
-            }));
-          }
-        }
-      } catch (error) {
-        console.error('Error processing message:', error);
-      }
-    });
-
-    ws.on('close', () => {
-      console.log('Client disconnected');
-    });
-  });
+  setupWebSocketServer(httpServer);
 
   return httpServer;
 }

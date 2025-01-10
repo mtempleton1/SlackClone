@@ -5,9 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Loader2 } from "lucide-react";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
-import ChatPage from "@/pages/chat";
+import ChatPage from "@/pages/chat-page";
 import { useUser } from "@/hooks/use-user";
-import { WebSocketProvider } from "@/contexts/websocket-context";
 
 function Router() {
   const { user, isLoading } = useUser();
@@ -25,13 +24,11 @@ function Router() {
   }
 
   return (
-    <WebSocketProvider>
-      <Switch>
-        <Route path="/" component={ChatPage} />
-        <Route path="/workspaces/:id" component={ChatPage} />
-        <Route component={NotFound} />
-      </Switch>
-    </WebSocketProvider>
+    <Switch>
+      <Route path="/" component={ChatPage} />
+      <Route path="/workspaces/:id" component={ChatPage} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
