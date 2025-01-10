@@ -33,7 +33,14 @@ export async function uploadFile(req: Request, res: Response) {
     const filePath = path.join(UPLOAD_DIR, uniqueFilename);
 
     try {
+      // Write file data directly from the buffer
       await fs.writeFile(filePath, file.data);
+
+      // Verify file was written successfully
+      const fileContent = await fs.readFile(filePath, 'utf-8');
+      if (!fileContent) {
+        throw new Error('File was not written correctly');
+      }
     } catch (error) {
       console.error("Failed to write file:", error);
       return res.status(500).json({ error: "Failed to save file to disk" });
@@ -98,7 +105,14 @@ export async function getFile(req: Request, res: Response) {
       return res.status(404).json({ error: "File not found on disk" });
     }
 
-    res.sendFile(filePath);
+    // Set appropriate content type and disposition headers
+    res.set({
+      'Content-Type': fileRecord.fileType,
+      'Content-Disposition': `attachment; filename="${path.basename(fileRecord.filename)}"`,
+    });
+
+    // Send file with absolute path
+    res.sendFile(path.resolve(filePath));
   } catch (error) {
     console.error("Get file error:", error);
     res.status(500).json({ error: "Failed to fetch file" });

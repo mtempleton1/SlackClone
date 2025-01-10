@@ -1,6 +1,6 @@
 /// <reference types="jest" />
 import { db } from '@db';
-import { users, workspaces, channels, messages, threads, emojis, userWorkspaces, userChannels, messageReactions, threadMessages } from '@db/schema';
+import { users, workspaces, channels, messages, threads, emojis, userWorkspaces, userChannels, messageReactions, threadMessages, files } from '@db/schema';
 import { sql } from 'drizzle-orm';
 
 // Increase test timeout
@@ -11,6 +11,7 @@ jest.setTimeout(timeout);
 beforeEach(async () => {
   try {
     // Delete data in reverse order of dependencies
+    await db.delete(files);  // Delete files first due to foreign key constraint
     await db.delete(messageReactions);
     await db.delete(threadMessages);
     await db.delete(threads);
@@ -40,6 +41,7 @@ afterAll(async () => {
       ALTER SEQUENCE emojis_emoji_id_seq RESTART WITH 1;
       ALTER SEQUENCE message_reactions_reaction_id_seq RESTART WITH 1;
       ALTER SEQUENCE thread_messages_thread_message_id_seq RESTART WITH 1;
+      ALTER SEQUENCE files_file_id_seq RESTART WITH 1;
     `);
 
     // Ensure all queries are complete
