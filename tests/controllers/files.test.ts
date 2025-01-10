@@ -13,6 +13,17 @@ describe('Files Controller', () => {
   const testFileName = 'test.txt';
   const uploadDir = path.join(process.cwd(), 'uploads');
 
+  // Helper function to check response status and show body on failure
+  const expectStatus = (response: any, status: number) => {
+    try {
+      expect(response.status).toBe(status);
+    } catch (error) {
+      // Show response body in the error message for better debugging
+      const bodyInfo = response.body ? `, Response body: ${JSON.stringify(response.body)}` : '';
+      throw new Error(`Expected status ${status} but got ${response.status}${bodyInfo}`);
+    }
+  };
+
   beforeAll(async () => {
     // Ensure uploads directory exists
     try {
@@ -49,10 +60,13 @@ describe('Files Controller', () => {
 
       const response = await agent
         .post('/api/files')
-        .attach('file', Buffer.from(testFileContent), testFileName)
+        .attach('file', Buffer.from(testFileContent), {
+          filename: testFileName,
+          contentType: 'text/plain'
+        })
         .field('messageId', '');
 
-      expect(response.status).toBe(201);
+      expectStatus(response, 201);
       expect(response.body).toHaveProperty('id');
       expect(response.body.userId).toBe(user.id);
       expect(response.body.filename).toBeTruthy();
@@ -113,10 +127,13 @@ describe('Files Controller', () => {
 
       const response = await agent
         .post('/api/files')
-        .attach('file', Buffer.from(testFileContent), testFileName)
+        .attach('file', Buffer.from(testFileContent), {
+          filename: testFileName,
+          contentType: 'text/plain'
+        })
         .field('messageId', message.id.toString());
 
-      expect(response.status).toBe(201);
+      expectStatus(response, 201);
       expect(response.body.messageId).toBe(message.id);
     });
 
@@ -136,15 +153,19 @@ describe('Files Controller', () => {
         .post('/api/files')
         .field('messageId', '');
 
-      expect(response.status).toBe(400);
+      expectStatus(response, 400);
+      expect(response.body.error).toBe('No file uploaded');
     });
 
     it('should return 401 when not authenticated', async () => {
       const response = await request(app)
         .post('/api/files')
-        .attach('file', Buffer.from(testFileContent), testFileName);
+        .attach('file', Buffer.from(testFileContent), {
+          filename: testFileName,
+          contentType: 'text/plain'
+        });
 
-      expect(response.status).toBe(401);
+      expectStatus(response, 401);
     });
   });
 
@@ -170,7 +191,7 @@ describe('Files Controller', () => {
       const response = await agent
         .get(`/api/files/${uploadResponse.body.id}`);
 
-      expect(response.status).toBe(200);
+      expectStatus(response, 200);
       expect(response.text).toBe(testFileContent);
     });
 
@@ -187,12 +208,12 @@ describe('Files Controller', () => {
         });
 
       const response = await agent.get('/api/files/99999');
-      expect(response.status).toBe(404);
+      expectStatus(response, 404);
     });
 
     it('should return 401 when not authenticated', async () => {
       const response = await request(app).get('/api/files/1');
-      expect(response.status).toBe(401);
+      expectStatus(response, 401);
     });
   });
 
@@ -218,7 +239,7 @@ describe('Files Controller', () => {
       const response = await agent
         .get(`/api/files/${uploadResponse.body.id}/metadata`);
 
-      expect(response.status).toBe(200);
+      expectStatus(response, 200);
       expect(response.body.id).toBe(uploadResponse.body.id);
       expect(response.body.filename).toBeTruthy();
       expect(response.body.fileType).toBe('text/plain');
@@ -238,12 +259,12 @@ describe('Files Controller', () => {
         });
 
       const response = await agent.get('/api/files/99999/metadata');
-      expect(response.status).toBe(404);
+      expectStatus(response, 404);
     });
 
     it('should return 401 when not authenticated', async () => {
       const response = await request(app).get('/api/files/1/metadata');
-      expect(response.status).toBe(401);
+      expectStatus(response, 401);
     });
   });
 
@@ -279,7 +300,7 @@ describe('Files Controller', () => {
       const response = await agent
         .delete(`/api/files/${uploadResponse.body.id}`);
 
-      expect(response.status).toBe(200);
+      expectStatus(response, 200);
 
       // Verify file was deleted from database
       const [deletedFile] = await db.select()
@@ -307,12 +328,12 @@ describe('Files Controller', () => {
         });
 
       const response = await agent.delete('/api/files/99999');
-      expect(response.status).toBe(404);
+      expectStatus(response, 404);
     });
 
     it('should return 401 when not authenticated', async () => {
       const response = await request(app).delete('/api/files/1');
-      expect(response.status).toBe(401);
+      expectStatus(response, 401);
     });
   });
 
@@ -367,7 +388,7 @@ describe('Files Controller', () => {
           messageId: message.id
         });
 
-      expect(response.status).toBe(200);
+      expectStatus(response, 200);
       expect(response.body.messageId).toBe(message.id);
 
       // Verify file was updated in database
@@ -398,7 +419,7 @@ describe('Files Controller', () => {
           messageId: 1
         });
 
-      expect(response.status).toBe(404);
+      expectStatus(response, 404);
     });
 
     it('should return 401 when not authenticated', async () => {
@@ -408,7 +429,7 @@ describe('Files Controller', () => {
           messageId: 1
         });
 
-      expect(response.status).toBe(401);
+      expectStatus(response, 401);
     });
   });
 });
