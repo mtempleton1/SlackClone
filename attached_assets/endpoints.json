@@ -1,0 +1,266 @@
+{
+  "channels_endpoints": [
+    {
+      "endpoint": "/channels",
+      "method": "POST",
+      "description": "Create a new channel within a workspace with specified parameters like name and description."
+    },
+    {
+      "endpoint": "/channels",
+      "method": "GET",
+      "description": "Retrieve a list of all channels available in the system, potentially with options to filter by workspace or other attributes."
+    },
+    {
+      "endpoint": "/channels/{channelId}",
+      "method": "GET",
+      "description": "Retrieve detailed information about a specific channel, including name, topic, and member count."
+    },
+    {
+      "endpoint": "/channels/{channelId}",
+      "method": "PUT",
+      "description": "Update the details of a specific channel, such as its name or topic."
+    },
+    {
+      "endpoint": "/channels/{channelId}",
+      "method": "DELETE",
+      "description": "Delete a specific channel from the system, removing all its messages and associations."
+    },
+    {
+      "endpoint": "/channels/{channelId}/members",
+      "method": "GET",
+      "description": "List all users who are members of a specific channel."
+    },
+    {
+      "endpoint": "/channels/{channelId}/members",
+      "method": "POST",
+      "description": "Add new users to the channel membership list."
+    },
+    {
+      "endpoint": "/channels/{channelId}/members/{userId}",
+      "method": "DELETE",
+      "description": "Remove a specific user from a channel."
+    },
+    {
+      "endpoint": "/channels/{channelId}/messages",
+      "method": "GET",
+      "description": "Retrieve all messages posted within a specific channel, with options for pagination or filtering."
+    },
+    {
+      "endpoint": "/channels/{channelId}/messages",
+      "method": "POST",
+      "description": "Send a new message to the specified channel."
+    }
+  ],
+  "emojis_endpoints": [
+    {
+      "endpoint": "/emojis",
+      "method": "GET",
+      "description": "List all available emojis that can be used within the platform, including standard and custom emojis."
+    },
+    {
+      "endpoint": "/emojis",
+      "method": "POST",
+      "description": "Add a new custom emoji to the platform's emoji library."
+    },
+    {
+      "endpoint": "/emojis/{emojiId}",
+      "method": "DELETE",
+      "description": "Remove a custom emoji from the platform's emoji library."
+    },
+    {
+      "endpoint": "/emojis/{emojiId}",
+      "method": "GET",
+      "description": "Retrieve details about a specific emoji, including its usage statistics."
+    }
+  ],
+  "files_endpoints": [
+    {
+      "endpoint": "/files",
+      "method": "POST",
+      "description": "Upload a new file to the platform, optionally associating it with a specific message or user context."
+    },
+    {
+      "endpoint": "/files/{fileId}",
+      "method": "GET",
+      "description": "Download or access a specific file by its unique identifier."
+    },
+    {
+      "endpoint": "/files/{fileId}/metadata",
+      "method": "GET",
+      "description": "Retrieve metadata for a specific file, including details such as file name, type, and upload timestamp."
+    },
+    {
+      "endpoint": "/files/{fileId}",
+      "method": "DELETE",
+      "description": "Delete a specific file, removing it from all associated messages or user accounts."
+    },
+    {
+      "endpoint": "/files/{fileId}/update",
+      "method": "PUT",
+      "description": "Update metadata or attributes of a file, such as modifying visibility or access restrictions."
+    }
+  ],
+  "messages_endpoints": [
+    {
+      "endpoint": "/messages",
+      "method": "POST",
+      "description": "Send a new message within a specified channel or direct message interface."
+    },
+    {
+      "endpoint": "/messages/{messageId}",
+      "method": "GET",
+      "description": "Retrieve detailed information about a specific message, including content and metadata."
+    },
+    {
+      "endpoint": "/messages/{messageId}",
+      "method": "PUT",
+      "description": "Update the content of a specific message, possibly modifying text or attached media."
+    },
+    {
+      "endpoint": "/messages/{messageId}",
+      "method": "DELETE",
+      "description": "Delete a specific message from the system, effectively removing it from all associated threads and histories."
+    },
+    {
+      "endpoint": "/messages/{messageId}/reactions",
+      "method": "GET",
+      "description": "List all emoji reactions associated with a specific message."
+    },
+    {
+      "endpoint": "/messages/{messageId}/reactions",
+      "method": "POST",
+      "description": "Add an emoji reaction to a specific message."
+    },
+    {
+      "endpoint": "/messages/{messageId}/reactions/{emojiId}",
+      "method": "DELETE",
+      "description": "Remove a specific emoji reaction from a message."
+    },
+    {
+      "endpoint": "/messages/{messageId}/thread",
+      "method": "GET",
+      "description": "Retrieve all messages within the thread initiated by the specified parent message."
+    },
+    {
+      "endpoint": "/messages/{messageId}/thread",
+      "method": "POST",
+      "description": "Post a new message in the thread initiated by the specified parent message."
+    }
+  ],
+  "threads_endpoints": [
+    {
+      "endpoint": "/threads",
+      "method": "POST",
+      "description": "Start a new thread associated with an existing parent message."
+    },
+    {
+      "endpoint": "/threads/{threadId}",
+      "method": "GET",
+      "description": "Retrieve all messages and details associated with a specific thread."
+    },
+    {
+      "endpoint": "/threads/{threadId}/messages",
+      "method": "POST",
+      "description": "Post a new message to an existing thread, contributing to the ongoing discussion."
+    },
+    {
+      "endpoint": "/threads/{threadId}/message/{messageId}",
+      "method": "DELETE",
+      "description": "Delete a specific message from within a thread."
+    },
+    {
+      "endpoint": "/threads/{threadId}/participants",
+      "method": "GET",
+      "description": "List all participants who have contributed to a specific thread."
+    }
+  ],
+  "users_endpoints": [
+    {
+      "endpoint": "/users",
+      "method": "POST",
+      "description": "Create a new user account with the necessary profile information including email, display name, and initial status."
+    },
+    {
+      "endpoint": "/users",
+      "method": "GET",
+      "description": "Retrieve a list of all user accounts in the system, possibly with filters."
+    },
+    {
+      "endpoint": "/users/{userId}",
+      "method": "GET",
+      "description": "Retrieve detailed information for a specific user, including profile details and user settings."
+    },
+    {
+      "endpoint": "/users/{userId}",
+      "method": "PUT",
+      "description": "Update the profile information for a specific user, such as display name or status message."
+    },
+    {
+      "endpoint": "/users/{userId}",
+      "method": "DELETE",
+      "description": "Delete the user account associated with the given user ID, removing access to the application."
+    },
+    {
+      "endpoint": "/users/{userId}/status",
+      "method": "PATCH",
+      "description": "Update the online presence status of a specific user, such as available or away."
+    },
+    {
+      "endpoint": "/users/{userId}/profile-picture",
+      "method": "PATCH",
+      "description": "Allows updating or changing the profile picture of a specific user."
+    },
+    {
+      "endpoint": "/users/{userId}/roles",
+      "method": "PATCH",
+      "description": "Update the user roles or permissions for a specific user within the system."
+    }
+  ],
+  "workspaces_endpoints": [
+    {
+      "endpoint": "/workspaces",
+      "method": "POST",
+      "description": "Create a new workspace with specified parameters like name, description, and initial admin users."
+    },
+    {
+      "endpoint": "/workspaces",
+      "method": "GET",
+      "description": "Retrieve a list of all workspaces available in the system, potentially with options to filter or search."
+    },
+    {
+      "endpoint": "/workspaces/{workspaceId}",
+      "method": "GET",
+      "description": "Retrieve detailed information about a specific workspace, including name, description, and member count."
+    },
+    {
+      "endpoint": "/workspaces/{workspaceId}",
+      "method": "PUT",
+      "description": "Update the details of a workspace, such as its name or description."
+    },
+    {
+      "endpoint": "/workspaces/{workspaceId}",
+      "method": "DELETE",
+      "description": "Delete a specific workspace from the system, including removal of all its channels and associations."
+    },
+    {
+      "endpoint": "/workspaces/{workspaceId}/users",
+      "method": "GET",
+      "description": "List all the users who are members of a specific workspace."
+    },
+    {
+      "endpoint": "/workspaces/{workspaceId}/users",
+      "method": "POST",
+      "description": "Add a new user to the workspace, potentially involving roles and permissions specifications."
+    },
+    {
+      "endpoint": "/workspaces/{workspaceId}/users/{userId}",
+      "method": "DELETE",
+      "description": "Remove a specific user from the workspace."
+    },
+    {
+      "endpoint": "/workspaces/{workspaceId}/channels",
+      "method": "GET",
+      "description": "Retrieve all channels associated with a specific workspace."
+    }
+  ]
+}

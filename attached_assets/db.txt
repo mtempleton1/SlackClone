@@ -1,0 +1,80 @@
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    display_name VARCHAR(50) NOT NULL,
+    profile_picture VARCHAR(255),
+    status_message VARCHAR(150),
+    presence_status BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE workspaces (
+    workspace_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE channels (
+    channel_id SERIAL PRIMARY KEY,
+    workspace_id INT NOT NULL REFERENCES workspaces(workspace_id),
+    name VARCHAR(100) NOT NULL,
+    topic TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE messages (
+    message_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id),
+    channel_id INT REFERENCES channels(channel_id),
+    content TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE files (
+    file_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id),
+    message_id INT REFERENCES messages(message_id),
+    filename VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50),
+    upload_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE threads (
+    thread_id SERIAL PRIMARY KEY,
+    parent_message_id INT NOT NULL REFERENCES messages(message_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE thread_messages (
+    thread_message_id SERIAL PRIMARY KEY,
+    thread_id INT NOT NULL REFERENCES threads(thread_id),
+    user_id INT NOT NULL REFERENCES users(user_id),
+    content TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE emojis (
+    emoji_id SERIAL PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE
+    );
+
+CREATE TABLE message_reactions (
+    reaction_id SERIAL PRIMARY KEY,
+    message_id INT REFERENCES messages(message_id),
+    emoji_id INT NOT NULL REFERENCES emojis(emoji_id),
+    user_id INT NOT NULL REFERENCES users(user_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE user_workspaces (
+    user_id INT REFERENCES users(user_id),
+    workspace_id INT REFERENCES workspaces(workspace_id),
+    PRIMARY KEY (user_id, workspace_id)
+    );
+
+CREATE TABLE user_channels (
+    user_id INT REFERENCES users(user_id),
+    channel_id INT REFERENCES channels(channel_id),
+    PRIMARY KEY (user_id, channel_id)
+    );
