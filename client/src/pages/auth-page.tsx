@@ -109,6 +109,13 @@ export default function AuthPage() {
     }
   };
 
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+    // Reset both forms when switching
+    loginForm.reset();
+    signupForm.reset();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md mx-4">
@@ -126,7 +133,11 @@ export default function AuthPage() {
         <CardContent>
           {isLogin ? (
             <Form {...loginForm}>
-              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+              <form 
+                id="login-form"
+                onSubmit={loginForm.handleSubmit(onLoginSubmit)} 
+                className="space-y-4"
+              >
                 <FormField
                   control={loginForm.control}
                   name="email"
@@ -134,7 +145,11 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} />
+                        <Input 
+                          type="email" 
+                          placeholder="email@example.com" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -147,7 +162,11 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="••••••" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -160,7 +179,11 @@ export default function AuthPage() {
             </Form>
           ) : (
             <Form {...signupForm}>
-              <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-4">
+              <form 
+                id="signup-form"
+                onSubmit={signupForm.handleSubmit(onSignupSubmit)} 
+                className="space-y-4"
+              >
                 <FormField
                   control={signupForm.control}
                   name="email"
@@ -168,7 +191,11 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="email@example.com" {...field} />
+                        <Input 
+                          type="email" 
+                          placeholder="email@example.com" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -181,7 +208,11 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="johndoe" {...field} />
+                        <Input 
+                          type="text"
+                          placeholder="johndoe" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -194,7 +225,11 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Display Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input 
+                          type="text"
+                          placeholder="John Doe" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -209,7 +244,11 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Organization Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Acme Corp" {...field} />
+                            <Input 
+                              type="text"
+                              placeholder="Acme Corp" 
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -222,7 +261,11 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Workspace Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Engineering" {...field} />
+                            <Input 
+                              type="text"
+                              placeholder="Engineering" 
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -237,7 +280,11 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="••••••" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -252,7 +299,7 @@ export default function AuthPage() {
           <div className="mt-4 text-center">
             <Button
               variant="link"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={toggleForm}
               className="text-primary"
             >
               {isLogin ? "Need an account? Sign up" : "Already have an account? Login"}
