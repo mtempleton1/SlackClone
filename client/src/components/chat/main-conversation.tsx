@@ -1,11 +1,11 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { MessageSquare, ChevronDown } from "lucide-react";
+import { MessageSquare, ChevronDown, Hash } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { MessageInput } from "./message-input";
 import { useWebSocket } from "@/contexts/websocket-context";
+import { useQuery } from "@tanstack/react-query";
 
 interface Message {
   id: number;
@@ -13,39 +13,46 @@ interface Message {
   sender: string;
   timestamp: string;
   avatar: string;
+  channelId?: number; // Added channelId to Message interface
 }
 
 interface MainConversationAreaProps {
   onThreadOpen: () => void;
+  selectedChannelId?: number;
 }
 
-export function MainConversationArea({ onThreadOpen }: MainConversationAreaProps) {
-  const { messages } = useWebSocket();
-  const [localMessages] = useState<Message[]>([
-    {
-      id: 1,
-      content: "Hey team! How's everyone doing?",
-      sender: "John Doe",
-      timestamp: "10:30 AM",
-      avatar: "https://github.com/shadcn.png",
-    },
-    {
-      id: 2,
-      content: "Working on the new feature!",
-      sender: "Jane Smith",
-      timestamp: "10:32 AM",
-      avatar: "https://github.com/shadcn.png",
-    },
-  ]);
+export function MainConversationArea({ onThreadOpen, selectedChannelId }: MainConversationAreaProps) {
+  const { messages: wsMessages } = useWebSocket();
 
-  const displayMessages = messages.length > 0 ? messages : localMessages;
+  const { data: channel } = useQuery({
+    queryKey: [`/api/channels/${selectedChannelId}`],
+    enabled: !!selectedChannelId,
+  });
+
+  const { data: channelMessages = [] } = useQuery({
+    queryKey: [`/api/channels/${selectedChannelId}/messages`],
+    enabled: !!selectedChannelId,
+  });
+
+  // Combine websocket messages with fetched messages
+  const allMessages = [...channelMessages, ...wsMessages.filter(msg => msg.channelId === selectedChannelId)];
+
+  if (!selectedChannelId) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center bg-background text-muted-foreground">
+        <Hash className="h-12 w-12 mb-4" />
+        <h2 className="text-xl font-semibold mb-2">Welcome to the workspace!</h2>
+        <p className="text-sm">Select a channel from the sidebar or create a new one to get started.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Conversation Header */}
       <div className="p-4 border-b flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <h2 className="font-semibold">#general</h2>
+          <h2 className="font-semibold">#{channel?.name || 'loading...'}</h2>
           <ChevronDown className="h-4 w-4" />
         </div>
       </div>
@@ -53,7 +60,7 @@ export function MainConversationArea({ onThreadOpen }: MainConversationAreaProps
       {/* Messages Area */}
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {displayMessages.map((message) => (
+          {allMessages.map((message) => (
             <div key={message.id} className="flex items-start space-x-3">
               <Avatar>
                 <AvatarImage src={message.avatar} alt={message.sender} />
@@ -85,7 +92,10 @@ export function MainConversationArea({ onThreadOpen }: MainConversationAreaProps
 
       {/* Message Input Area */}
       <div className="p-4 border-t">
-        <MessageInput placeholder="Message #general" />
+        <MessageInput 
+          placeholder={`Message #${channel?.name || 'loading...'}`}
+          channelId={selectedChannelId}
+        />
       </div>
     </div>
   );
