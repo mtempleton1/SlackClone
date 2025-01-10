@@ -149,6 +149,9 @@ export default function AuthPage() {
                           type="email" 
                           placeholder="email@example.com" 
                           onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                           value={field.value}
                         />
                       </FormControl>
@@ -167,6 +170,9 @@ export default function AuthPage() {
                           type="password" 
                           placeholder="••••••" 
                           onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                           value={field.value}
                         />
                       </FormControl>
@@ -197,6 +203,9 @@ export default function AuthPage() {
                           type="email" 
                           placeholder="email@example.com" 
                           onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                           value={field.value}
                         />
                       </FormControl>
@@ -215,6 +224,9 @@ export default function AuthPage() {
                           type="text"
                           placeholder="johndoe" 
                           onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                           value={field.value}
                         />
                       </FormControl>
@@ -233,6 +245,9 @@ export default function AuthPage() {
                           type="text"
                           placeholder="John Doe" 
                           onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                           value={field.value}
                         />
                       </FormControl>
@@ -253,6 +268,9 @@ export default function AuthPage() {
                               type="text"
                               placeholder="Acme Corp" 
                               onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              ref={field.ref}
                               value={field.value}
                             />
                           </FormControl>
@@ -271,6 +289,9 @@ export default function AuthPage() {
                               type="text"
                               placeholder="Engineering" 
                               onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              ref={field.ref}
                               value={field.value}
                             />
                           </FormControl>
@@ -291,6 +312,9 @@ export default function AuthPage() {
                           type="password" 
                           placeholder="••••••" 
                           onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                           value={field.value}
                         />
                       </FormControl>
