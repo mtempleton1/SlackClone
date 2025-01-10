@@ -36,9 +36,9 @@ export async function uploadFile(req: Request, res: Response) {
       // Write file data directly from the buffer
       await fs.writeFile(filePath, file.data);
 
-      // Verify file was written successfully
-      const fileContent = await fs.readFile(filePath, 'utf-8');
-      if (!fileContent) {
+      // Verify file was written successfully by checking if it exists and has the correct size
+      const stats = await fs.stat(filePath);
+      if (!stats.isFile() || stats.size !== file.data.length) {
         throw new Error('File was not written correctly');
       }
     } catch (error) {
