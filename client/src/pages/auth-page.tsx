@@ -116,6 +116,8 @@ export default function AuthPage() {
     signupForm.reset();
   };
 
+  console.log('Signup form values:', signupForm.watch());
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md mx-4">
@@ -192,26 +194,36 @@ export default function AuthPage() {
                 onSubmit={signupForm.handleSubmit(onSignupSubmit)} 
                 className="space-y-4"
               >
+                <div className="text-xs opacity-50">
+                  <pre>{JSON.stringify(signupForm.watch(), null, 2)}</pre>
+                </div>
+
                 <FormField
                   control={signupForm.control}
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="email@example.com" 
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const value = signupForm.watch('email');
+                    
+                    return (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email"
+                            placeholder="email@example.com"
+                            value={value}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              signupForm.setValue('email', e.target.value, {
+                                shouldValidate: true
+                              });
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
                 <FormField
                   control={signupForm.control}
@@ -220,14 +232,15 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input 
+                        <input
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                           type="text"
-                          placeholder="johndoe" 
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
+                          placeholder="johndoe"
                           value={field.value}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            console.log('New username value:', e.target.value);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
