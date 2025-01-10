@@ -29,6 +29,7 @@ async function handleRequest(
   body?: unknown
 ): Promise<RequestResult> {
   try {
+    console.log('Making request to:', url, 'with body:', body);
     const response = await fetch(url, {
       method,
       headers: body ? { "Content-Type": "application/json" } : undefined,
@@ -42,11 +43,15 @@ async function handleRequest(
       }
 
       const message = await response.text();
+      console.log('Request failed:', message);
       return { ok: false, message };
     }
 
+    const data = await response.json();
+    console.log('Request succeeded:', data);
     return { ok: true };
   } catch (e: any) {
+    console.error('Request error:', e);
     return { ok: false, message: e.toString() };
   }
 }

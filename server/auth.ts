@@ -63,6 +63,7 @@ export function setupAuth(app: Express) {
       passwordField: 'password'
     }, async (email, password, done) => {
       try {
+        console.log('Attempting login with email:', email);
         const [user] = await db
           .select()
           .from(users)
@@ -70,14 +71,18 @@ export function setupAuth(app: Express) {
           .limit(1);
 
         if (!user) {
+          console.log('User not found');
           return done(null, false, { message: "Incorrect email." });
         }
         const isMatch = await crypto.compare(password, user.password);
         if (!isMatch) {
+          console.log('Password mismatch');
           return done(null, false, { message: "Incorrect password." });
         }
+        console.log('Login successful');
         return done(null, user);
       } catch (err) {
+        console.error('Login error:', err);
         return done(err);
       }
     })
@@ -148,20 +153,26 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req: Request, res: Response, next: NextFunction) => {
+    console.log('Login request received:', req.body);
+
     passport.authenticate("local", (err: any, user: Express.User, info: IVerifyOptions) => {
       if (err) {
+        console.error('Authentication error:', err);
         return next(err);
       }
 
       if (!user) {
+        console.log('Authentication failed:', info.message);
         return res.status(400).send(info.message ?? "Login failed");
       }
 
       req.logIn(user, (err) => {
         if (err) {
+          console.error('Login error:', err);
           return next(err);
         }
 
+        console.log('Login successful for user:', user.email);
         return res.json({
           message: "Login successful",
           user: {
