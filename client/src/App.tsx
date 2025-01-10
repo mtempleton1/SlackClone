@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Loader2 } from "lucide-react";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
-import ChatPage from "@/pages/chat-page";
+import ChatPage from "@/pages/chat";
 import { useUser } from "@/hooks/use-user";
 
 function Router() {
