@@ -139,8 +139,6 @@ export async function deleteFile(req: Request, res: Response) {
       return res.status(404).json({ error: "File not found" });
     }
 
-    const filePath = path.join(UPLOAD_DIR, fileRecord.filename);
-
     // Delete the database record first
     const [deletedFile] = await db.delete(files)
       .where(eq(files.id, fileId))
@@ -151,6 +149,7 @@ export async function deleteFile(req: Request, res: Response) {
     }
 
     // Then try to delete the file from disk
+    const filePath = path.join(UPLOAD_DIR, deletedFile.filename);
     try {
       await fs.unlink(filePath);
     } catch (error) {
@@ -172,14 +171,6 @@ export async function updateFile(req: Request, res: Response) {
       return res.status(400).json({ error: "Invalid file ID" });
     }
 
-    const rawMessageId = req.body.messageId;
-    const messageId = rawMessageId ? Number(rawMessageId) : null;
-
-    // Check if messageId is provided but invalid
-    if (rawMessageId && (Number.isNaN(messageId) || !Number.isInteger(messageId))) {
-      return res.status(400).json({ error: "Invalid message ID" });
-    }
-
     // Check if file exists
     const [existingFile] = await db.select()
       .from(files)
@@ -188,6 +179,14 @@ export async function updateFile(req: Request, res: Response) {
 
     if (!existingFile) {
       return res.status(404).json({ error: "File not found" });
+    }
+
+    const rawMessageId = req.body.messageId;
+    const messageId = rawMessageId ? Number(rawMessageId) : null;
+
+    // Check if messageId is provided but invalid
+    if (rawMessageId && (Number.isNaN(messageId) || !Number.isInteger(messageId))) {
+      return res.status(400).json({ error: "Invalid message ID" });
     }
 
     // Update the file metadata
