@@ -103,7 +103,7 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req:Request, res: Response, next: NextFunction) => {
     try {
-      const { email, password, displayName } = req.body;
+      const { email, password, displayName, username } = req.body;
       
       // Check if user already exists
       const [existingUser] = await db
@@ -126,6 +126,7 @@ export function setupAuth(app: Express) {
           email,
           password: hashedPassword,
           displayName,
+          username,
           presenceStatus: true
         })
         .returning();
