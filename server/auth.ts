@@ -30,7 +30,6 @@ const crypto = {
 
 declare global {
   namespace Express {
-    // Extend the User interface with our database User type
     interface User extends DbUser {}
   }
 }
@@ -101,10 +100,10 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/register", async (req:Request, res: Response, next: NextFunction) => {
+  app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password, displayName, username } = req.body;
-      
+
       // Check if user already exists
       const [existingUser] = await db
         .select()
@@ -126,8 +125,7 @@ export function setupAuth(app: Express) {
           email,
           password: hashedPassword,
           displayName,
-          username,
-          presenceStatus: true
+          username
         })
         .returning();
 
@@ -149,7 +147,7 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", (req:Request, res: Response, next: NextFunction) => {
+  app.post("/api/login", (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("local", (err: any, user: Express.User, info: IVerifyOptions) => {
       if (err) {
         return next(err);
@@ -176,7 +174,7 @@ export function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.post("/api/logout", (req:Request, res: Response) => {
+  app.post("/api/logout", (req: Request, res: Response) => {
     req.logout((err) => {
       if (err) {
         return res.status(500).send("Logout failed");
@@ -185,7 +183,7 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/user", (req:Request, res: Response) => {
+  app.get("/api/user", (req: Request, res: Response) => {
     if (req.isAuthenticated()) {
       return res.json(req.user);
     }
