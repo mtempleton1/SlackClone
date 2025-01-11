@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { app } from '../test-app';
 import { db } from '@db';
-import { messages, channels, workspaces, organizations } from '@db/schema';
+import { messages, users, channels, workspaces, organizations } from '@db/schema';
 import { createTestUser, createTestOrganization } from '../utils';
 import { eq } from 'drizzle-orm';
 
@@ -483,6 +483,7 @@ describe('Messages Controller', () => {
           channelId: channel.body.id
         })
         .returning();
+      
       expect(parentMessage[0]).toBeDefined();
       expect(parentMessage[0].id).toBeDefined();
       expect(parentMessage[0].content).toBe('Parent message');
