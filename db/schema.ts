@@ -1,7 +1,9 @@
 import { relations, type InferSelectModel, type InferInsertModel } from 'drizzle-orm';
 import { pgTable, serial, varchar, text, boolean, timestamp, integer, primaryKey } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
+// Define base tables first
 export const organizations = pgTable('organizations', {
   id: serial('organization_id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull().unique(),
@@ -37,10 +39,12 @@ export const channels = pgTable('channels', {
   createdAt: timestamp('created_at').defaultNow()
 });
 
+// Messages table with self-referential relationship for threads
 export const messages = pgTable('messages', {
   id: serial('message_id').primaryKey(),
   userId: integer('user_id').references(() => users.id).notNull(),
   channelId: integer('channel_id').references(() => channels.id),
+  parentId: integer('parent_id').references((): AnyPgColumn => messages.id, { onDelete: 'cascade' }),
   content: text('content').notNull(),
   timestamp: timestamp('timestamp').defaultNow()
 });
@@ -52,20 +56,6 @@ export const files = pgTable('files', {
   filename: varchar('filename', { length: 255 }).notNull(),
   fileType: varchar('file_type', { length: 50 }),
   uploadTime: timestamp('upload_time').defaultNow()
-});
-
-export const threads = pgTable('threads', {
-  id: serial('thread_id').primaryKey(),
-  parentMessageId: integer('parent_message_id').references(() => messages.id).notNull(),
-  createdAt: timestamp('created_at').defaultNow()
-});
-
-export const threadMessages = pgTable('thread_messages', {
-  id: serial('thread_message_id').primaryKey(),
-  threadId: integer('thread_id').references(() => threads.id).notNull(),
-  userId: integer('user_id').references(() => users.id).notNull(),
-  content: text('content').notNull(),
-  timestamp: timestamp('timestamp').defaultNow()
 });
 
 export const emojis = pgTable('emojis', {
@@ -105,8 +95,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   channels: many(userChannels),
   messages: many(messages),
   reactions: many(messageReactions),
-  files: many(files),
-  threadMessages: many(threadMessages)
+  files: many(files)
 }));
 
 export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
@@ -127,23 +116,22 @@ export const channelsRelations = relations(channels, ({ one, many }) => ({
   users: many(userChannels)
 }));
 
-export const threadMessagesRelations = relations(threadMessages, ({ one }) => ({
-  thread: one(threads, {
-    fields: [threadMessages.threadId],
-    references: [threads.id],
+export const messagesRelations = relations(messages, ({ one, many }) => ({
+  channel: one(channels, {
+    fields: [messages.channelId],
+    references: [channels.id],
   }),
   user: one(users, {
-    fields: [threadMessages.userId],
+    fields: [messages.userId],
     references: [users.id],
-  })
-}));
-
-export const threadsRelations = relations(threads, ({ one, many }) => ({
-  parentMessage: one(messages, {
-    fields: [threads.parentMessageId],
+  }),
+  parent: one(messages, {
+    fields: [messages.parentId],
     references: [messages.id],
   }),
-  messages: many(threadMessages)
+  replies: many(messages, { relationName: 'thread_replies' }),
+  reactions: many(messageReactions),
+  files: many(files)
 }));
 
 // Validation Schemas
@@ -162,19 +150,16 @@ export const selectMessageSchema = createSelectSchema(messages);
 export const insertOrganizationSchema = createInsertSchema(organizations);
 export const selectOrganizationSchema = createSelectSchema(organizations);
 
-
 // Types
 export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
 export type Workspace = InferSelectModel<typeof workspaces>;
 export type Channel = InferSelectModel<typeof channels>;
 export type Message = InferSelectModel<typeof messages>;
-export type Thread = InferSelectModel<typeof threads>;
 export type File = InferSelectModel<typeof files>;
 export type Emoji = InferSelectModel<typeof emojis>;
 export type MessageReaction = InferSelectModel<typeof messageReactions>;
-export type ThreadMessage = InferSelectModel<typeof threadMessages>;
-export type NewThreadMessage = InferInsertModel<typeof threadMessages>;
 export type Organization = InferSelectModel<typeof organizations>;
 export type NewOrganization = InferInsertModel<typeof organizations>;
 export type NewWorkspace = InferInsertModel<typeof workspaces>;
+export type NewMessage = InferInsertModel<typeof messages>;

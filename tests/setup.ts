@@ -1,6 +1,6 @@
 /// <reference types="jest" />
 import { db } from '@db';
-import { users, workspaces, channels, messages, threads, emojis, userWorkspaces, userChannels, messageReactions, threadMessages, files } from '@db/schema';
+import { users, workspaces, channels, messages, emojis, userWorkspaces, userChannels, messageReactions, files } from '@db/schema';
 import { sql } from 'drizzle-orm';
 
 // Increase test timeout
@@ -13,9 +13,7 @@ beforeEach(async () => {
     // Delete data in reverse order of dependencies
     await db.delete(files);  // Delete files first due to foreign key constraint
     await db.delete(messageReactions);
-    await db.delete(threadMessages);
-    await db.delete(threads);
-    await db.delete(messages);
+    await db.delete(messages); // Now handles both regular and thread messages
     await db.delete(userChannels);
     await db.delete(channels);
     await db.delete(userWorkspaces);
@@ -37,10 +35,8 @@ afterAll(async () => {
       ALTER SEQUENCE workspaces_workspace_id_seq RESTART WITH 1;
       ALTER SEQUENCE channels_channel_id_seq RESTART WITH 1;
       ALTER SEQUENCE messages_message_id_seq RESTART WITH 1;
-      ALTER SEQUENCE threads_thread_id_seq RESTART WITH 1;
       ALTER SEQUENCE emojis_emoji_id_seq RESTART WITH 1;
       ALTER SEQUENCE message_reactions_reaction_id_seq RESTART WITH 1;
-      ALTER SEQUENCE thread_messages_thread_message_id_seq RESTART WITH 1;
       ALTER SEQUENCE files_file_id_seq RESTART WITH 1;
     `);
 
