@@ -12,12 +12,13 @@ describe('Channels Controller', () => {
       const user = await createTestUser();
 
       // Login the user
-      await agent
+      const loginResponse = await agent
         .post('/api/login')
         .send({
           email: user.email,
           password: 'password123'
         });
+      expect(loginResponse.status).toBe(200);
 
       // Create an organization first
       const organization = await agent
@@ -25,7 +26,9 @@ describe('Channels Controller', () => {
         .send({
           name: 'Test Organization'
         });
-
+      expect(organization.status).toBe(201);
+      expect(organization.body).toHaveProperty('id');
+      
       // Then create a workspace
       const workspace = await agent
         .post('/api/workspaces')
@@ -34,6 +37,15 @@ describe('Channels Controller', () => {
           description: 'A test workspace',
           organizationId: organization.body.id
         });
+      expect(workspace.status).toBe(201);
+      expect(workspace.body).toHaveProperty('id');
+
+      // Verify workspace exists in database
+      const [dbWorkspace] = await db.select()
+        .from(workspaces)
+        .where(eq(workspaces.id, workspace.body.id))
+        .limit(1);
+      expect(dbWorkspace).toBeTruthy();
 
       const channelData = {
         workspaceId: workspace.body.id,
