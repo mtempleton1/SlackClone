@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Hash, Lock, ChevronDown, Plus, Star, Pin, Settings } from "lucide-react";
+import { Hash, Lock, ChevronDown, Plus, Star, Pin, Settings, ArrowDown, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -28,6 +28,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { AddChannelOverlay } from "./AddChannelOverlay";
+import { cn } from "@/lib/utils";
 
 interface Channel {
   id: string;
@@ -40,25 +41,35 @@ interface Channel {
 }
 
 type SortOrder = "alphabetical" | "recent" | "unread";
+type SortDirection = "asc" | "desc";
 
 export function ChannelList() {
   const [channelsExpanded, setChannelsExpanded] = useState(true);
   const [sortOrder, setSortOrder] = useState<SortOrder>("alphabetical");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [showSettings, setShowSettings] = useState(false);
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const [showStarOverlay, setShowStarOverlay] = useState(false);
+  const [starAnimationChannel, setStarAnimationChannel] = useState<string | null>(null);
 
   const { data: channels, refetch: refetchChannels } = useQuery<Channel[]>({
     queryKey: ["/api/channels"],
   });
 
   const sortedChannels = channels?.slice().sort((a, b) => {
+    let comparison = 0;
+
     if (sortOrder === "alphabetical") {
-      return a.name.localeCompare(b.name);
+      comparison = a.name.localeCompare(b.name);
     } else if (sortOrder === "unread") {
-      return b.unreadCount - a.unreadCount;
+      comparison = b.unreadCount - a.unreadCount;
+    } else if (sortOrder === "recent") {
+      // Assuming channels are already in chronological order
+      return 0;
     }
-    return 0; // For "recent", we'll assume the API returns in correct order
+
+    return sortDirection === "asc" ? comparison : -comparison;
   });
 
   const pinnedChannels = sortedChannels?.filter(channel => channel.isPinned);
@@ -66,13 +77,16 @@ export function ChannelList() {
 
   const handleStarChannel = async (channelId: string) => {
     try {
+      setStarAnimationChannel(channelId);
       await fetch(`/api/channels/${channelId}/star`, {
         method: "POST",
         credentials: "include",
       });
-      refetchChannels();
+      await refetchChannels();
+      setTimeout(() => setStarAnimationChannel(null), 1000);
     } catch (error) {
       console.error("Failed to star channel:", error);
+      setStarAnimationChannel(null);
     }
   };
 
@@ -86,6 +100,10 @@ export function ChannelList() {
     } catch (error) {
       console.error("Failed to pin channel:", error);
     }
+  };
+
+  const toggleSortDirection = () => {
+    setSortDirection(prev => prev === "asc" ? "desc" : "asc");
   };
 
   const renderChannelItem = (channel: Channel) => (
@@ -108,7 +126,12 @@ export function ChannelList() {
                   {channel.name}
                 </span>
                 {channel.isStarred && (
-                  <Star className="h-3 w-3 text-yellow-400" />
+                  <Star 
+                    className={cn(
+                      "h-3 w-3 text-yellow-400",
+                      starAnimationChannel === channel.id && "animate-spin"
+                    )} 
+                  />
                 )}
               </div>
               {channel.unreadCount > 0 && (
@@ -134,7 +157,13 @@ export function ChannelList() {
             handleStarChannel(channel.id);
           }}
         >
-          <Star className={`h-3 w-3 ${channel.isStarred ? 'text-yellow-400' : ''}`} />
+          <Star 
+            className={cn(
+              "h-3 w-3",
+              channel.isStarred && "text-yellow-400",
+              starAnimationChannel === channel.id && "animate-spin"
+            )} 
+          />
         </Button>
         <Button
           variant="ghost"
@@ -145,7 +174,10 @@ export function ChannelList() {
             handlePinChannel(channel.id);
           }}
         >
-          <Pin className={`h-3 w-3 ${channel.isPinned ? 'text-primary' : ''}`} />
+          <Pin className={cn(
+            "h-3 w-3",
+            channel.isPinned && "text-primary"
+          )} />
         </Button>
         <Button
           variant="ghost"
@@ -169,9 +201,18 @@ export function ChannelList() {
         <div className="flex items-center justify-between px-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-xs">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-xs gap-2"
+                onClick={toggleSortDirection}
+              >
                 Sort: {sortOrder}
-                <ChevronDown className="h-3 w-3 ml-1" />
+                {sortDirection === "asc" ? (
+                  <ArrowUp className="h-3 w-3" />
+                ) : (
+                  <ArrowDown className="h-3 w-3" />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
