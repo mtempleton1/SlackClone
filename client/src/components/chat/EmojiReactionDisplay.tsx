@@ -16,6 +16,7 @@ interface EmojiReactionDisplayProps {
 interface Reaction {
   id: number;
   emoji: {
+    id: number;
     code: string;
   };
   userId: number;
@@ -25,7 +26,7 @@ export const EmojiReactionDisplay: FC<EmojiReactionDisplayProps> = ({ messageId 
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: reactions } = useQuery<Reaction[]>({
+  const { data: reactions = [] } = useQuery<Reaction[]>({
     queryKey: [`/api/messages/${messageId}/reactions`],
   });
 
@@ -37,6 +38,7 @@ export const EmojiReactionDisplay: FC<EmojiReactionDisplayProps> = ({ messageId 
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ emojiCode }),
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -57,48 +59,56 @@ export const EmojiReactionDisplay: FC<EmojiReactionDisplayProps> = ({ messageId 
     },
   });
 
+  // Group reactions by emoji code
+  const groupedReactions = reactions.reduce((acc, reaction) => {
+    if (!reaction.emoji) return acc;
+    const code = reaction.emoji.code;
+    if (!acc[code]) {
+      acc[code] = { code, count: 0, userIds: [] };
+    }
+    acc[code].count++;
+    acc[code].userIds.push(reaction.userId);
+    return acc;
+  }, {} as Record<string, { code: string; count: number; userIds: number[] }>);
+
   const commonEmojis = ["👍", "❤️", "😄", "🎉", "👀", "🚀", "💯", "✅"];
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 px-2">
-          <Smile className="h-4 w-4" />
+    <div className="flex items-center gap-1">
+      {Object.values(groupedReactions).map(({ code, count }) => (
+        <Button
+          key={code}
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs gap-1 hover:bg-primary/10"
+          onClick={() => addReactionMutation.mutate(code)}
+        >
+          <span>{code}</span>
+          <span>{count}</span>
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80">
-        <div className="grid grid-cols-8 gap-2 p-2">
-          {commonEmojis.map((emoji) => (
-            <Button
-              key={emoji}
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => addReactionMutation.mutate(emoji)}
-            >
-              {emoji}
-            </Button>
-          ))}
-        </div>
-        {reactions && reactions.length > 0 && (
-          <div className="border-t mt-2 pt-2">
-            <div className="text-sm font-medium mb-2">Recent Reactions</div>
-            <div className="flex flex-wrap gap-1">
-              {reactions.map((reaction) => (
-                <Button
-                  key={reaction.id}
-                  variant="secondary"
-                  size="sm"
-                  className="h-6 px-2"
-                  onClick={() => addReactionMutation.mutate(reaction.emoji.code)}
-                >
-                  {reaction.emoji.code}
-                </Button>
-              ))}
-            </div>
+      ))}
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+            <Smile className="h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-64">
+          <div className="grid grid-cols-8 gap-1">
+            {commonEmojis.map((emoji) => (
+              <Button
+                key={emoji}
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => addReactionMutation.mutate(emoji)}
+              >
+                {emoji}
+              </Button>
+            ))}
           </div>
-        )}
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };

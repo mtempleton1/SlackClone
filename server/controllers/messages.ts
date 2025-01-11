@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "@db";
-import { messages, messageReactions, threads, threadMessages } from "@db/schema";
+import { messages, messageReactions, threads, threadMessages, emojis } from "@db/schema";
 import { and, eq, asc } from "drizzle-orm";
 
 export async function createMessage(req: Request, res: Response) {
@@ -118,16 +118,18 @@ export async function getMessageReactions(req: Request, res: Response) {
   try {
     const messageId = parseInt(req.params.messageId);
 
-    const reactions = await db.query.messageReactions.findMany({
-      where: eq(messageReactions.messageId, messageId),
-      with: {
-        emoji: true,
-        user: true
-      }
-    });
+    const reactions = await db.select({
+      id: messageReactions.id,
+      userId: messageReactions.userId,
+      emoji: emojis
+    })
+    .from(messageReactions)
+    .leftJoin(emojis, eq(messageReactions.emojiId, emojis.id))
+    .where(eq(messageReactions.messageId, messageId));
 
     res.json(reactions);
   } catch (error) {
+    console.error('Error fetching message reactions:', error);
     res.status(500).json({ error: "Failed to fetch message reactions" });
   }
 }
@@ -135,18 +137,32 @@ export async function getMessageReactions(req: Request, res: Response) {
 export async function addMessageReaction(req: Request, res: Response) {
   try {
     const messageId = parseInt(req.params.messageId);
-    const { emojiId } = req.body;
+    const { emojiCode } = req.body;
 
+    // First, get or create the emoji
+    let [emoji] = await db.select()
+      .from(emojis)
+      .where(eq(emojis.code, emojiCode))
+      .limit(1);
+
+    if (!emoji) {
+      [emoji] = await db.insert(emojis)
+        .values({ code: emojiCode })
+        .returning();
+    }
+
+    // Then create the reaction
     const [reaction] = await db.insert(messageReactions)
       .values({
         messageId,
-        emojiId,
+        emojiId: emoji.id,
         userId: req.user!.id
       })
       .returning();
 
-    res.status(201).json(reaction);
+    res.status(201).json({ ...reaction, emoji });
   } catch (error) {
+    console.error('Error adding reaction:', error);
     res.status(500).json({ error: "Failed to add reaction" });
   }
 }

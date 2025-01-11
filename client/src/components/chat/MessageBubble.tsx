@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { MessageContent } from "./MessageContent";
 import { MessageActions } from "./MessageActions";
+import { EmojiReactionDisplay } from "./EmojiReactionDisplay";
 
 interface MessageBubbleProps {
   message: {
@@ -38,10 +39,15 @@ export const MessageBubble: FC<MessageBubbleProps> = ({ message, onThreadClick }
             </span>
           </div>
           <MessageContent message={message} />
-          <MessageActions 
-            message={message} 
-            onThreadClick={onThreadClick}
-          />
+          <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2">
+              <EmojiReactionDisplay messageId={message.id} />
+            </div>
+            <MessageActions 
+              message={message} 
+              onThreadClick={onThreadClick}
+            />
+          </div>
         </div>
       </div>
     </div>
