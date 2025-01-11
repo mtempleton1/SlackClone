@@ -61,6 +61,7 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/threads", isAuthenticated, threadsController.createThread);
   app.get("/api/threads/:threadId", isAuthenticated, threadsController.getThread);
   app.post("/api/threads/:threadId/messages", isAuthenticated, threadsController.createThreadMessage);
+  app.get("/api/threads/:threadId/messages", isAuthenticated, threadsController.getThreadMessages);
   app.delete("/api/threads/:threadId/messages/:messageId", isAuthenticated, threadsController.deleteThreadMessage);
   app.get("/api/threads/:threadId/participants", isAuthenticated, threadsController.getThreadParticipants);
 
