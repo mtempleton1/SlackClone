@@ -7,13 +7,14 @@ export async function createMessage(req: Request, res: Response) {
   try {
     const { channelId, content } = req.body;
 
-    if (!channelId || !content) {
-      return res.status(400).json({ error: "Missing required fields" });
+    // Validate required fields
+    if (!channelId || channelId <= 0 || !content) {
+      return res.status(400).json({ error: "Missing or invalid required fields" });
     }
 
     const [message] = await db.insert(messages)
       .values({
-        channelId,
+        channelId: Number(channelId),
         content,
         userId: req.user!.id
       })
@@ -35,9 +36,9 @@ export async function createMessage(req: Request, res: Response) {
 
 export async function getChannelMessages(req: Request, res: Response) {
   try {
-    const channelId = parseInt(req.params.channelId);
+    const channelId = Number(req.params.channelId);
 
-    if (isNaN(channelId)) {
+    if (isNaN(channelId) || channelId <= 0) {
       return res.status(400).json({ error: "Invalid channel ID" });
     }
 
@@ -53,7 +54,7 @@ export async function getChannelMessages(req: Request, res: Response) {
     .from(messages)
     .leftJoin(users, eq(messages.userId, users.id))
     .where(eq(messages.channelId, channelId))
-    .orderBy(asc(messages.timestamp));
+    .orderBy(asc(messages.id));
 
     // Format the response
     const formattedMessages = channelMessages.map(msg => ({

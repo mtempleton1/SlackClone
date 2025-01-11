@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { app } from '../test-app';
 import { db } from '@db';
-import { messages, channels, workspaces } from '@db/schema';
-import { createTestUser } from '../utils';
+import { messages, channels, workspaces, organizations } from '@db/schema';
+import { createTestUser, createTestOrganization } from '../utils';
 import { eq } from 'drizzle-orm';
 
 describe('Messages Controller', () => {
@@ -20,11 +20,13 @@ describe('Messages Controller', () => {
         });
 
       // Create a workspace first
+      const organization = await createTestOrganization();
       const workspace = await agent
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       // Create a channel
@@ -387,11 +389,13 @@ describe('Messages Controller', () => {
         });
 
       // Create workspace and channel
+      const organization = await createTestOrganization();
       const workspace = await agent
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       const channel = await agent
