@@ -26,13 +26,20 @@ export const MessageBubble: FC<MessageBubbleProps> = ({
   onThreadClick,
   hideThread = false
 }) => {
+  // Add null check for message
+  if (!message || !message.userId) {
+    return null;
+  }
+
+  const userInitial = String(message.userId)[0]?.toUpperCase() || 'U';
+
   return (
     <div className="group hover:bg-accent/5 transition-colors rounded-lg px-4 py-2">
       <div className="flex gap-4">
         <Avatar className="h-8 w-8">
           <div className="h-full w-full rounded-full bg-primary/10 flex items-center justify-center">
             <span className="text-sm font-medium text-primary">
-              {String(message.userId)[0].toUpperCase()}
+              {userInitial}
             </span>
           </div>
         </Avatar>
