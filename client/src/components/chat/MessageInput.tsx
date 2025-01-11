@@ -40,7 +40,7 @@ export const MessageInput: FC<MessageInputProps> = ({ channelId = 1 }) => {
     onSuccess: () => {
       setMessageText("");
       setAttachments([]);
-      queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/channels/${channelId}/messages`] });
     },
     onError: () => {
       toast({

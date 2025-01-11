@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 interface Message {
   id: string;
   content: string;
-  sender: string;
+  userId: number;
   timestamp: string;
   hasThread?: boolean;
   attachments?: Array<{
@@ -16,9 +16,13 @@ interface Message {
   }>;
 }
 
-export const MessageDisplayArea: FC = () => {
+interface MessageDisplayAreaProps {
+  channelId?: number;
+}
+
+export const MessageDisplayArea: FC<MessageDisplayAreaProps> = ({ channelId = 1 }) => {
   const { data: messages, isLoading } = useQuery<Message[]>({
-    queryKey: ["/api/messages"], // This will be updated to include channelId
+    queryKey: [`/api/channels/${channelId}/messages`],
   });
 
   if (isLoading) {
