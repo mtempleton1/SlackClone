@@ -495,10 +495,21 @@ describe('Messages Controller', () => {
       expect(response.body).toHaveProperty('replies');
       expect(response.body.parentMessage.id).toBe(parentMessage[0].id);
       expect(response.body.parentMessage.content).toBe('Parent message');
+      expect(response.body.parentMessage.userId).toBe(user.id);
+      expect(response.body.parentMessage.channelId).toBe(channel.body.id);
+      expect(response.body.parentMessage.user).toBeDefined();
+      expect(response.body.parentMessage.user.id).toBe(user.id);
+
       expect(Array.isArray(response.body.replies)).toBe(true);
       expect(response.body.replies.length).toBe(2);
       expect(response.body.replies[0].content).toBe('Reply 1');
+      expect(response.body.replies[0].userId).toBe(user.id);
+      expect(response.body.replies[0].user).toBeDefined();
+      expect(response.body.replies[0].user.id).toBe(user.id);
       expect(response.body.replies[1].content).toBe('Reply 2');
+      expect(response.body.replies[1].userId).toBe(user.id); 
+      expect(response.body.replies[1].user).toBeDefined();
+      expect(response.body.replies[1].user.id).toBe(user.id);
     });
 
     it('should return 404 when thread parent message does not exist', async () => {
