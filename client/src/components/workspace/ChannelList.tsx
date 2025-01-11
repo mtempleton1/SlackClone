@@ -120,7 +120,7 @@ export function ChannelList() {
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center justify-between w-full px-2 hover:bg-sidebar-accent"
+              className="flex items-center justify-between w-full px-2 hover:bg-sidebar-accent group-hover:bg-sidebar-accent/50 transition-colors"
             >
               <div className="flex items-center gap-2">
                 {channel.isPrivate ? (
@@ -134,7 +134,7 @@ export function ChannelList() {
                 {channel.isStarred && (
                   <Star 
                     className={cn(
-                      "h-3 w-3 text-yellow-400",
+                      "h-3 w-3 text-yellow-400 transition-transform",
                       starAnimationChannel === channel.id && "animate-spin"
                     )} 
                   />
@@ -147,8 +147,13 @@ export function ChannelList() {
               )}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent side="right" className="flex flex-col gap-1">
             <p>{channel.description || `#${channel.name}`}</p>
+            {channel.isPinned && (
+              <p className="text-xs text-muted-foreground">
+                Pinned to top of channel list
+              </p>
+            )}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -157,7 +162,7 @@ export function ChannelList() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 w-6 p-0"
+          className="h-6 w-6 p-0 hover:bg-sidebar-accent/30"
           onClick={(e) => {
             e.stopPropagation();
             handleStarChannel(channel.id);
@@ -165,7 +170,7 @@ export function ChannelList() {
         >
           <Star 
             className={cn(
-              "h-3 w-3",
+              "h-3 w-3 transition-all duration-200",
               channel.isStarred && "text-yellow-400",
               starAnimationChannel === channel.id && "animate-spin"
             )} 
@@ -174,21 +179,21 @@ export function ChannelList() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 w-6 p-0"
+          className="h-6 w-6 p-0 hover:bg-sidebar-accent/30"
           onClick={(e) => {
             e.stopPropagation();
             handlePinChannel(channel.id);
           }}
         >
           <Pin className={cn(
-            "h-3 w-3",
+            "h-3 w-3 transition-all duration-200",
             channel.isPinned && "text-primary"
           )} />
         </Button>
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 w-6 p-0"
+          className="h-6 w-6 p-0 hover:bg-sidebar-accent/30"
           onClick={(e) => {
             e.stopPropagation();
             setSelectedChannel(channel);
@@ -203,7 +208,7 @@ export function ChannelList() {
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-2 space-y-4">
+      <div className="p-2 space-y-4 bg-sidebar">
         <div className="space-y-2">
           <div className="px-2">
             <div className="relative">
@@ -212,7 +217,7 @@ export function ChannelList() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search channels"
-                className="pl-8"
+                className="pl-8 bg-sidebar-accent/20 border-sidebar-border focus:bg-sidebar-accent/30 transition-colors"
               />
             </div>
           </div>
@@ -223,14 +228,14 @@ export function ChannelList() {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="text-xs gap-2"
+                  className="text-xs gap-2 hover:bg-sidebar-accent/30"
                   onClick={toggleSortDirection}
                 >
                   Sort: {sortOrder}
                   {sortDirection === "asc" ? (
-                    <ArrowUp className="h-3 w-3" />
+                    <ArrowUp className="h-3 w-3 transition-transform" />
                   ) : (
-                    <ArrowDown className="h-3 w-3" />
+                    <ArrowDown className="h-3 w-3 transition-transform" />
                   )}
                 </Button>
               </DropdownMenuTrigger>
@@ -254,6 +259,7 @@ export function ChannelList() {
                 Pinned
               </div>
               {pinnedChannels.map(renderChannelItem)}
+              <Separator className="my-2 bg-sidebar-border/50" />
             </div>
           )}
 
@@ -266,7 +272,7 @@ export function ChannelList() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center justify-between w-full px-2 hover:bg-sidebar-accent"
+                className="flex items-center justify-between w-full px-2 hover:bg-sidebar-accent/30"
               >
                 <span className="text-sm font-medium text-sidebar-foreground">
                   Channels {unpinnedChannels?.length ? `(${unpinnedChannels.length})` : ''}
@@ -288,15 +294,15 @@ export function ChannelList() {
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center gap-2 w-full px-2 hover:bg-sidebar-accent"
+            className="flex items-center gap-2 w-full px-2 hover:bg-sidebar-accent/30 group"
             onClick={() => setShowAddChannel(true)}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
             <span className="text-sm">Add Channel</span>
           </Button>
         </div>
 
-        <Separator className="my-2 bg-sidebar-border" />
+        <Separator className="my-2 bg-sidebar-border/50" />
       </div>
 
       {/* Channel Settings Dialog */}
@@ -325,6 +331,7 @@ export function ChannelList() {
           )}
         </DialogContent>
       </Dialog>
+
       <AddChannelOverlay 
         isOpen={showAddChannel}
         onClose={() => setShowAddChannel(false)}
