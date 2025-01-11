@@ -433,3 +433,88 @@ describe('Messages Controller', () => {
     });
   });
 });
+
+  describe('GET /api/messages/:messageId/thread', () => {
+    it('should return parent message and thread replies when authenticated', async () => {
+      const agent = request.agent(app);
+      const user = await createTestUser();
+
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      // Create workspace and channel
+      const organization = await createTestOrganization();
+      const workspace = await agent
+        .post('/api/workspaces')
+        .send({
+          name: 'Test Workspace',
+          description: 'A test workspace',
+          organizationId: organization.id
+        });
+
+      const channel = await agent
+        .post('/api/channels')
+        .send({
+          workspaceId: workspace.body.id,
+          name: 'general',
+          topic: 'General discussion'
+        });
+
+      // Create parent message
+      const parentMessage = await db.insert(messages)
+        .values({
+          content: 'Parent message',
+          userId: user.id,
+          channelId: channel.body.id
+        })
+        .returning();
+
+      // Create reply messages
+      await db.insert(messages)
+        .values([{
+          content: 'Reply 1',
+          userId: user.id,
+          channelId: channel.body.id,
+          parentId: parentMessage[0].id
+        }, {
+          content: 'Reply 2',
+          userId: user.id,
+          channelId: channel.body.id,
+          parentId: parentMessage[0].id
+        }]);
+
+      const response = await agent.get(`/api/messages/${parentMessage[0].id}/thread`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('parentMessage');
+      expect(response.body).toHaveProperty('replies');
+      expect(response.body.parentMessage.id).toBe(parentMessage[0].id);
+      expect(response.body.parentMessage.content).toBe('Parent message');
+      expect(Array.isArray(response.body.replies)).toBe(true);
+      expect(response.body.replies.length).toBe(2);
+      expect(response.body.replies[0].content).toBe('Reply 1');
+      expect(response.body.replies[1].content).toBe('Reply 2');
+    });
+
+    it('should return 404 when thread parent message does not exist', async () => {
+      const agent = request.agent(app);
+      const user = await createTestUser();
+
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent.get('/api/messages/99999/thread');
+      expect(response.status).toBe(404);
+    });
+  });
+

@@ -251,8 +251,8 @@ export async function getThreadMessages(req: Request, res: Response) {
   try {
     const messageId = parseInt(req.params.messageId);
 
-    // Get the parent message and all its replies
-    const threadMessages = await db.select({
+    // Get parent message
+    const [parentMessage] = await db.select({
       id: messages.id,
       content: messages.content,
       userId: messages.userId,
@@ -263,12 +263,32 @@ export async function getThreadMessages(req: Request, res: Response) {
     })
     .from(messages)
     .leftJoin(users, eq(messages.userId, users.id))
-    .where(and(
-      eq(messages.parentId, messageId)
-    ))
+    .where(eq(messages.id, messageId))
+    .limit(1);
+
+    if (!parentMessage) {
+      return res.status(404).json({ error: "Parent message not found" });
+    }
+
+    // Get replies
+    const replies = await db.select({
+      id: messages.id,
+      content: messages.content,
+      userId: messages.userId,
+      channelId: messages.channelId,
+      parentId: messages.parentId,
+      timestamp: messages.timestamp,
+      user: users
+    })
+    .from(messages)
+    .leftJoin(users, eq(messages.userId, users.id))
+    .where(eq(messages.parentId, messageId))
     .orderBy(asc(messages.timestamp));
 
-    res.json(threadMessages);
+    res.json({
+      parentMessage,
+      replies
+    });
   } catch (error) {
     console.error('Error fetching thread messages:', error);
     res.status(500).json({ error: "Failed to fetch thread messages" });
