@@ -6,6 +6,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -39,10 +49,19 @@ interface Channel {
   isStarred?: boolean;
   isPinned?: boolean;
   description?: string;
+  memberCount?: number;
+  lastActivity?: string;
 }
 
 type SortOrder = "alphabetical" | "recent" | "unread";
 type SortDirection = "asc" | "desc";
+type ConfirmActionType = "star" | "pin" | "leave" | null;
+
+interface ConfirmAction {
+  type: ConfirmActionType;
+  channelId: string;
+  channelName: string;
+}
 
 export function ChannelList() {
   const [channelsExpanded, setChannelsExpanded] = useState(true);
@@ -54,6 +73,7 @@ export function ChannelList() {
   const [showStarOverlay, setShowStarOverlay] = useState(false);
   const [starAnimationChannel, setStarAnimationChannel] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
 
   const { data: channels, refetch: refetchChannels } = useQuery<Channel[]>({
     queryKey: ["/api/channels"],
@@ -71,8 +91,9 @@ export function ChannelList() {
     } else if (sortOrder === "unread") {
       comparison = b.unreadCount - a.unreadCount;
     } else if (sortOrder === "recent") {
-      // Assuming channels are already in chronological order
-      return 0;
+      if (a.lastActivity && b.lastActivity) {
+        comparison = new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime();
+      }
     }
 
     return sortDirection === "asc" ? comparison : -comparison;
@@ -81,35 +102,68 @@ export function ChannelList() {
   const pinnedChannels = sortedChannels?.filter(channel => channel.isPinned);
   const unpinnedChannels = sortedChannels?.filter(channel => !channel.isPinned);
 
-  const handleStarChannel = async (channelId: string) => {
-    try {
-      setStarAnimationChannel(channelId);
-      await fetch(`/api/channels/${channelId}/star`, {
-        method: "POST",
-        credentials: "include",
-      });
-      await refetchChannels();
-      setTimeout(() => setStarAnimationChannel(null), 1000);
-    } catch (error) {
-      console.error("Failed to star channel:", error);
-      setStarAnimationChannel(null);
-    }
+  const handleStarChannel = async (channelId: string, channelName: string) => {
+    setConfirmAction({
+      type: "star",
+      channelId,
+      channelName,
+    });
   };
 
-  const handlePinChannel = async (channelId: string) => {
+  const handlePinChannel = async (channelId: string, channelName: string) => {
+    setConfirmAction({
+      type: "pin",
+      channelId,
+      channelName,
+    });
+  };
+
+  const executeChannelAction = async () => {
+    if (!confirmAction) return;
+
     try {
-      await fetch(`/api/channels/${channelId}/pin`, {
-        method: "POST",
-        credentials: "include",
-      });
-      refetchChannels();
+      const { type, channelId } = confirmAction;
+
+      if (type === "star") {
+        setStarAnimationChannel(channelId);
+        await fetch(`/api/channels/${channelId}/star`, {
+          method: "POST",
+          credentials: "include",
+        });
+        setTimeout(() => setStarAnimationChannel(null), 1000);
+      } else if (type === "pin") {
+        await fetch(`/api/channels/${channelId}/pin`, {
+          method: "POST",
+          credentials: "include",
+        });
+      }
+
+      await refetchChannels();
     } catch (error) {
-      console.error("Failed to pin channel:", error);
+      console.error(`Failed to ${confirmAction.type} channel:`, error);
+      if (confirmAction.type === "star") {
+        setStarAnimationChannel(null);
+      }
+    } finally {
+      setConfirmAction(null);
     }
   };
 
   const toggleSortDirection = () => {
     setSortDirection(prev => prev === "asc" ? "desc" : "asc");
+  };
+
+  const getActionDescription = (type: ConfirmActionType, channelName: string) => {
+    switch (type) {
+      case "star":
+        return `Are you sure you want to star #${channelName}? This will add it to your starred items for quick access.`;
+      case "pin":
+        return `Are you sure you want to pin #${channelName}? This will keep it at the top of your channel list.`;
+      case "leave":
+        return `Are you sure you want to leave #${channelName}? You'll need to be re-invited to join again.`;
+      default:
+        return "";
+    }
   };
 
   const renderChannelItem = (channel: Channel) => (
@@ -149,9 +203,19 @@ export function ChannelList() {
           </TooltipTrigger>
           <TooltipContent side="right" className="flex flex-col gap-1">
             <p>{channel.description || `#${channel.name}`}</p>
+            {channel.memberCount && (
+              <p className="text-xs text-muted-foreground">
+                {channel.memberCount} members
+              </p>
+            )}
             {channel.isPinned && (
               <p className="text-xs text-muted-foreground">
                 Pinned to top of channel list
+              </p>
+            )}
+            {channel.lastActivity && (
+              <p className="text-xs text-muted-foreground">
+                Last active: {new Date(channel.lastActivity).toLocaleDateString()}
               </p>
             )}
           </TooltipContent>
@@ -165,7 +229,7 @@ export function ChannelList() {
           className="h-6 w-6 p-0 hover:bg-sidebar-accent/30"
           onClick={(e) => {
             e.stopPropagation();
-            handleStarChannel(channel.id);
+            handleStarChannel(channel.id, channel.name);
           }}
         >
           <Star 
@@ -182,7 +246,7 @@ export function ChannelList() {
           className="h-6 w-6 p-0 hover:bg-sidebar-accent/30"
           onClick={(e) => {
             e.stopPropagation();
-            handlePinChannel(channel.id);
+            handlePinChannel(channel.id, channel.name);
           }}
         >
           <Pin className={cn(
@@ -327,10 +391,38 @@ export function ChannelList() {
                   {selectedChannel.isPrivate ? 'Private Channel' : 'Public Channel'}
                 </p>
               </div>
+              {selectedChannel.memberCount && (
+                <div>
+                  <h3 className="text-sm font-medium">Members</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedChannel.memberCount} members
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Action Confirmation Dialog */}
+      <AlertDialog open={!!confirmAction} onOpenChange={() => setConfirmAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction?.type === "star" ? "Star Channel" :
+               confirmAction?.type === "pin" ? "Pin Channel" :
+               confirmAction?.type === "leave" ? "Leave Channel" : ""}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmAction && getActionDescription(confirmAction.type, confirmAction.channelName)}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={executeChannelAction}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AddChannelOverlay 
         isOpen={showAddChannel}
