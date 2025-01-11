@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { io, Socket } from "socket.io-client";
+import { ThreadView } from "./ThreadView";
 
 interface Message {
   id: string;
@@ -60,10 +61,10 @@ export function MessageArea() {
       });
     });
 
-    setSocket(newSocket); //Corrected this line
+    setSocket(newSocket);
 
     return () => {
-      if (newSocket) { //Corrected this line
+      if (newSocket) {
         newSocket.emit("leaveChannel", channelId);
         newSocket.disconnect();
       }
@@ -230,11 +231,13 @@ export function MessageArea() {
 
       {/* Thread Dialog */}
       <Dialog open={!!selectedMessage} onOpenChange={() => setSelectedMessage(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl h-[80vh]">
           <DialogHeader>
             <DialogTitle>Thread</DialogTitle>
           </DialogHeader>
-          {/* TODO: Implement thread view */}
+          {selectedMessage && (
+            <ThreadView parentMessage={selectedMessage} />
+          )}
         </DialogContent>
       </Dialog>
 
