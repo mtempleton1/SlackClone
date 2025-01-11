@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { app } from '../test-app';
 import { db } from '@db';
-import { users } from '@db/schema';
+import { users, type User } from '@db/schema';
 import { createTestUser, generateRandomEmail } from '../utils';
 import { eq } from 'drizzle-orm';
 
@@ -69,6 +69,43 @@ describe('Users Controller', () => {
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('error');
     });
+
+    it('should return 400 for invalid email format', async () => {
+      const response = await request(app)
+        .post('/api/users')
+        .send({
+          email: 'invalid-email',
+          username: `user-${Date.now()}`,
+          displayName: 'Test User',
+          password: 'password123'
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toMatch(/invalid.*email/i);
+    });
+
+    it('should handle concurrent user creation with same email', async () => {
+      const email = generateRandomEmail();
+      const createUser = () => 
+        request(app)
+          .post('/api/users')
+          .send({
+            email,
+            username: `user-${Date.now()}`,
+            displayName: 'Test User',
+            password: 'password123'
+          });
+
+      const [response1, response2] = await Promise.all([
+        createUser(),
+        createUser()
+      ]);
+
+      expect(
+        (response1.status === 201 && response2.status === 400) ||
+        (response1.status === 400 && response2.status === 201)
+      ).toBe(true);
+    });
   });
 
   describe('GET /api/users', () => {
@@ -76,7 +113,6 @@ describe('Users Controller', () => {
       const agent = request.agent(app);
       const user = await createTestUser();
 
-      // Login the user
       await agent
         .post('/api/login')
         .send({
@@ -179,6 +215,25 @@ describe('Users Controller', () => {
 
       expect(response.status).toBe(403);
     });
+
+    it('should return 400 for invalid update data format', async () => {
+      const agent = request.agent(app);
+      const user = await createTestUser();
+
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent
+        .put(`/api/users/${user.id}`)
+        .send({ displayName: { invalid: 'format' } });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
+    });
   });
 
   describe('PATCH /api/users/:userId/status', () => {
@@ -202,11 +257,30 @@ describe('Users Controller', () => {
 
       // Verify status was updated in database
       const [dbUser] = await db.select()
-        .from(user)
+        .from(users)
         .where(eq(users.id, user.id))
         .limit(1);
 
       expect(dbUser.presenceStatus).toBe(false);
+    });
+
+    it('should return 400 for invalid status format', async () => {
+      const agent = request.agent(app);
+      const user = await createTestUser();
+
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent
+        .patch(`/api/users/${user.id}/status`)
+        .send({ presenceStatus: 'invalid' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
     });
   });
 
@@ -238,6 +312,46 @@ describe('Users Controller', () => {
         .limit(1);
 
       expect(dbUser.profilePicture).toBe(newPicture);
+    });
+
+    it('should return 400 for invalid picture URL format', async () => {
+      const agent = request.agent(app);
+      const user = await createTestUser();
+
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const response = await agent
+        .patch(`/api/users/${user.id}/profile-picture`)
+        .send({ profilePicture: 'invalid-url' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
+    });
+
+    it('should handle very long picture URLs', async () => {
+      const agent = request.agent(app);
+      const user = await createTestUser();
+
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      const veryLongUrl = `https://example.com/${'a'.repeat(2048)}.jpg`;
+
+      const response = await agent
+        .patch(`/api/users/${user.id}/profile-picture`)
+        .send({ profilePicture: veryLongUrl });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toMatch(/url.*too long/i);
     });
   });
 });

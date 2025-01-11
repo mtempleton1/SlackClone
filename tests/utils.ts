@@ -30,17 +30,6 @@ export async function createTestUser(overrides: Partial<User> = {}): Promise<Use
   return user;
 }
 
-export async function createTestOrganization(overrides: Partial<Organization> = {}): Promise<Organization> {
-  const timestamp = Date.now();
-  const [org] = await db.insert(organizations).values({
-    name: `Test Org ${timestamp}`,
-    description: `Test organization created at ${timestamp}`,
-    ...overrides
-  }).returning();
-
-  return org;
-}
-
 export function generateRandomEmail() {
   return `test-${Date.now()}-${Math.random().toString(36).substring(7)}@example.com`;
 }

@@ -15,6 +15,12 @@ export async function createUser(req: Request, res: Response) {
       });
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
     // Check if user already exists by email
     const [existingUserByEmail] = await db.select()
       .from(users)
@@ -116,6 +122,11 @@ export async function updateUser(req: Request, res: Response) {
       return res.status(403).json({ error: "Unauthorized to update this user" });
     }
 
+    // Validate displayName format
+    if (displayName && typeof displayName !== 'string') {
+      return res.status(400).json({ error: "Invalid display name format" });
+    }
+
     const [updatedUser] = await db.update(users)
       .set({ displayName, statusMessage })
       .where(eq(users.id, userId))
@@ -132,6 +143,7 @@ export async function updateUser(req: Request, res: Response) {
       statusMessage: updatedUser.statusMessage
     });
   } catch (error) {
+    console.error('Error updating user:', error);
     res.status(500).json({ error: "Failed to update user" });
   }
 }
@@ -171,6 +183,11 @@ export async function updateUserStatus(req: Request, res: Response) {
       return res.status(403).json({ error: "Unauthorized to update status" });
     }
 
+    // Validate presenceStatus type
+    if (typeof presenceStatus !== 'boolean') {
+      return res.status(400).json({ error: "Invalid presence status format - must be boolean" });
+    }
+
     const [updatedUser] = await db.update(users)
       .set({ presenceStatus })
       .where(eq(users.id, userId))
@@ -178,6 +195,7 @@ export async function updateUserStatus(req: Request, res: Response) {
 
     res.json({ presenceStatus: updatedUser.presenceStatus });
   } catch (error) {
+    console.error('Error updating user status:', error);
     res.status(500).json({ error: "Failed to update user status" });
   }
 }
@@ -191,6 +209,18 @@ export async function updateProfilePicture(req: Request, res: Response) {
       return res.status(403).json({ error: "Unauthorized to update profile picture" });
     }
 
+    // Validate URL format
+    try {
+      new URL(profilePicture);
+    } catch (error) {
+      return res.status(400).json({ error: "Invalid URL format" });
+    }
+
+    // Check URL length
+    if (profilePicture.length > 1024) {
+      return res.status(400).json({ error: "URL too long - must be less than 1024 characters" });
+    }
+
     const [updatedUser] = await db.update(users)
       .set({ profilePicture })
       .where(eq(users.id, userId))
@@ -198,6 +228,7 @@ export async function updateProfilePicture(req: Request, res: Response) {
 
     res.json({ profilePicture: updatedUser.profilePicture });
   } catch (error) {
+    console.error("Profile picture update error:", error);
     res.status(500).json({ error: "Failed to update profile picture" });
   }
 }

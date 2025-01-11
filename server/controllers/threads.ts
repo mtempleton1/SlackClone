@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { db } from "@db";
 import { threads, threadMessages, messages, users } from "@db/schema";
 import { eq, asc } from "drizzle-orm";
+import type { ThreadMessage, Message, User } from "@db/schema";
 
 export async function createThread(req: Request, res: Response) {
   try {
@@ -114,7 +115,7 @@ export async function getThreadMessages(req: Request, res: Response) {
   try {
     const threadId = parseInt(req.params.threadId);
 
-    const threadMessages = await db.query.threadMessages.findMany({
+    const messages = await db.query.threadMessages.findMany({
       where: eq(threadMessages.threadId, threadId),
       with: {
         user: true
@@ -122,7 +123,7 @@ export async function getThreadMessages(req: Request, res: Response) {
       orderBy: [asc(threadMessages.timestamp)]
     });
 
-    const formattedMessages = threadMessages.map(message => ({
+    const formattedMessages = messages.map((message: ThreadMessage & { user: User }) => ({
       id: message.id.toString(),
       content: message.content,
       userId: message.userId,
@@ -159,7 +160,7 @@ export async function getThreadParticipants(req: Request, res: Response) {
   try {
     const threadId = parseInt(req.params.threadId);
 
-    const messages = await db.query.threadMessages.findMany({
+    const threadMsgs = await db.query.threadMessages.findMany({
       where: eq(threadMessages.threadId, threadId),
       with: {
         user: true
@@ -167,16 +168,16 @@ export async function getThreadParticipants(req: Request, res: Response) {
     });
 
     // Get unique participants using Set
-    const uniqueParticipantIds = new Set();
-    const uniqueParticipants = messages
-      .filter(message => {
-        if (uniqueParticipantIds.has(message.user.id)) {
+    const uniqueParticipantIds = new Set<number>();
+    const uniqueParticipants = threadMsgs
+      .filter(msg => {
+        if (uniqueParticipantIds.has(msg.user.id)) {
           return false;
         }
-        uniqueParticipantIds.add(message.user.id);
+        uniqueParticipantIds.add(msg.user.id);
         return true;
       })
-      .map(message => message.user);
+      .map(msg => msg.user);
 
     res.json(uniqueParticipants);
   } catch (error) {
