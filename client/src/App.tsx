@@ -25,8 +25,8 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={ChatPage} />
-      <Route path="/workspaces/:id" component={ChatPage} />
+      <Route path="/" component={() => <ChatPage />} />
+      <Route path="/workspaces/:id" component={() => <ChatPage />} />
       <Route component={NotFound} />
     </Switch>
   );
