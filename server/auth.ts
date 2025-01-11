@@ -5,7 +5,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { users, type User as DbUser } from "@db/schema";
+import { users, organizations, workspaces, userWorkspaces, type User as DbUser } from "@db/schema";
 import { db } from "@db";
 import { eq } from "drizzle-orm";
 
@@ -107,7 +107,7 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, password, displayName, username } = req.body;
+      const { email, password, displayName, username, organizationName, workspaceName } = req.body;
 
       // Check if user already exists
       const [existingUser] = await db
@@ -123,27 +123,62 @@ export function setupAuth(app: Express) {
       // Hash the password
       const hashedPassword = await crypto.hash(password);
 
-      // Create the new user
-      const [newUser] = await db
-        .insert(users)
-        .values({
-          email,
-          password: hashedPassword,
-          displayName,
-          username
-        })
-        .returning();
+      // Create the new user, organization, and workspace in a transaction
+      const result = await db.transaction(async (tx) => {
+        // Create user
+        const [newUser] = await tx
+          .insert(users)
+          .values({
+            email,
+            password: hashedPassword,
+            displayName,
+            username
+          })
+          .returning();
 
-      req.login(newUser, (err) => {
+        // If organization name provided, create organization and workspace
+        if (organizationName && workspaceName) {
+          // Create organization
+          const [newOrg] = await tx
+            .insert(organizations)
+            .values({
+              name: organizationName,
+            })
+            .returning();
+
+          // Create workspace
+          const [newWorkspace] = await tx
+            .insert(workspaces)
+            .values({
+              name: workspaceName,
+              organizationId: newOrg.id,
+            })
+            .returning();
+
+          // Add user to workspace
+          await tx
+            .insert(userWorkspaces)
+            .values({
+              userId: newUser.id,
+              workspaceId: newWorkspace.id,
+            });
+
+          return { newUser, organization: newOrg, workspace: newWorkspace };
+        }
+
+        return { newUser };
+      });
+
+      req.login(result.newUser, (err) => {
         if (err) {
           return next(err);
         }
         return res.json({
           message: "Registration successful",
           user: {
-            id: newUser.id,
-            email: newUser.email,
-            displayName: newUser.displayName
+            id: result.newUser.id,
+            email: result.newUser.email,
+            displayName: result.newUser.displayName
           },
         });
       });
