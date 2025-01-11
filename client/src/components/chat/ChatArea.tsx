@@ -19,7 +19,9 @@ interface Channel {
 }
 
 export const ChatArea: FC<ChatAreaProps> = ({ className, channelId = 1 }) => {
-  const [selectedMessageId, setSelectedMessageId] = useState<string | undefined>();
+  const [selectedMessageId, setSelectedMessageId] = useState<
+    string | undefined
+  >();
 
   const { data: channel } = useQuery<Channel>({
     queryKey: [`/api/channels/${channelId}`],
@@ -27,6 +29,8 @@ export const ChatArea: FC<ChatAreaProps> = ({ className, channelId = 1 }) => {
   });
 
   const handleThreadOpen = (messageId: string) => {
+    console.log("IN HERE");
+    console.log(messageId);
     setSelectedMessageId(messageId);
   };
 
@@ -39,7 +43,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ className, channelId = 1 }) => {
       <div className="flex-1 flex flex-col h-full">
         <div className="border-b border-border px-4 py-3">
           <h2 className="text-lg font-semibold">
-            #{channel?.name || 'general'}
+            #{channel?.name || "general"}
           </h2>
           {channel?.description && (
             <p className="text-sm text-muted-foreground mt-1">
@@ -48,8 +52,8 @@ export const ChatArea: FC<ChatAreaProps> = ({ className, channelId = 1 }) => {
           )}
         </div>
         <ScrollArea className="flex-1">
-          <MessageDisplayArea 
-            channelId={channelId} 
+          <MessageDisplayArea
+            channelId={channelId}
             onThreadClick={handleThreadOpen}
           />
         </ScrollArea>
@@ -57,7 +61,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ className, channelId = 1 }) => {
           <MessageInput channelId={channelId} />
         </div>
       </div>
-      <ThreadViewer 
+      <ThreadViewer
         isOpen={!!selectedMessageId}
         selectedMessageId={selectedMessageId}
         onClose={handleThreadClose}
