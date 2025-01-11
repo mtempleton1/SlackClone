@@ -35,23 +35,29 @@ interface Thread {
 }
 
 interface MessageThreadResponse {
-  id: string;
-  messageId: string;
+  thread: {
+    id: string;
+    parentMessageId: string;
+  };
+  message: {
+    content: string;
+    id: string;
+  };
 }
 
-export const ThreadViewer: FC<ThreadViewerProps> = ({ 
-  isOpen = false, 
+export const ThreadViewer: FC<ThreadViewerProps> = ({
+  isOpen = false,
   selectedMessageId,
-  onClose 
+  onClose,
 }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   // First fetch the thread ID for the selected message
-  const { 
+  const {
     data: messageThread,
     isLoading: messageThreadLoading,
-    error: messageThreadError 
+    error: messageThreadError,
   } = useQuery<MessageThreadResponse>({
     queryKey: [`/api/messages/${selectedMessageId}/thread`],
     enabled: isOpen && !!selectedMessageId,
@@ -59,23 +65,25 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
     throwOnError: false,
   });
 
+  console.log("messageThread");
+  console.log(messageThread);
+
   // Then fetch the thread details using the thread ID
-  const { 
+  const {
     data: thread,
     isLoading: threadLoading,
-    error: threadError 
+    error: threadError,
   } = useQuery<Thread>({
-    queryKey: [`/api/threads/${messageThread?.id}`],
-    enabled: isOpen && !!messageThread?.id,
+    queryKey: [`/api/threads/${messageThread?.thread?.id}`],
+    enabled: isOpen && !!messageThread?.thread?.id,
     retry: false,
     throwOnError: false,
   });
 
   // Finally fetch thread messages
-  const { 
-    data: threadMessages = [],
-    isLoading: messagesLoading 
-  } = useQuery<ThreadMessage[]>({
+  const { data: threadMessages = [], isLoading: messagesLoading } = useQuery<
+    ThreadMessage[]
+  >({
     queryKey: [`/api/threads/${thread?.id}/messages`],
     enabled: isOpen && !!thread?.id,
     retry: false,
@@ -94,14 +102,15 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
           <h2 className="text-lg font-semibold">Thread</h2>
           {thread && thread.replyCount > 0 && (
             <p className="text-sm text-muted-foreground">
-              {thread.replyCount} {thread.replyCount === 1 ? 'reply' : 'replies'}
+              {thread.replyCount}{" "}
+              {thread.replyCount === 1 ? "reply" : "replies"}
             </p>
           )}
         </div>
         {onClose && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
             className="hover:bg-destructive/10 hover:text-destructive"
           >
@@ -120,14 +129,20 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
       ) : hasError ? (
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">Failed to load thread</p>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <p className="text-sm text-muted-foreground">
+              Failed to load thread
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
               className="mt-2"
               onClick={() => {
-                queryClient.invalidateQueries({ queryKey: [`/api/messages/${selectedMessageId}/thread`] });
-                queryClient.invalidateQueries({ queryKey: [`/api/threads/${messageThread?.id}`] });
+                queryClient.invalidateQueries({
+                  queryKey: [`/api/messages/${selectedMessageId}/thread`],
+                });
+                queryClient.invalidateQueries({
+                  queryKey: [`/api/threads/${messageThread?.thread?.id}`],
+                });
               }}
             >
               Try again
@@ -140,7 +155,7 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
             <div className="p-4 space-y-4">
               {thread && (
                 <div className="pb-4 border-b">
-                  <MessageBubble 
+                  <MessageBubble
                     message={thread.parentMessage}
                     hideThread={true}
                   />
@@ -157,7 +172,7 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
           </ScrollArea>
           <div className="border-t p-4">
             {thread && (
-              <MessageInput 
+              <MessageInput
                 threadId={thread.id}
                 placeholder="Reply in thread..."
               />
