@@ -1,5 +1,6 @@
 import { db } from '@db';
 import { users, organizations } from '@db/schema';
+import { eq } from 'drizzle-orm';
 import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
 import type { User, Organization } from '@db/schema';
