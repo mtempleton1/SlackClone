@@ -115,6 +115,10 @@ export async function deleteChannel(req: Request, res: Response) {
 export async function getChannelMembers(req: Request, res: Response) {
   try {
     const channelId = parseInt(req.params.channelId);
+    
+    if (isNaN(channelId)) {
+      return res.status(400).json({ error: "Invalid channel ID" });
+    }
 
     const members = await db.select({
       user: users
