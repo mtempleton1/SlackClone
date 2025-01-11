@@ -163,6 +163,9 @@ describe('Threads Controller', () => {
           password: 'password123'
         });
 
+      const response = await agent.get('/api/threads/99999');
+      expect(response.status).toBe(404);
+    });
     it('should return thread with only parent message when no child messages exist', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
@@ -211,11 +214,6 @@ describe('Threads Controller', () => {
       expect(response.body.id).toBe(thread.id);
       expect(response.body.messages).toHaveLength(0);
       expect(response.body.parentMessage.id).toBe(parentMessage.id);
-    });
-
-
-      const response = await agent.get('/api/threads/99999');
-      expect(response.status).toBe(404);
     });
   });
 
