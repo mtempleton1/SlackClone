@@ -136,6 +136,9 @@ export async function getChannelMembers(req: Request, res: Response) {
 
 export async function addChannelMember(req: Request, res: Response) {
   try {
+    if (!req.params.channelId || isNaN(Number(req.params.channelId))) {
+      return res.status(400).json({ error: "Invalid channel ID" });
+    }
     const channelId = parseInt(req.params.channelId);
     const { userId } = req.body;
 
