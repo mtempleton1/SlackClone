@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { io, Socket } from "socket.io-client";
 import { ThreadView } from "./ThreadView";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 
 interface Message {
   id: string;
@@ -39,6 +40,7 @@ export function MessageArea() {
   const [messageInput, setMessageInput] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [messageForReaction, setMessageForReaction] = useState<Message | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -58,6 +60,23 @@ export function MessageArea() {
       queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
         if (!oldMessages) return [message];
         return [...oldMessages, message];
+      });
+    });
+
+    newSocket.on("reaction", ({ messageId, reaction }) => {
+      queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
+        if (!oldMessages) return [];
+        return oldMessages.map((msg) => {
+          if (msg.id === messageId) {
+            return {
+              ...msg,
+              reactions: msg.reactions 
+                ? [...msg.reactions, reaction]
+                : [reaction],
+            };
+          }
+          return msg;
+        });
       });
     });
 
@@ -110,6 +129,50 @@ export function MessageArea() {
     },
   });
 
+  const addReactionMutation = useMutation({
+    mutationFn: async ({ messageId, emoji }: { messageId: string; emoji: string }) => {
+      const response = await fetch(`/api/messages/${messageId}/reactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ emoji }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add reaction");
+      }
+
+      return response.json();
+    },
+    onSuccess: (reaction, { messageId }) => {
+      socket?.emit("reaction", { messageId, reaction });
+      queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
+        if (!oldMessages) return [];
+        return oldMessages.map((msg) => {
+          if (msg.id === messageId) {
+            return {
+              ...msg,
+              reactions: msg.reactions 
+                ? [...msg.reactions, reaction]
+                : [reaction],
+            };
+          }
+          return msg;
+        });
+      });
+      setShowEmojiPicker(false);
+      setMessageForReaction(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to add reaction",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSendMessage = async () => {
     if (!messageInput.trim()) return;
     await sendMessageMutation.mutateAsync(messageInput.trim());
@@ -121,8 +184,17 @@ export function MessageArea() {
   };
 
   const handleAddReaction = (message: Message) => {
-    // TODO: Implement reaction adding
+    setMessageForReaction(message);
     setShowEmojiPicker(true);
+  };
+
+  const handleEmojiSelect = (emojiData: EmojiClickData) => {
+    if (messageForReaction) {
+      addReactionMutation.mutate({
+        messageId: messageForReaction.id,
+        emoji: emojiData.emoji,
+      });
+    }
   };
 
   return (
@@ -155,7 +227,7 @@ export function MessageArea() {
                           key={index}
                           variant="ghost"
                           size="sm"
-                          className="h-6 px-2 text-xs gap-1"
+                          className="h-6 px-2 text-xs gap-1 hover:bg-primary/10"
                           onClick={() => handleAddReaction(message)}
                         >
                           <span>{reaction.emoji}</span>
@@ -247,7 +319,9 @@ export function MessageArea() {
           <DialogHeader>
             <DialogTitle>Add Reaction</DialogTitle>
           </DialogHeader>
-          {/* TODO: Implement emoji picker */}
+          <div className="mt-4">
+            <EmojiPicker onEmojiClick={handleEmojiSelect} />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
