@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Hash, Lock, ChevronDown, Plus, Star, Pin, Settings, ArrowDown, ArrowUp } from "lucide-react";
+import { Hash, Lock, ChevronDown, Plus, Star, Pin, Settings, ArrowDown, ArrowUp, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -52,12 +53,17 @@ export function ChannelList() {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [showStarOverlay, setShowStarOverlay] = useState(false);
   const [starAnimationChannel, setStarAnimationChannel] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: channels, refetch: refetchChannels } = useQuery<Channel[]>({
     queryKey: ["/api/channels"],
   });
 
-  const sortedChannels = channels?.slice().sort((a, b) => {
+  const filteredChannels = channels?.filter(channel =>
+    channel.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedChannels = filteredChannels?.slice().sort((a, b) => {
     let comparison = 0;
 
     if (sortOrder === "alphabetical") {
@@ -198,38 +204,50 @@ export function ChannelList() {
   return (
     <ScrollArea className="h-full">
       <div className="p-2 space-y-4">
-        <div className="flex items-center justify-between px-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs gap-2"
-                onClick={toggleSortDirection}
-              >
-                Sort: {sortOrder}
-                {sortDirection === "asc" ? (
-                  <ArrowUp className="h-3 w-3" />
-                ) : (
-                  <ArrowDown className="h-3 w-3" />
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setSortOrder("alphabetical")}>
-                Alphabetical
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSortOrder("recent")}>
-                Recent
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSortOrder("unread")}>
-                Unread
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
         <div className="space-y-2">
+          <div className="px-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search channels"
+                className="pl-8"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between px-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-xs gap-2"
+                  onClick={toggleSortDirection}
+                >
+                  Sort: {sortOrder}
+                  {sortDirection === "asc" ? (
+                    <ArrowUp className="h-3 w-3" />
+                  ) : (
+                    <ArrowDown className="h-3 w-3" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => setSortOrder("alphabetical")}>
+                  Alphabetical
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder("recent")}>
+                  Recent
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder("unread")}>
+                  Unread
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           {pinnedChannels && pinnedChannels.length > 0 && (
             <div className="space-y-[2px]">
               <div className="px-2 text-xs text-sidebar-foreground/70">
@@ -242,6 +260,7 @@ export function ChannelList() {
           <Collapsible
             open={channelsExpanded}
             onOpenChange={setChannelsExpanded}
+            className="space-y-2"
           >
             <CollapsibleTrigger asChild>
               <Button
@@ -250,13 +269,16 @@ export function ChannelList() {
                 className="flex items-center justify-between w-full px-2 hover:bg-sidebar-accent"
               >
                 <span className="text-sm font-medium text-sidebar-foreground">
-                  Channels
+                  Channels {unpinnedChannels?.length ? `(${unpinnedChannels.length})` : ''}
                 </span>
-                <ChevronDown className={`h-4 w-4 transition-transform ${channelsExpanded ? "" : "-rotate-90"}`} />
+                <ChevronDown className={cn(
+                  "h-4 w-4 transition-transform duration-200",
+                  !channelsExpanded && "-rotate-90"
+                )} />
               </Button>
             </CollapsibleTrigger>
 
-            <CollapsibleContent>
+            <CollapsibleContent className="animate-accordion-down">
               <div className="mt-1 space-y-[2px]">
                 {unpinnedChannels?.map(renderChannelItem)}
               </div>
