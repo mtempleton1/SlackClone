@@ -1,0 +1,43 @@
+The attached JSON document describes the component structure of the Message Area. Below is the structure of the attached JSON with descriptions of each field.
+
+---
+
+## JSON Document Structure
+
+The JSON document contains a list of component objects. Each component object includes:
+
+- name: The component's name.
+- description: The purpose and functionality of the component.
+- location: The placement of the component within its immediate parent component.
+- user_interactions: A list of ways in which users interact with this element and what happens when they do (e.g., '_overlay appears on click_', '_message is submitted to the backend on enter (or submit, or click)_', etc.).
+- sub: A list of sub-components, each following the same format.
+- is_root_component: A boolean indicating whether this component is at the bottom of our component tree.
+
+---
+
+## Instructions
+
+### Build and Integrate Components
+
+- Build this component and all its subcomponents, and implement their functionalities. Integrate them into the existing application.
+
+- Do not alter the backend of the application. Your task is to focus entirely on the front end code. Use the api documentation in /documentation/API_DOC.md. This document describes the api's endpoints. This is the only reference you should need for understanding how to communicate with the backend. If you come across something you need to be able to do that the backend doesn't currently allow then stop and propose to me what you need and we'll take it from there.
+
+### Guidelines
+
+#### 1. Structure Alignment
+
+- Hierarchy Matching: Ensure the component's structure matches the hierarchical structure defined in the JSON document.
+
+#### 2. Component Implementation
+
+For each component:
+
+- Functionality: Implement the functionality as described in its description.
+- State Management and Styling: Apply the necessary state management and styling.
+- Placement: Place it in the specified location within its parent component.
+- User Interactions: Implement the specified user_interactions.
+
+---
+
+Note that you are picking up where an earlier agent left off in this task. Much of this component's structure has been implemented already. It is up to you to determine what is left to implement and work on that. 
