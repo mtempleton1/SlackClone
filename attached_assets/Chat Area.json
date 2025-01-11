@@ -1,0 +1,823 @@
+{
+    "name": "Chat Area",
+    "description": "Displays all the conversation history of the currently selected channel or direct message. Includes messages, threads, and media shared.",
+    "location": "Central section of the interface, displaying the active channel or conversation.",
+    "sub": [
+      {
+        "name": "Message Display Area",
+        "description": "The main section where messages sent within a channel or direct message are displayed, including text and media.",
+        "location": "Centrally located within the Chat Area parent component.",
+        "user_interactions": [
+          "Scrolls to view message history.",
+          "Clickable links and media."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Thread Viewer",
+        "description": "Interface for viewing and interacting with threads linked to specific messages.",
+        "location": "Pops out as a sidebar or overlay when a thread is accessed.",
+        "user_interactions": [
+          "Opens thread view on message click.",
+          "Scrolls through thread replies."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Message Content Section",
+            "description": "The section within the Message Display Area where individual message content is displayed including text, images, and files.",
+            "location": "Within the Message Display Area, appearing as user scrolls through messages.",
+            "user_interactions": [
+              "Clickable links or images.",
+              "File previews on hover."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Thread Interaction Pane",
+            "description": "Detailed view where users can interact with threads, add new replies, or view existing responses.",
+            "location": "Accessible through the Thread Viewer as a slide-out pane.",
+            "user_interactions": [
+              "Reply to thread using input box.",
+              "Like or react to thread messages."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "Message Bubble",
+                "description": "Encapsulated area for individual messages displayed within the Chat Area, showing text, sender, and time.",
+                "location": "Appears sequentially as part of the Message Content Section.",
+                "user_interactions": [
+                  "Hover highlights message.",
+                  "Reacts to message clicked."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Thread Interaction Panel",
+                "description": "Interface to engage specifically with message threads, allowing users to add replies or review message history.",
+                "location": "Activated as part of a thread interaction via the Thread Interaction Pane.",
+                "user_interactions": [
+                  "Add to thread on text input and send.",
+                  "Scroll through message history."
+                ],
+                "is_root_component": false,
+                "sub": [
+                  {
+                    "name": "Message Text Content",
+                    "description": "Displays the text portion of each message, including styling and links.",
+                    "location": "Inside each Message Bubble within the Message Content Section.",
+                    "user_interactions": [
+                      "Clickable links within message.",
+                      "Expand/collapse longer messages."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Media Attachment Display",
+                    "description": "Area within Message Bubbles showing attached images, files, or videos.",
+                    "location": "Within the Message Bubble, alongside or below text content.",
+                    "user_interactions": [
+                      "Preview media on click.",
+                      "Download files from link."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Thread Reply Input",
+                    "description": "Input box within the Thread Interaction Panel for adding replies to existing threads.",
+                    "location": "At the bottom of the Thread Interaction Panel.",
+                    "user_interactions": [
+                      "Type and send reply message.",
+                      "Attach files to replies."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Pinned Indicator Badge",
+                    "description": "Badge icon representing pinned status on a message within the Highlight Feature for Pinned Items.",
+                    "location": "Overlayed on the message title or corner within the Pinned Item Highlighter.",
+                    "user_interactions": [
+                      "Click to view all pinned items.",
+                      "Detach item from pinned list."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Reaction Pop-up Menu",
+                    "description": "Pop-up menu that expands from the Reaction Icon Display, listing available emoji reactions.",
+                    "location": "Adjacent to the Reaction Icon Display, overlaying message area.",
+                    "user_interactions": [
+                      "Select emoji to react.",
+                      "Menu collapses on selection."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Bookmark Edit Overlay",
+                    "description": "Overlay allowing modification or deletion of bookmarks within the Bookmark Configuration Panel.",
+                    "location": "Part of the Bookmark Configuration Panel.",
+                    "user_interactions": [
+                      "Edit bookmark details.",
+                      "Confirm or cancel changes."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Filter Application Tools",
+                    "description": "Tools within the Advanced Search Toolbar assisting in filtering search results by category or date.",
+                    "location": "Integrated into the Advanced Search Toolbar.",
+                    "user_interactions": [
+                      "Apply filters during search.",
+                      "Remove or adjust filter settings."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  }
+                ]
+              },
+              {
+                "name": "Highlight Feature for Pinned Items",
+                "description": "Emphasizes pinned messages or items within the main chat for better visibility.",
+                "location": "Functional within the Pinned Item Highlighter.",
+                "user_interactions": [
+                  "Item details appear on hover.",
+                  "Access origin via click."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Reaction Icon Display",
+                "description": "Interactive element allowing users to add and view emoji reactions to messages.",
+                "location": "Visible when hovering over a message.",
+                "user_interactions": [
+                  "Reacts added on icon click.",
+                  "Icon view expanded during selection."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Bookmark Configuration Panel",
+                "description": "Options panel allowing users to add, remove, or edit bookmarks.",
+                "location": "Integrated within the Bookmark Management Interface.",
+                "user_interactions": [
+                  "Bookmarks rearranged on user action.",
+                  "Entries modified through interface."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Advanced Search Toolbar",
+                "description": "Toolbar facilitating advanced search queries and applying filters within the Search Modal Overlay.",
+                "location": "Part of the Search Modal Overlay interface.",
+                "user_interactions": [
+                  "Search by message type or user.",
+                  "Apply search filters through toolbar."
+                ],
+                "is_root_component": false,
+                "sub": [
+                  {
+                    "name": "Link Click Interaction",
+                    "description": "Handles interactions when a user clicks on hyperlinks within message text.",
+                    "location": "Embedded within each Message Text Content area.",
+                    "user_interactions": [
+                      "Opens link in a new tab.",
+                      "Displays preview on hover."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Media Preview Overlay",
+                    "description": "Provides a detailed view when users click on media attachments within a message.",
+                    "location": "Activated from the Media Attachment Display.",
+                    "user_interactions": [
+                      "Enlarges media on click.",
+                      "Provides download option."
+                    ],
+                    "is_root_component": false,
+                    "sub": [
+                      {
+                        "name": "URL Preview Card",
+                        "description": "Embedded preview that provides a snippet view of the URL content within the Message Text Content.",
+                        "location": "Appears as part of the Message Text Content when a link is included.",
+                        "user_interactions": [
+                          "Preview expands on hover.",
+                          "Link opens on click."
+                        ],
+                        "is_root_component": true,
+                        "sub": []
+                      },
+                      {
+                        "name": "Media Viewer Modal",
+                        "description": "Modal window offering a detailed view of media and providing tools for interaction like zooming or saving.",
+                        "location": "Overlay element activated via the Media Preview Overlay.",
+                        "user_interactions": [
+                          "Media enlarges or shrinks with zoom.",
+                          "Download media using button."
+                        ],
+                        "is_root_component": false,
+                        "sub": [
+                          {
+                            "name": "Link Hover Preview",
+                            "description": "Hover effect that provides a preview of the URL content within the Message Text Content.",
+                            "location": "Triggers when hovering over URLs in the URL Preview Card.",
+                            "user_interactions": [
+                              "Preview details show on hover.",
+                              "Link activated on click."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Media Interaction Tools",
+                            "description": "Provides tools for interacting with media inside the Media Viewer Modal, including zoom and share.",
+                            "location": "Accessible within the Media Viewer Modal.",
+                            "user_interactions": [
+                              "Zoom media in and out.",
+                              "Share or download options."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Reply Read Confirmation",
+                            "description": "Notifies users that their thread reply has been read by another participant.",
+                            "location": "Functions within the Thread Reply Indicator.",
+                            "user_interactions": [
+                              "Indicates read confirmation visually."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Pin Dropdown Options",
+                            "description": "Dropdown providing specific options to manage pinned items, appearing within the Pinning Options Dropdown.",
+                            "location": "Located in the Pinning Options Dropdown.",
+                            "user_interactions": [
+                              "Manage pin state for items.",
+                              "View additional item options."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Tally Breakdown Tooltip",
+                            "description": "Tooltip providing details on individual reaction counts when users hover over the Reaction Tally Display.",
+                            "location": "Part of the Reaction Tally Display component.",
+                            "user_interactions": [
+                              "Tooltip displayed on hover.",
+                              "Shows detailed user reaction data."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Bookmark Content Editor",
+                            "description": "Editor feature that allows in-depth changes to bookmark details and organization.",
+                            "location": "Integrated within the Bookmark Detail Editor.",
+                            "user_interactions": [
+                              "Edit bookmark fields.",
+                              "Save changes with confirmation."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Filter Category Chips",
+                            "description": "Chips representing active filter categories in the search, part of Active Filter Display.",
+                            "location": "Visible within the Active Filter Display section.",
+                            "user_interactions": [
+                              "Click to remove category filter.",
+                              "Displays category on hover."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Thread Reply Indicator",
+                        "description": "Acknowledges receipt of a reply within a thread, showing successful delivery.",
+                        "location": "Displayed in the Reply Submission Confirmation section.",
+                        "user_interactions": [
+                          "Indicator presents on reply send."
+                        ],
+                        "is_root_component": true,
+                        "sub": []
+                      },
+                      {
+                        "name": "Pinning Options Dropdown",
+                        "description": "Dropdown for managing pinned items, allowing toggling or listing within the Pinned Item Interaction Overlay.",
+                        "location": "Part of the Pinned Item Interaction Overlay.",
+                        "user_interactions": [
+                          "Display list of pinned items.",
+                          "Unpin item from dropdown."
+                        ],
+                        "is_root_component": true,
+                        "sub": []
+                      },
+                      {
+                        "name": "Reaction Tally Display",
+                        "description": "Shows individual counts of each reaction type added to a message.",
+                        "location": "Located adjacent to the Emoji Reaction Display Counter.",
+                        "user_interactions": [
+                          "Count increases with new reactions.",
+                          "Hover shows user reaction list."
+                        ],
+                        "is_root_component": false,
+                        "sub": [
+                          {
+                            "name": "Link Interaction Preview",
+                            "description": "Interactive preview allowing users to see content snippet when hovering over a URL.",
+                            "location": "Within the URL Preview Card of the Message Text Content.",
+                            "user_interactions": [
+                              "Displays snippet on hover.",
+                              "Navigates to URL on click."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Interactive Media Tools",
+                            "description": "Set of tools provided to interact with media, including zoom, rotate, or full-screen features.",
+                            "location": "Embedded within the Media Interaction Tools area.",
+                            "user_interactions": [
+                              "Tools accessed on media click.",
+                              "Adjust media viewing settings."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Read Confirmation Notice",
+                            "description": "Notification or visual cue indicating a reply has been read by thread participants.",
+                            "location": "Appears near the Reply Read Confirmation within threads.",
+                            "user_interactions": [
+                              "Alert displayed when reply is read."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Pin Management Dropdown",
+                            "description": "Dropdown management tool for pinned items, providing options such as pinning, unpinning or reordering.",
+                            "location": "Located within the Pin Dropdown Options section.",
+                            "user_interactions": [
+                              "Modify pin status or order.",
+                              "Access dropdown on icon click."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Emoji Reaction Stats",
+                            "description": "Summary view of aggregated emoji reactions for individual messages, accessible via Reaction Tally Display.",
+                            "location": "Associated with Reaction Tally Display, adjacent to messages.",
+                            "user_interactions": [
+                              "Reveal stats on hover.",
+                              "Show reaction details."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Bookmark Attribute Editor",
+                            "description": "Toolset within Bookmark Content Editor enabling modification of individual bookmark attributes like title, URL, and tags.",
+                            "location": "Available within the Bookmark Content Editor.",
+                            "user_interactions": [
+                              "Edit attributes via fields.",
+                              "Save on action confirmation."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          },
+                          {
+                            "name": "Filter Chip Controls",
+                            "description": "UI elements for controlling active search filters represented as chips, part of Filter Category Chips.",
+                            "location": "Exists within Filter Category Chips.",
+                            "user_interactions": [
+                              "Remove filter by clicking chip.",
+                              "Hover reveals chip functions."
+                            ],
+                            "is_root_component": true,
+                            "sub": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Bookmark Detail Editor",
+                        "description": "Editor allowing users to modify bookmark details, including name and URL.",
+                        "location": "Within the Bookmark Edit Controls.",
+                        "user_interactions": [
+                          "Update bookmark attributes.",
+                          "Save new settings with button."
+                        ],
+                        "is_root_component": true,
+                        "sub": []
+                      },
+                      {
+                        "name": "Active Filter Display",
+                        "description": "Visual representation of currently active filters in search, shown in the Search Filter Chip.",
+                        "location": "Part of the Filter Application Tools.",
+                        "user_interactions": [
+                          "Interacts to remove active filter.",
+                          "Hover shows filter details."
+                        ],
+                        "is_root_component": true,
+                        "sub": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Reply Submission Confirmation",
+                    "description": "Feedback mechanism confirming message delivery after user adds a reply in the Thread Reply Input.",
+                    "location": "Operational within the Thread Reply Input.",
+                    "user_interactions": [
+                      "Confirmation displayed on reply send."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Pinned Item Interaction Overlay",
+                    "description": "Overlay facilitating interactions with pinned items, allowing unpinning or direct navigation.",
+                    "location": "Linked to the Pinned Indicator Badge.",
+                    "user_interactions": [
+                      "Unpin item on button press.",
+                      "Navigate directly to message."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Emoji Reaction Display Counter",
+                    "description": "Counter showing the total number of reactions each message has received.",
+                    "location": "Next to the Reaction Icon Display within the Reaction Pop-up Menu.",
+                    "user_interactions": [
+                      "Incremented on new reaction.",
+                      "Tooltip shows detailed breakdown."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Bookmark Edit Controls",
+                    "description": "Controls for editing bookmark details within the Bookmark Edit Overlay.",
+                    "location": "Part of the Bookmark Edit Overlay.",
+                    "user_interactions": [
+                      "Edit fields for title or notes.",
+                      "Save or discard changes."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  },
+                  {
+                    "name": "Search Filter Chip",
+                    "description": "Interactive elements representing active filters within the Filter Application Tools.",
+                    "location": "Appears in the Advanced Search Toolbar.",
+                    "user_interactions": [
+                      "Filter visible when applied.",
+                      "Removes filter on click."
+                    ],
+                    "is_root_component": true,
+                    "sub": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Pinned Item Highlighter",
+            "description": "Highlights pinned items for easy visibility within the Pinned Items Panel.",
+            "location": "Within the Pinned Items Panel, visually distinguishing highlighted items.",
+            "user_interactions": [
+              "View full message on click.",
+              "Unpin from quick menu."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Emoji Reaction Selection",
+            "description": "Provides tooltips and selection options for emoji reactions when hovering over messages.",
+            "location": "Part of the Emoji Reaction Toolbar.",
+            "user_interactions": [
+              "Tooltip appears on hover.",
+              "Reactions added on emoji click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Bookmark Management Interface",
+            "description": "Allows users to manage bookmarks from the Bookmark Sidebar, including adding, removing, or organizing bookmarks.",
+            "location": "Accessed within the Bookmark Sidebar.",
+            "user_interactions": [
+              "Add bookmark to sidebar.",
+              "Remove bookmark from list."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "URL Content Tooltip",
+                "description": "Tooltip showing a brief description or image of a linked URL when hovered over.",
+                "location": "Above or beside the link in the Message Text Content.",
+                "user_interactions": [
+                  "Tooltip appears on hover.",
+                  "Facilitates link understanding."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Media Zoom Tool",
+                "description": "Tool within the Interactive Media Tools that allows users to zoom into media for a closer view.",
+                "location": "Within the Interactive Media Tools of the Media Viewer Modal.",
+                "user_interactions": [
+                  "Click or slide to zoom media.",
+                  "Media refocuses on movement."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Read Receipt Indicator",
+                "description": "Icon or text showing that a participant in the thread has read the message.",
+                "location": "Displayed within the Read Confirmation Notice.",
+                "user_interactions": [
+                  "Read receipt updates on opening."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Pin Action Menu",
+                "description": "Menu providing action buttons for managing pin status, accessible from Pin Management Dropdown.",
+                "location": "Located within the Pin Management Dropdown.",
+                "user_interactions": [
+                  "Buttons activate pin/unpin.",
+                  "Reorder pins within menu."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Reaction Distribution Tooltip",
+                "description": "Shows the distribution of reactions when users hover over the Emoji Reaction Stats.",
+                "location": "Appears near the Reaction Stats section.",
+                "user_interactions": [
+                  "Shows reaction details on hover."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Bookmark Field Editor",
+                "description": "Input fields enabling changes to bookmark properties like name or tag.",
+                "location": "Part of the Bookmark Attribute Editor.",
+                "user_interactions": [
+                  "Edit fields on user action.",
+                  "Updates on saving changes."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Filter Management Chips",
+                "description": "Chips representing active filters with management capabilities, embedded in the Filter Chip Controls.",
+                "location": "Within the Filter Chip Controls section.",
+                "user_interactions": [
+                  "Remove filter by clicking.",
+                  "Details shown on hover."
+                ],
+                "is_root_component": true,
+                "sub": []
+              }
+            ]
+          },
+          {
+            "name": "Search Modal Overlay",
+            "description": "Full screen or modal overlay facilitating detailed searches within the chat.",
+            "location": "Part of the Search Interface, displaying search results.",
+            "user_interactions": [
+              "Narrow results using filters.",
+              "Navigate directly to selected result."
+            ],
+            "is_root_component": false,
+            "sub": [
+              {
+                "name": "URL Summary Card",
+                "description": "Card displayed when a URL is included in a message, showing a brief preview of the link content.",
+                "location": "Embedded within the Message Text Content area.",
+                "user_interactions": [
+                  "Card expands on hover.",
+                  "Navigates to link on click."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Full Media Viewer",
+                "description": "Provides an interface for full viewing of media with options like full-screen and downloadable buttons.",
+                "location": "Accessible through the Interactive Media Tools section.",
+                "user_interactions": [
+                  "Switches media to full-screen on click.",
+                  "Media downloadable via button press."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Reply Read Notification",
+                "description": "Notification that informs users when their reply has been read in threads.",
+                "location": "Located in the Read Confirmation Notice section.",
+                "user_interactions": [
+                  "Notification appears post-read confirmation."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Pin Options Menu",
+                "description": "Menu to manage pinned items, offering controls like pinning or unpinning and item organization.",
+                "location": "Exists within the Pin Action Menu.",
+                "user_interactions": [
+                  "Select pin options from menu.",
+                  "Reorder or unpin from menu list."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Emoji Reaction Breakdown Tooltip",
+                "description": "Detailed breakdown tooltip providing specifics on who reacted and what emoji reaction was used.",
+                "location": "Related to the Reaction Distribution Tooltip.",
+                "user_interactions": [
+                  "Tooltip with details shows on hover."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Bookmark Attribute Field",
+                "description": "Fields for editing the attributes of bookmarks, such as name or URL.",
+                "location": "Part of the Bookmark Field Editor.",
+                "user_interactions": [
+                  "Field changes are saved on confirmation.",
+                  "Editable via input fields."
+                ],
+                "is_root_component": true,
+                "sub": []
+              },
+              {
+                "name": "Search Filter Chip Management",
+                "description": "Management tools for handling search filter chips, facilitating operations like filter change or removal.",
+                "location": "Within Filter Management Chips.",
+                "user_interactions": [
+                  "Activate or deactivate filters via chips.",
+                  "Remove chips on action."
+                ],
+                "is_root_component": true,
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Pinned Items Panel",
+        "description": "Displays messages or items that have been pinned for quick access.",
+        "location": "Accessed through a toggle within the Chat Area.",
+        "user_interactions": [
+          "Shows pinned content on activation.",
+          "Navigates to the original message on click."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Emoji Reaction Toolbar",
+        "description": "Toolbar allowing users to add emoji reactions to messages for a quick response.",
+        "location": "Adjacent to each message within the Chat Area.",
+        "user_interactions": [
+          "Opens emoji selection on click.",
+          "Adds reaction to message."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Bookmark Sidebar",
+        "description": "Sidebar showing all bookmarks created by the user for quick reference.",
+        "location": "Located alongside the main Chat Area on user command.",
+        "user_interactions": [
+          "Displays bookmarked items.",
+          "Provides navigation to bookmarked messages."
+        ],
+        "is_root_component": true,
+        "sub": []
+      },
+      {
+        "name": "Search Interface",
+        "description": "Interface to search for messages, files, or users within the Chat Area.",
+        "location": "Accessible from a search bar in the Chat Area.",
+        "user_interactions": [
+          "Initiates search on input.",
+          "Filters results by type."
+        ],
+        "is_root_component": false,
+        "sub": [
+          {
+            "name": "Snippet View Thumbnail",
+            "description": "Thumbnail view that gives a visual snippet of the URL content when hovered over a link.",
+            "location": "Part of the URL Content Tooltip within the URL Summary Card.",
+            "user_interactions": [
+              "Displays thumbnail on hover.",
+              "Thumbnail redirects on click."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Zoom Interaction Buttons",
+            "description": "Buttons enabling users to zoom in and out within the Full Media Viewer.",
+            "location": "Within the Full Media Viewer interface.",
+            "user_interactions": [
+              "Press button to zoom in.",
+              "Hold for continuous zoom action."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Notification Display Element",
+            "description": "Element indicating read statuses across conversation replies and threads.",
+            "location": "Displayed in the Reply Read Notification section.",
+            "user_interactions": [
+              "Updates on read action.",
+              "Visual confirmation of read messages."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Pin Interactions Manager",
+            "description": "Manager allowing users to pin or unpin messages and manage their order visually.",
+            "location": "Accessible within the Pin Options Menu.",
+            "user_interactions": [
+              "Pin options selected via button.",
+              "Messages reordered by drag and drop."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Reaction Summary Indicator",
+            "description": "Indicator providing a summary count of how many and what type of emoji reactions a message has received.",
+            "location": "Adjacent to the Emoji Reaction Breakdown Tooltip.",
+            "user_interactions": [
+              "View summary on hover.",
+              "Details displayed by category."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Bookmark Edit Field",
+            "description": "Fields enabling users to add or adjust information related to their bookmarks.",
+            "location": "Located within the Bookmark Attribute Field.",
+            "user_interactions": [
+              "Enter and modify field content.",
+              "Save updates to bookmarks."
+            ],
+            "is_root_component": true,
+            "sub": []
+          },
+          {
+            "name": "Filter Operation Chips",
+            "description": "Chips allowing active management of search filters, handling operations like activation, deactivation, or deletion.",
+            "location": "Related to the Search Filter Chip Management section.",
+            "user_interactions": [
+              "Activate or deactivate chips.",
+              "Delete chips with click action."
+            ],
+            "is_root_component": true,
+            "sub": []
+          }
+        ]
+      }
+    ]
+  }
