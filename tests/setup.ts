@@ -18,6 +18,7 @@ beforeEach(async () => {
     await db.delete(channels);
     await db.delete(userWorkspaces);
     await db.delete(workspaces);
+    await db.delete(organizations);
     await db.delete(users);
     await db.delete(emojis);
   } catch (error) {

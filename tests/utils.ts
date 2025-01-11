@@ -32,8 +32,19 @@ export async function createTestUser(overrides: Partial<User> = {}): Promise<Use
 
 export async function createTestOrganization(overrides: Partial<Organization> = {}): Promise<Organization> {
   const timestamp = Date.now();
-  const name = `test-org-${timestamp}`;
+  const name = overrides.name || `test-org-${timestamp}`;
 
+  // Try to find existing organization first
+  const [existingOrg] = await db.select()
+    .from(organizations)
+    .where(eq(organizations.name, name))
+    .limit(1);
+
+  if (existingOrg) {
+    return existingOrg;
+  }
+
+  // Create new if not found
   const [organization] = await db.insert(organizations).values({
     name,
     description: `Test Organization ${timestamp}`,
