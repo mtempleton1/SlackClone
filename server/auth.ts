@@ -5,7 +5,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { users, organizations, workspaces, userWorkspaces, type User as DbUser } from "@db/schema";
+import { users, organizations, workspaces, userWorkspaces, channels, userChannels, type User as DbUser } from "@db/schema";
 import { db } from "@db";
 import { eq } from "drizzle-orm";
 
@@ -123,7 +123,7 @@ export function setupAuth(app: Express) {
       // Hash the password
       const hashedPassword = await crypto.hash(password);
 
-      // Create the new user, organization, and workspace in a transaction
+      // Create the new user, organization, workspace, and general channel in a transaction
       const result = await db.transaction(async (tx) => {
         // Create user
         const [newUser] = await tx
@@ -155,6 +155,16 @@ export function setupAuth(app: Express) {
             })
             .returning();
 
+          // Create general channel
+          const [generalChannel] = await tx
+            .insert(channels)
+            .values({
+              name: 'general',
+              workspaceId: newWorkspace.id,
+              topic: 'General discussions'
+            })
+            .returning();
+
           // Add user to workspace
           await tx
             .insert(userWorkspaces)
@@ -163,7 +173,15 @@ export function setupAuth(app: Express) {
               workspaceId: newWorkspace.id,
             });
 
-          return { newUser, organization: newOrg, workspace: newWorkspace };
+          // Add user to general channel
+          await tx
+            .insert(userChannels)
+            .values({
+              userId: newUser.id,
+              channelId: generalChannel.id,
+            });
+
+          return { newUser, organization: newOrg, workspace: newWorkspace, channel: generalChannel };
         }
 
         return { newUser };
