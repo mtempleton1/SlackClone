@@ -3,7 +3,13 @@ import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 import { WorkspaceNavigation } from "@/components/workspace/WorkspaceNavigation";
 import { ChannelList } from "@/components/workspace/ChannelList";
-import { MessageArea } from "@/components/workspace/MessageArea";
+import { ChatArea } from "@/components/chat/ChatArea";
+
+interface Workspace {
+  id: string;
+  name: string;
+  organizationId: number;
+}
 
 export default function ChatPage() {
   const [location] = useLocation();
@@ -11,7 +17,7 @@ export default function ChatPage() {
     ? location.split("/workspaces/")[1]
     : "default";
 
-  const { data: workspace, isLoading } = useQuery({
+  const { data: workspace, isLoading } = useQuery<Workspace>({
     queryKey: [`/api/workspaces/${workspaceId}`],
     enabled: workspaceId !== "default",
   });
@@ -39,7 +45,7 @@ export default function ChatPage() {
             </h1>
           </div>
           <div className="flex-1">
-            <MessageArea />
+            <ChatArea />
           </div>
         </div>
       </div>
