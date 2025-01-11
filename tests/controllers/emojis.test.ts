@@ -6,15 +6,6 @@ import { createTestUser } from '../utils';
 import { eq } from 'drizzle-orm';
 
 describe('Emojis Controller', () => {
-  // Clear database before each test
-  beforeEach(async () => {
-    await db.delete(messageReactions);
-    await db.delete(messages);
-    await db.delete(channels);
-    await db.delete(workspaces);
-    await db.delete(emojis);
-  });
-
   describe('GET /api/emojis', () => {
     it('should return all emojis when authenticated', async () => {
       const agent = request.agent(app);
@@ -134,12 +125,11 @@ describe('Emojis Controller', () => {
         .values({ code: ':to_delete:' })
         .returning();
 
-      // Create a workspace and channel structure
+      // Create a workspace first
       const [workspace] = await db.insert(workspaces)
         .values({
           name: 'Test Workspace',
-          description: 'Test workspace description',
-          organizationId: 1 // Adding required organizationId
+          description: 'Test workspace description'
         })
         .returning();
 
@@ -231,8 +221,7 @@ describe('Emojis Controller', () => {
       const [workspace] = await db.insert(workspaces)
         .values({
           name: 'Test Workspace',
-          description: 'Test workspace description',
-          organizationId: 1 // Adding required organizationId
+          description: 'Test workspace description'
         })
         .returning();
 
