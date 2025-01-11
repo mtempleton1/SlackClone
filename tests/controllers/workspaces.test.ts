@@ -1,15 +1,32 @@
 import request from 'supertest';
 import { app } from '../test-app';
 import { db } from '@db';
-import { workspaces, userWorkspaces } from '@db/schema';
+import { workspaces, userWorkspaces, channels, messages, organizations } from '@db/schema';
 import { createTestUser } from '../utils';
 import { eq } from 'drizzle-orm';
 
 describe('Workspaces Controller', () => {
+  // Clear database before each test
+  beforeEach(async () => {
+    await db.delete(messages);
+    await db.delete(channels);
+    await db.delete(userWorkspaces);
+    await db.delete(workspaces);
+    await db.delete(organizations);
+  });
+
   describe('POST /api/workspaces', () => {
     it('should create a new workspace when authenticated', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+
+      // Create test organization first
+      const [organization] = await db.insert(organizations)
+        .values({
+          name: 'Test Organization',
+          ownerId: user.id
+        })
+        .returning();
 
       // Login the user
       await agent
@@ -21,7 +38,8 @@ describe('Workspaces Controller', () => {
 
       const workspaceData = {
         name: 'Test Workspace',
-        description: 'A test workspace'
+        description: 'A test workspace',
+        organizationId: organization.id
       };
 
       const response = await agent
@@ -68,6 +86,7 @@ describe('Workspaces Controller', () => {
     it('should return user workspaces when authenticated', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
 
       // Login the user
       await agent
@@ -82,7 +101,8 @@ describe('Workspaces Controller', () => {
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       const response = await agent.get('/api/workspaces');
@@ -103,6 +123,7 @@ describe('Workspaces Controller', () => {
     it('should return workspace by id when authenticated', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
 
       // Login the user
       await agent
@@ -117,7 +138,8 @@ describe('Workspaces Controller', () => {
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       const response = await agent.get(`/api/workspaces/${workspace.body.id}`);
@@ -130,6 +152,7 @@ describe('Workspaces Controller', () => {
     it('should return 404 for non-existent workspace', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
 
       // Login the user
       await agent
@@ -148,6 +171,7 @@ describe('Workspaces Controller', () => {
     it('should update workspace when authenticated and user is member', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
 
       // Login the user
       await agent
@@ -162,7 +186,8 @@ describe('Workspaces Controller', () => {
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       const updateData = {
@@ -182,6 +207,7 @@ describe('Workspaces Controller', () => {
     it('should return 404 for non-existent workspace', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
 
       // Login the user
       await agent
@@ -206,6 +232,7 @@ describe('Workspaces Controller', () => {
     it('should delete workspace when authenticated and user is member', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
 
       // Login the user
       await agent
@@ -220,7 +247,8 @@ describe('Workspaces Controller', () => {
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       const response = await agent.delete(`/api/workspaces/${workspace.body.id}`);
@@ -239,6 +267,7 @@ describe('Workspaces Controller', () => {
     it('should return 404 for non-existent workspace', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
 
       // Login the user
       await agent
@@ -257,6 +286,8 @@ describe('Workspaces Controller', () => {
     it('should return workspace users when authenticated', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
+
 
       // Login the user
       await agent
@@ -271,7 +302,8 @@ describe('Workspaces Controller', () => {
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       const response = await agent.get(`/api/workspaces/${workspace.body.id}/users`);
@@ -288,6 +320,7 @@ describe('Workspaces Controller', () => {
       const agent = request.agent(app);
       const user1 = await createTestUser();
       const user2 = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user1.id }).returning();
 
       // Login as user1
       await agent
@@ -302,7 +335,8 @@ describe('Workspaces Controller', () => {
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       const response = await agent
@@ -327,6 +361,7 @@ describe('Workspaces Controller', () => {
       const agent = request.agent(app);
       const user1 = await createTestUser();
       const user2 = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user1.id }).returning();
 
       // Login as user1
       await agent
@@ -341,7 +376,8 @@ describe('Workspaces Controller', () => {
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       // Add user2 to workspace
@@ -368,6 +404,7 @@ describe('Workspaces Controller', () => {
     it('should return workspace channels when authenticated', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
+      const [organization] = await db.insert(organizations).values({ name: 'Test Org', ownerId: user.id }).returning();
 
       // Login the user
       await agent
@@ -382,7 +419,8 @@ describe('Workspaces Controller', () => {
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.id
         });
 
       const response = await agent.get(`/api/workspaces/${workspace.body.id}/channels`);
