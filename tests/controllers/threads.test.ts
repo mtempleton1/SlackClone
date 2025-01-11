@@ -163,6 +163,57 @@ describe('Threads Controller', () => {
           password: 'password123'
         });
 
+    it('should return thread with only parent message when no child messages exist', async () => {
+      const agent = request.agent(app);
+      const user = await createTestUser();
+
+      // Login the user
+      await agent
+        .post('/api/login')
+        .send({
+          email: user.email,
+          password: 'password123'
+        });
+
+      // Create workspace and channel
+      const workspace = await agent
+        .post('/api/workspaces')
+        .send({
+          name: 'Test Workspace',
+          description: 'A test workspace'
+        });
+
+      const channel = await agent
+        .post('/api/channels')
+        .send({
+          workspaceId: workspace.body.id,
+          name: 'general',
+          topic: 'General discussion'
+        });
+
+      // Create parent message
+      const [parentMessage] = await db.insert(messages)
+        .values({
+          content: 'Parent message',
+          userId: user.id,
+          channelId: channel.body.id
+        })
+        .returning();
+
+      // Create thread without any messages
+      const [thread] = await db.insert(threads)
+        .values({ parentMessageId: parentMessage.id })
+        .returning();
+
+      const response = await agent.get(`/api/threads/${thread.id}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.id).toBe(thread.id);
+      expect(response.body.messages).toHaveLength(0);
+      expect(response.body.parentMessage.id).toBe(parentMessage.id);
+    });
+
+
       const response = await agent.get('/api/threads/99999');
       expect(response.status).toBe(404);
     });
