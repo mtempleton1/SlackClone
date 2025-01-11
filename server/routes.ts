@@ -10,10 +10,17 @@ import * as channelsController from "./controllers/channels";
 import * as messagesController from "./controllers/messages";
 import * as emojisController from "./controllers/emojis";
 import * as filesController from "./controllers/files";
+import * as organizationsController from "./controllers/organizations";
 
 export function registerRoutes(app: Express): Server {
   // Auth routes
   setupAuth(app);
+
+  // Organizations endpoints
+  app.post("/api/organizations", isAuthenticated, organizationsController.createOrganization);
+  app.get("/api/organizations", isAuthenticated, organizationsController.getOrganizations);
+  app.get("/api/organizations/:organizationId", isAuthenticated, organizationsController.getOrganization);
+  app.put("/api/organizations/:organizationId", isAuthenticated, organizationsController.updateOrganization);
 
   // Users endpoints
   app.post("/api/users", usersController.createUser);
