@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "@db";
 import { threads, threadMessages, messages, users } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export async function createThread(req: Request, res: Response) {
   try {
@@ -32,7 +32,7 @@ export async function getThread(req: Request, res: Response) {
   try {
     const messageId = parseInt(req.params.threadId);
 
-    // First get the parent message
+    // Get the parent message with user details
     const parentMessage = await db.query.messages.findFirst({
       where: eq(messages.id, messageId),
       with: {
@@ -46,7 +46,7 @@ export async function getThread(req: Request, res: Response) {
 
     // Look for an existing thread or create one
     let thread = await db.query.threads.findFirst({
-      where: eq(threads.parentMessageId, messageId),
+      where: eq(threads.parentMessageId, messageId)
     });
 
     if (!thread) {
@@ -58,14 +58,15 @@ export async function getThread(req: Request, res: Response) {
 
     // Format the response
     const response = {
-      id: thread.id,
+      id: thread.id.toString(),
       parentMessage: {
         id: parentMessage.id.toString(),
         content: parentMessage.content,
         userId: parentMessage.userId,
-        timestamp: parentMessage.timestamp.toISOString()
+        timestamp: parentMessage.timestamp?.toISOString() || new Date().toISOString(),
+        attachments: [] // Add attachments if needed
       },
-      createdAt: thread.createdAt.toISOString()
+      createdAt: thread.createdAt?.toISOString() || new Date().toISOString()
     };
 
     res.json(response);
@@ -101,7 +102,7 @@ export async function createThreadMessage(req: Request, res: Response) {
       id: message.id.toString(),
       content: message.content,
       userId: message.userId,
-      timestamp: message.timestamp.toISOString()
+      timestamp: message.timestamp?.toISOString() || new Date().toISOString()
     });
   } catch (error) {
     console.error('Error creating thread message:', error);
@@ -113,19 +114,19 @@ export async function getThreadMessages(req: Request, res: Response) {
   try {
     const threadId = parseInt(req.params.threadId);
 
-    const messages = await db.query.threadMessages.findMany({
+    const threadMessages = await db.query.threadMessages.findMany({
       where: eq(threadMessages.threadId, threadId),
       with: {
         user: true
       },
-      orderBy: threadMessages.timestamp
+      orderBy: [asc(threadMessages.timestamp)]
     });
 
-    const formattedMessages = messages.map(message => ({
+    const formattedMessages = threadMessages.map(message => ({
       id: message.id.toString(),
       content: message.content,
       userId: message.userId,
-      timestamp: message.timestamp.toISOString()
+      timestamp: message.timestamp?.toISOString() || new Date().toISOString()
     }));
 
     res.json(formattedMessages);
