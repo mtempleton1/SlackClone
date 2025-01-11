@@ -1,31 +1,44 @@
 import { Request, Response } from "express";
 import { db } from "@db";
-import { messages, messageReactions, threads, threadMessages, emojis, users } from "@db/schema";
-import { and, eq, asc } from "drizzle-orm";
+import { messages, messageReactions, emojis, users } from "@db/schema";
+import { and, eq, asc, isNull } from "drizzle-orm";
 
 export async function createMessage(req: Request, res: Response) {
   try {
-    const { channelId, content } = req.body;
+    const { channelId, content, parentId } = req.body;
 
     // Validate required fields
     if (!channelId || channelId <= 0 || !content) {
       return res.status(400).json({ error: "Missing or invalid required fields" });
     }
 
+    // If parentId is provided, verify parent message exists
+    if (parentId) {
+      const [parentMessage] = await db.select()
+        .from(messages)
+        .where(eq(messages.id, parentId))
+        .limit(1);
+
+      if (!parentMessage) {
+        return res.status(404).json({ error: "Parent message not found" });
+      }
+    }
+
     const [message] = await db.insert(messages)
       .values({
         channelId: Number(channelId),
         content,
-        userId: req.user!.id
+        userId: req.user!.id,
+        parentId: parentId ? Number(parentId) : null
       })
       .returning();
 
-    // Return all fields including channelId
     res.status(201).json({
       id: message.id,
       content: message.content,
       userId: message.userId,
       channelId: message.channelId,
+      parentId: message.parentId,
       timestamp: message.timestamp?.toISOString() || new Date().toISOString()
     });
   } catch (error) {
@@ -42,26 +55,30 @@ export async function getChannelMessages(req: Request, res: Response) {
       return res.status(400).json({ error: "Invalid channel ID" });
     }
 
-    // Query messages with user details
+    // Query only top-level messages (not thread replies)
     const channelMessages = await db.select({
       id: messages.id,
       content: messages.content,
       userId: messages.userId,
       channelId: messages.channelId,
+      parentId: messages.parentId,
       timestamp: messages.timestamp,
       user: users
     })
     .from(messages)
     .leftJoin(users, eq(messages.userId, users.id))
-    .where(eq(messages.channelId, channelId))
+    .where(and(
+      eq(messages.channelId, channelId),
+      isNull(messages.parentId)  // Only get top-level messages
+    ))
     .orderBy(asc(messages.id));
 
-    // Format the response
     const formattedMessages = channelMessages.map(msg => ({
       id: msg.id,
       content: msg.content,
       userId: msg.userId,
       channelId: msg.channelId,
+      parentId: msg.parentId,
       timestamp: msg.timestamp?.toISOString() || new Date().toISOString(),
       user: msg.user
     }));
@@ -97,7 +114,6 @@ export async function updateMessage(req: Request, res: Response) {
     const messageId = parseInt(req.params.messageId);
     const { content } = req.body;
 
-    // First check if message exists and user is author
     const [message] = await db.select()
       .from(messages)
       .where(eq(messages.id, messageId))
@@ -126,7 +142,6 @@ export async function deleteMessage(req: Request, res: Response) {
   try {
     const messageId = parseInt(req.params.messageId);
 
-    // First check if message exists and user is author
     const [message] = await db.select()
       .from(messages)
       .where(eq(messages.id, messageId))
@@ -144,19 +159,13 @@ export async function deleteMessage(req: Request, res: Response) {
     await db.delete(messageReactions)
       .where(eq(messageReactions.messageId, messageId));
 
-    // Delete thread messages if this is a parent message
-    const thread = await db.query.threads.findFirst({
-      where: eq(threads.parentMessageId, messageId)
-    });
-
-    if (thread) {
-      await db.delete(threadMessages)
-        .where(eq(threadMessages.threadId, thread.id));
-      await db.delete(threads)
-        .where(eq(threads.id, thread.id));
+    // Delete thread messages (replies) if this is a parent message
+    if (!message.parentId) {
+      await db.delete(messages)
+        .where(eq(messages.parentId, messageId));
     }
 
-    // Delete the message
+    // Delete the message itself
     await db.delete(messages)
       .where(eq(messages.id, messageId));
 
@@ -234,5 +243,66 @@ export async function removeMessageReaction(req: Request, res: Response) {
     res.json({ message: "Reaction removed successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to remove reaction" });
+  }
+}
+
+// New thread-related functions that work with parentId
+export async function getThreadMessages(req: Request, res: Response) {
+  try {
+    const messageId = parseInt(req.params.messageId);
+
+    // Get the parent message and all its replies
+    const threadMessages = await db.select({
+      id: messages.id,
+      content: messages.content,
+      userId: messages.userId,
+      channelId: messages.channelId,
+      parentId: messages.parentId,
+      timestamp: messages.timestamp,
+      user: users
+    })
+    .from(messages)
+    .leftJoin(users, eq(messages.userId, users.id))
+    .where(and(
+      eq(messages.parentId, messageId)
+    ))
+    .orderBy(asc(messages.timestamp));
+
+    res.json(threadMessages);
+  } catch (error) {
+    console.error('Error fetching thread messages:', error);
+    res.status(500).json({ error: "Failed to fetch thread messages" });
+  }
+}
+
+export async function createThreadMessage(req: Request, res: Response) {
+  try {
+    const parentId = parseInt(req.params.messageId);
+    const { content } = req.body;
+
+    // Verify parent message exists
+    const [parentMessage] = await db.select()
+      .from(messages)
+      .where(eq(messages.id, parentId))
+      .limit(1);
+
+    if (!parentMessage) {
+      return res.status(404).json({ error: "Parent message not found" });
+    }
+
+    // Create the thread message
+    const [threadMessage] = await db.insert(messages)
+      .values({
+        content,
+        userId: req.user!.id,
+        channelId: parentMessage.channelId,
+        parentId
+      })
+      .returning();
+
+    res.status(201).json(threadMessage);
+  } catch (error) {
+    console.error('Error creating thread message:', error);
+    res.status(500).json({ error: "Failed to create thread message" });
   }
 }
