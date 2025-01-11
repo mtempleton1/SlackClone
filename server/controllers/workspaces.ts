@@ -6,10 +6,14 @@ import "../types";
 
 export async function createWorkspace(req: Request, res: Response) {
   try {
-    const { name, description } = req.body;
+    const { name, description, organizationId } = req.body;
+
+    if (!organizationId) {
+      return res.status(400).json({ error: "organizationId is required" });
+    }
 
     const [workspace] = await db.insert(workspaces)
-      .values({ name, description })
+      .values({ name, description, organizationId })
       .returning();
 
     // Add creator as workspace member

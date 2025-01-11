@@ -9,8 +9,10 @@ describe('Users Controller', () => {
   describe('POST /api/users', () => {
     it('should create a new user', async () => {
       const email = generateRandomEmail();
+      const timestamp = Date.now();
       const userData = {
         email,
+        username: `user-${timestamp}`,
         displayName: 'New User',
         password: 'password123'
       };
@@ -23,6 +25,7 @@ describe('Users Controller', () => {
       expect(response.body).toHaveProperty('id');
       expect(response.body.email).toBe(email);
       expect(response.body.displayName).toBe('New User');
+      expect(response.body.username).toBe(userData.username);
       expect(response.body).not.toHaveProperty('password');
 
       // Verify user was created in database
@@ -42,6 +45,7 @@ describe('Users Controller', () => {
         .post('/api/users')
         .send({
           email: existingUser.email,
+          username: `user-${Date.now()}`,
           displayName: 'Another User',
           password: 'password123'
         });

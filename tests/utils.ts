@@ -1,8 +1,8 @@
 import { db } from '@db';
-import { users } from '@db/schema';
+import { users, organizations } from '@db/schema';
 import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
-import type { User } from '@db/schema';
+import type { User, Organization } from '@db/schema';
 
 const scryptAsync = promisify(scrypt);
 
@@ -25,6 +25,17 @@ export async function createTestUser(overrides: Partial<User> = {}): Promise<Use
   }).returning();
 
   return user;
+}
+
+export async function createTestOrganization(overrides: Partial<Organization> = {}): Promise<Organization> {
+  const timestamp = Date.now();
+  const [org] = await db.insert(organizations).values({
+    name: `Test Org ${timestamp}`,
+    description: `Test organization created at ${timestamp}`,
+    ...overrides
+  }).returning();
+
+  return org;
 }
 
 export function generateRandomEmail() {

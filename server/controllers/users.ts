@@ -2,31 +2,53 @@ import { Request, Response } from "express";
 import { db } from "@db";
 import { users, userWorkspaces, userChannels } from "@db/schema";
 import { eq } from "drizzle-orm";
+import { hashPassword } from "../utils";
 
 export async function createUser(req: Request, res: Response) {
   try {
     const { email, displayName, password, username } = req.body;
 
-    // Check if user already exists
-    const [existingUser] = await db.select()
+    // Validate required fields
+    if (!email || !displayName || !password || !username) {
+      return res.status(400).json({ 
+        error: "Missing required fields. Email, displayName, password, and username are required." 
+      });
+    }
+
+    // Check if user already exists by email
+    const [existingUserByEmail] = await db.select()
       .from(users)
       .where(eq(users.email, email))
       .limit(1);
 
-    if (existingUser) {
+    if (existingUserByEmail) {
       return res.status(400).json({ error: "Email already exists" });
     }
+
+    // Check if username is taken
+    const [existingUserByUsername] = await db.select()
+      .from(users)
+      .where(eq(users.username, username))
+      .limit(1);
+
+    if (existingUserByUsername) {
+      return res.status(400).json({ error: "Username already taken" });
+    }
+
+    // Hash password before storing
+    const hashedPassword = await hashPassword(password);
 
     const [user] = await db.insert(users)
       .values({
         email,
         displayName,
-        password,
+        password: hashedPassword,
         username,
         presenceStatus: true
       })
       .returning();
 
+    // Return user data without password
     res.status(201).json({
       id: user.id,
       email: user.email,
@@ -34,10 +56,7 @@ export async function createUser(req: Request, res: Response) {
       username: user.username
     });
   } catch (error) {
-    // Check for unique constraint violation as a fallback
-    if (error instanceof Error && error.message.includes('unique constraint')) {
-      return res.status(400).json({ error: "Email already exists" });
-    }
+    console.error('Error creating user:', error);
     res.status(500).json({ error: "Failed to create user" });
   }
 }
