@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { app } from '../test-app';
 import { db } from '@db';
-import { emojis, messageReactions, messages, channels, workspaces } from '@db/schema';
-import { createTestUser } from '../utils';
+import { emojis, messageReactions, messages, channels, workspaces, organizations } from '@db/schema';
+import { createTestUser, createTestOrganization } from '../utils';
 import { eq } from 'drizzle-orm';
 
 describe('Emojis Controller', () => {
@@ -125,11 +125,15 @@ describe('Emojis Controller', () => {
         .values({ code: ':to_delete:' })
         .returning();
 
-      // Create a workspace first
+      // Create an organization first
+      const organization = await createTestOrganization();
+
+      // Create a workspace
       const [workspace] = await db.insert(workspaces)
         .values({
           name: 'Test Workspace',
-          description: 'Test workspace description'
+          description: 'Test workspace description',
+          organizationId: organization.id
         })
         .returning();
 
@@ -217,11 +221,15 @@ describe('Emojis Controller', () => {
         .values({ code: ':test_stats:' })
         .returning();
 
-      // Create a workspace first
+      // Create an organization first
+      const organization = await createTestOrganization();
+
+      // Create a workspace
       const [workspace] = await db.insert(workspaces)
         .values({
           name: 'Test Workspace',
-          description: 'Test workspace description'
+          description: 'Test workspace description',
+          organizationId: organization.id
         })
         .returning();
 
