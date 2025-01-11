@@ -116,11 +116,19 @@ describe('Channels Controller', () => {
           password: 'password123'
         });
 
+      // Create an organization first
+      const organization = await otherAgent
+        .post('/api/organizations')
+        .send({
+          name: 'Other Organization'
+        });
+
       const workspace = await otherAgent
         .post('/api/workspaces')
         .send({
           name: 'Other Workspace',
-          description: 'Another workspace'
+          description: 'Another workspace',
+          organizationId: organization.body.id
         });
 
       const response = await agent
