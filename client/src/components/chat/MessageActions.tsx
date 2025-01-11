@@ -2,7 +2,6 @@ import { FC } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Pin, Bookmark, Share } from "lucide-react";
-import { EmojiReactionDisplay } from "./EmojiReactionDisplay";
 
 interface MessageActionsProps {
   message: {
@@ -35,7 +34,6 @@ export const MessageActions: FC<MessageActionsProps> = ({ message, onThreadClick
             <span className="ml-1 text-xs">View thread</span>
           )}
         </Button>
-        <EmojiReactionDisplay messageId={message.id} />
         <Button variant="ghost" size="sm" className="h-8 px-2">
           <Pin className="h-4 w-4" />
         </Button>
