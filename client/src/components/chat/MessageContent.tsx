@@ -14,12 +14,12 @@ interface MessageContentProps {
 export const MessageContent: FC<MessageContentProps> = ({ message }) => {
   return (
     <div className="space-y-2">
-      <p className="whitespace-pre-wrap">{message.content}</p>
+      <p className="whitespace-pre-wrap text-sm">{message.content}</p>
       {message.attachments && message.attachments.length > 0 && (
-        <div className="mt-2">
+        <div className="flex flex-col gap-2 mt-2">
           {message.attachments.map((attachment, index) => (
             <MediaAttachmentDisplay
-              key={index}
+              key={`${attachment.url}-${index}`}
               type={attachment.type}
               url={attachment.url}
             />

@@ -1,6 +1,7 @@
 import { FC } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ThumbsUp, Pin, Bookmark, Share } from "lucide-react";
+import { MessageCircle, Pin, Bookmark, Share } from "lucide-react";
 import { EmojiReactionDisplay } from "./EmojiReactionDisplay";
 
 interface MessageActionsProps {
@@ -8,18 +9,33 @@ interface MessageActionsProps {
     id: string;
     hasThread?: boolean;
   };
+  onThreadClick?: () => void;
 }
 
-export const MessageActions: FC<MessageActionsProps> = ({ message }) => {
+export const MessageActions: FC<MessageActionsProps> = ({ message, onThreadClick }) => {
+  const queryClient = useQueryClient();
+
+  const handleThreadClick = () => {
+    if (onThreadClick) {
+      onThreadClick();
+    }
+  };
+
   return (
     <div className="flex items-center gap-2 mt-2">
       <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
-        <Button variant="ghost" size="sm" className="h-8 px-2">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-8 px-2"
+          onClick={handleThreadClick}
+        >
           <MessageCircle className="h-4 w-4" />
+          {message.hasThread && (
+            <span className="ml-1 text-xs">View thread</span>
+          )}
         </Button>
-        <Button variant="ghost" size="sm" className="h-8 px-2">
-          <ThumbsUp className="h-4 w-4" />
-        </Button>
+        <EmojiReactionDisplay messageId={message.id} />
         <Button variant="ghost" size="sm" className="h-8 px-2">
           <Pin className="h-4 w-4" />
         </Button>
@@ -30,7 +46,6 @@ export const MessageActions: FC<MessageActionsProps> = ({ message }) => {
           <Share className="h-4 w-4" />
         </Button>
       </div>
-      <EmojiReactionDisplay messageId={message.id} />
     </div>
   );
 };
