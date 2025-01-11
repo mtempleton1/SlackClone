@@ -27,6 +27,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { AddChannelOverlay } from "./AddChannelOverlay";
 
 interface Channel {
   id: string;
@@ -44,6 +45,7 @@ export function ChannelList() {
   const [channelsExpanded, setChannelsExpanded] = useState(true);
   const [sortOrder, setSortOrder] = useState<SortOrder>("alphabetical");
   const [showSettings, setShowSettings] = useState(false);
+  const [showAddChannel, setShowAddChannel] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
 
   const { data: channels, refetch: refetchChannels } = useQuery<Channel[]>({
@@ -224,6 +226,7 @@ export function ChannelList() {
             variant="ghost"
             size="sm"
             className="flex items-center gap-2 w-full px-2 hover:bg-sidebar-accent"
+            onClick={() => setShowAddChannel(true)}
           >
             <Plus className="h-4 w-4" />
             <span className="text-sm">Add Channel</span>
@@ -259,6 +262,10 @@ export function ChannelList() {
           )}
         </DialogContent>
       </Dialog>
+      <AddChannelOverlay 
+        isOpen={showAddChannel}
+        onClose={() => setShowAddChannel(false)}
+      />
     </ScrollArea>
   );
 }
