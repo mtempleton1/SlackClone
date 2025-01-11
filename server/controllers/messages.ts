@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import { db } from "@db";
-import { messages, messageReactions, threads, threadMessages, emojis } from "@db/schema";
+import { messages, messageReactions, threads, threadMessages, emojis, users } from "@db/schema";
 import { and, eq, asc } from "drizzle-orm";
 
 export async function createMessage(req: Request, res: Response) {
   try {
     const { channelId, content } = req.body;
+
+    if (!channelId || !content) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
     const [message] = await db.insert(messages)
       .values({
@@ -15,9 +19,56 @@ export async function createMessage(req: Request, res: Response) {
       })
       .returning();
 
-    res.status(201).json(message);
+    // Return all fields including channelId
+    res.status(201).json({
+      id: message.id,
+      content: message.content,
+      userId: message.userId,
+      channelId: message.channelId,
+      timestamp: message.timestamp?.toISOString() || new Date().toISOString()
+    });
   } catch (error) {
+    console.error('Error creating message:', error);
     res.status(500).json({ error: "Failed to create message" });
+  }
+}
+
+export async function getChannelMessages(req: Request, res: Response) {
+  try {
+    const channelId = parseInt(req.params.channelId);
+
+    if (isNaN(channelId)) {
+      return res.status(400).json({ error: "Invalid channel ID" });
+    }
+
+    // Query messages with user details
+    const channelMessages = await db.select({
+      id: messages.id,
+      content: messages.content,
+      userId: messages.userId,
+      channelId: messages.channelId,
+      timestamp: messages.timestamp,
+      user: users
+    })
+    .from(messages)
+    .leftJoin(users, eq(messages.userId, users.id))
+    .where(eq(messages.channelId, channelId))
+    .orderBy(asc(messages.timestamp));
+
+    // Format the response
+    const formattedMessages = channelMessages.map(msg => ({
+      id: msg.id,
+      content: msg.content,
+      userId: msg.userId,
+      channelId: msg.channelId,
+      timestamp: msg.timestamp?.toISOString() || new Date().toISOString(),
+      user: msg.user
+    }));
+
+    res.json(formattedMessages);
+  } catch (error) {
+    console.error('Error fetching channel messages:', error);
+    res.status(500).json({ error: "Failed to fetch channel messages" });
   }
 }
 
@@ -182,20 +233,5 @@ export async function removeMessageReaction(req: Request, res: Response) {
     res.json({ message: "Reaction removed successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to remove reaction" });
-  }
-}
-
-export async function getChannelMessages(req: Request, res: Response) {
-  try {
-    const channelId = parseInt(req.params.channelId);
-
-    const channelMessages = await db.select()
-      .from(messages)
-      .where(eq(messages.channelId, channelId))
-      .orderBy(asc(messages.id)); // Order by id asc to get oldest messages first
-
-    res.json(channelMessages);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch channel messages" });
   }
 }
