@@ -440,15 +440,20 @@ describe('Messages Controller', () => {
       const user = await createTestUser();
 
       // Login the user
-      await agent
+      const loginResponse = await agent
         .post('/api/login')
         .send({
           email: user.email,
           password: 'password123'
         });
+      expect(loginResponse.status).toBe(200);
 
-      // Create workspace and channel
+      // Create organization and verify
       const organization = await createTestOrganization();
+      expect(organization).toBeDefined();
+      expect(organization.id).toBeDefined();
+
+      // Create workspace and verify
       const workspace = await agent
         .post('/api/workspaces')
         .send({
@@ -456,7 +461,10 @@ describe('Messages Controller', () => {
           description: 'A test workspace',
           organizationId: organization.id
         });
+      expect(workspace.status).toBe(201);
+      expect(workspace.body.id).toBeDefined();
 
+      // Create channel and verify
       const channel = await agent
         .post('/api/channels')
         .send({
@@ -464,8 +472,10 @@ describe('Messages Controller', () => {
           name: 'general',
           topic: 'General discussion'
         });
+      expect(channel.status).toBe(201);
+      expect(channel.body.id).toBeDefined();
 
-      // Create parent message
+      // Create parent message and verify
       const parentMessage = await db.insert(messages)
         .values({
           content: 'Parent message',
@@ -473,9 +483,12 @@ describe('Messages Controller', () => {
           channelId: channel.body.id
         })
         .returning();
+      expect(parentMessage[0]).toBeDefined();
+      expect(parentMessage[0].id).toBeDefined();
+      expect(parentMessage[0].content).toBe('Parent message');
 
-      // Create reply messages
-      await db.insert(messages)
+      // Create reply messages and verify
+      const replies = await db.insert(messages)
         .values([{
           content: 'Reply 1',
           userId: user.id,
@@ -486,7 +499,11 @@ describe('Messages Controller', () => {
           userId: user.id,
           channelId: channel.body.id,
           parentId: parentMessage[0].id
-        }]);
+        }])
+        .returning();
+      expect(replies.length).toBe(2);
+      expect(replies[0].parentId).toBe(parentMessage[0].id);
+      expect(replies[1].parentId).toBe(parentMessage[0].id);
 
       const response = await agent.get(`/api/messages/${parentMessage[0].id}/thread`);
 
