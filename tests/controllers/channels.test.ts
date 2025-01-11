@@ -148,13 +148,25 @@ describe('Channels Controller', () => {
           password: 'password123'
         });
 
+      // Create an organization first
+      const organization = await agent
+        .post('/api/organizations')
+        .send({
+          name: 'Test Organization'
+        });
+      expect(organization.status).toBe(201);
+      expect(organization.body).toHaveProperty('id');
+
       // Create a workspace
       const workspace = await agent
         .post('/api/workspaces')
         .send({
           name: 'Test Workspace',
-          description: 'A test workspace'
+          description: 'A test workspace',
+          organizationId: organization.body.id
         });
+      expect(workspace.status).toBe(201);
+      expect(workspace.body).toHaveProperty('id');
 
       // Create a channel
       await agent
