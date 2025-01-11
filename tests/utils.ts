@@ -13,14 +13,17 @@ export async function hashPassword(password: string) {
 }
 
 export async function createTestUser(overrides: Partial<User> = {}): Promise<User> {
+  const timestamp = Date.now();
+  const email = `test-${timestamp}@example.com`;
   const [user] = await db.insert(users).values({
-    email: `test-${Date.now()}@example.com`,
-    displayName: 'Test User',
+    username: `user-${timestamp}`,
+    email: email,
     password: await hashPassword('password123'),
+    displayName: `Test User ${timestamp}`,
     presenceStatus: true,
     ...overrides
   }).returning();
-  
+
   return user;
 }
 

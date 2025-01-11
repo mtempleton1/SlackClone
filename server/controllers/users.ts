@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 export async function createUser(req: Request, res: Response) {
   try {
-    const { email, displayName, password } = req.body;
+    const { email, displayName, password, username } = req.body;
 
     // Check if user already exists
     const [existingUser] = await db.select()
@@ -22,6 +22,7 @@ export async function createUser(req: Request, res: Response) {
         email,
         displayName,
         password,
+        username,
         presenceStatus: true
       })
       .returning();
@@ -29,7 +30,8 @@ export async function createUser(req: Request, res: Response) {
     res.status(201).json({
       id: user.id,
       email: user.email,
-      displayName: user.displayName
+      displayName: user.displayName,
+      username: user.username
     });
   } catch (error) {
     // Check for unique constraint violation as a fallback
@@ -48,10 +50,11 @@ export async function getUsers(req: Request, res: Response) {
       displayName: users.displayName,
       profilePicture: users.profilePicture,
       statusMessage: users.statusMessage,
-      presenceStatus: users.presenceStatus
+      presenceStatus: users.presenceStatus,
+      username: users.username
     })
     .from(users);
-    
+
     res.json(allUsers);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch users" });
@@ -61,7 +64,7 @@ export async function getUsers(req: Request, res: Response) {
 export async function getUser(req: Request, res: Response) {
   try {
     const userId = parseInt(req.params.userId);
-    
+
     const [user] = await db.select()
       .from(users)
       .where(eq(users.id, userId))
@@ -77,7 +80,8 @@ export async function getUser(req: Request, res: Response) {
       displayName: user.displayName,
       profilePicture: user.profilePicture,
       statusMessage: user.statusMessage,
-      presenceStatus: user.presenceStatus
+      presenceStatus: user.presenceStatus,
+      username: user.username
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch user" });
