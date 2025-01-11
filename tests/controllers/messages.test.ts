@@ -3,7 +3,7 @@ import { app } from '../test-app';
 import { db } from '@db';
 import { messages, users, channels, workspaces, organizations } from '@db/schema';
 import { createTestUser, createTestOrganization } from '../utils';
-import { eq } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 
 describe('Messages Controller', () => {
   describe('POST /api/messages', () => {
