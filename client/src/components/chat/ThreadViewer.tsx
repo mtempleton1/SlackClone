@@ -6,6 +6,7 @@ import { MessageInput } from "./MessageInput";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface ThreadViewerProps {
   isOpen?: boolean;
@@ -21,12 +22,15 @@ interface ThreadMessage {
   attachments?: Array<{
     type: string;
     url: string;
+    name?: string;
+    size?: number;
   }>;
 }
 
 interface Thread {
   id: string;
   parentMessage: ThreadMessage;
+  replyCount: number;
   createdAt: string;
 }
 
@@ -36,27 +40,52 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
   onClose 
 }) => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  const { data: thread, isLoading: threadLoading } = useQuery<Thread>({
+  const { 
+    data: thread, 
+    isLoading: threadLoading,
+    error: threadError 
+  } = useQuery<Thread>({
     queryKey: [`/api/threads/${selectedMessageId}`],
     enabled: isOpen && !!selectedMessageId,
+    retry: false,
+    throwOnError: false,
   });
 
-  const { data: threadMessages = [], isLoading: messagesLoading } = useQuery<ThreadMessage[]>({
+  const { 
+    data: threadMessages = [], 
+    isLoading: messagesLoading 
+  } = useQuery<ThreadMessage[]>({
     queryKey: [`/api/threads/${thread?.id}/messages`],
     enabled: isOpen && !!thread?.id,
+    retry: false,
+    throwOnError: false,
   });
 
   if (!isOpen) return null;
 
   const isLoading = threadLoading || messagesLoading;
+  const hasError = !!threadError;
 
   return (
     <Card className="w-96 border-l h-full flex flex-col">
       <div className="p-4 border-b flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Thread</h2>
+        <div>
+          <h2 className="text-lg font-semibold">Thread</h2>
+          {thread?.replyCount > 0 && (
+            <p className="text-sm text-muted-foreground">
+              {thread.replyCount} {thread.replyCount === 1 ? 'reply' : 'replies'}
+            </p>
+          )}
+        </div>
         {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onClose}
+            className="hover:bg-destructive/10 hover:text-destructive"
+          >
             <X className="h-4 w-4" />
           </Button>
         )}
@@ -64,7 +93,24 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
 
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-primary/50" />
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin text-primary/50" />
+            <p className="text-sm text-muted-foreground">Loading thread...</p>
+          </div>
+        </div>
+      ) : hasError ? (
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">Failed to load thread</p>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="mt-2"
+              onClick={() => queryClient.invalidateQueries({ queryKey: [`/api/threads/${selectedMessageId}`] })}
+            >
+              Try again
+            </Button>
+          </div>
         </div>
       ) : (
         <>
@@ -87,11 +133,11 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
               ))}
             </div>
           </ScrollArea>
-          <div className="border-t">
+          <div className="border-t p-4">
             {thread && (
               <MessageInput 
                 threadId={thread.id}
-                placeholder="Reply to thread..."
+                placeholder="Reply in thread..."
               />
             )}
           </div>
