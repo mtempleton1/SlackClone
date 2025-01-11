@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,6 +40,11 @@ export function CreateWorkspaceOverlay({ isOpen, onClose }: CreateWorkspaceOverl
   const queryClient = useQueryClient();
   const [step, setStep] = useState(1);
 
+  // Fetch current user data to get organization
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/user"],
+  });
+
   const form = useForm<WorkspaceForm>({
     resolver: zodResolver(workspaceSchema),
     defaultValues: {
@@ -50,12 +55,19 @@ export function CreateWorkspaceOverlay({ isOpen, onClose }: CreateWorkspaceOverl
 
   const createWorkspaceMutation = useMutation({
     mutationFn: async (data: WorkspaceForm) => {
+      if (!currentUser?.organizationId) {
+        throw new Error("No organization found. Please create an organization first.");
+      }
+
       const response = await fetch("/api/workspaces", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          organizationId: currentUser.organizationId,
+        }),
         credentials: "include",
       });
 
@@ -72,6 +84,7 @@ export function CreateWorkspaceOverlay({ isOpen, onClose }: CreateWorkspaceOverl
         description: "Workspace created successfully",
       });
       onClose();
+      form.reset();
     },
     onError: (error) => {
       toast({
@@ -91,7 +104,13 @@ export function CreateWorkspaceOverlay({ isOpen, onClose }: CreateWorkspaceOverl
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        form.reset();
+        setStep(1);
+        onClose();
+      }
+    }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create New Workspace</DialogTitle>
@@ -143,6 +162,12 @@ export function CreateWorkspaceOverlay({ isOpen, onClose }: CreateWorkspaceOverl
               )}
             />
 
+            {!currentUser?.organizationId && (
+              <div className="text-sm text-destructive">
+                Note: You need to create an organization first before creating a workspace.
+              </div>
+            )}
+
             <div className="flex justify-end gap-2">
               {step > 1 && (
                 <Button
@@ -155,7 +180,7 @@ export function CreateWorkspaceOverlay({ isOpen, onClose }: CreateWorkspaceOverl
               )}
               <Button
                 type="submit"
-                disabled={createWorkspaceMutation.isPending}
+                disabled={createWorkspaceMutation.isPending || !currentUser?.organizationId}
               >
                 {createWorkspaceMutation.isPending ? (
                   "Creating..."
