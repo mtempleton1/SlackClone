@@ -1,8 +1,8 @@
 import { db } from '@db';
-import { users, organizations } from '@db/schema';
+import { users } from '@db/schema';
 import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
-import type { User, Organization } from '@db/schema';
+import type { User } from '@db/schema';
 
 const scryptAsync = promisify(scrypt);
 
@@ -15,11 +15,14 @@ export async function hashPassword(password: string) {
 export async function createTestUser(overrides: Partial<User> = {}): Promise<User> {
   const timestamp = Date.now();
   const email = `test-${timestamp}@example.com`;
+  const username = `user-${timestamp}`;
+  const displayName = `Test User ${timestamp}`;
+
   const [user] = await db.insert(users).values({
-    username: `user-${timestamp}`,
-    email: email,
+    username,
+    email,
+    displayName,
     password: await hashPassword('password123'),
-    displayName: `Test User ${timestamp}`,
     presenceStatus: true,
     ...overrides
   }).returning();

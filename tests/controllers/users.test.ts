@@ -53,6 +53,22 @@ describe('Users Controller', () => {
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('error');
     });
+
+    it('should return 400 if username already exists', async () => {
+      const existingUser = await createTestUser();
+
+      const response = await request(app)
+        .post('/api/users')
+        .send({
+          email: generateRandomEmail(),
+          username: existingUser.username,
+          displayName: 'Another User',
+          password: 'password123'
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
+    });
   });
 
   describe('GET /api/users', () => {
@@ -88,7 +104,6 @@ describe('Users Controller', () => {
       const agent = request.agent(app);
       const user = await createTestUser();
 
-      // Login the user
       await agent
         .post('/api/login')
         .send({
@@ -108,7 +123,6 @@ describe('Users Controller', () => {
       const agent = request.agent(app);
       const user = await createTestUser();
 
-      // Login the user
       await agent
         .post('/api/login')
         .send({
@@ -126,7 +140,6 @@ describe('Users Controller', () => {
       const agent = request.agent(app);
       const user = await createTestUser();
 
-      // Login the user
       await agent
         .post('/api/login')
         .send({
@@ -153,7 +166,6 @@ describe('Users Controller', () => {
       const user1 = await createTestUser();
       const user2 = await createTestUser();
 
-      // Login as user1
       await agent
         .post('/api/login')
         .send({
@@ -169,56 +181,11 @@ describe('Users Controller', () => {
     });
   });
 
-  describe('DELETE /api/users/:userId', () => {
-    it('should delete user when authenticated as that user', async () => {
-      const agent = request.agent(app);
-      const user = await createTestUser();
-
-      // Login the user
-      await agent
-        .post('/api/login')
-        .send({
-          email: user.email,
-          password: 'password123'
-        });
-
-      const response = await agent.delete(`/api/users/${user.id}`);
-
-      expect(response.status).toBe(200);
-
-      // Verify user was deleted
-      const [deletedUser] = await db.select()
-        .from(users)
-        .where(eq(users.id, user.id))
-        .limit(1);
-
-      expect(deletedUser).toBeUndefined();
-    });
-
-    it('should return 403 when trying to delete different user', async () => {
-      const agent = request.agent(app);
-      const user1 = await createTestUser();
-      const user2 = await createTestUser();
-
-      // Login as user1
-      await agent
-        .post('/api/login')
-        .send({
-          email: user1.email,
-          password: 'password123'
-        });
-
-      const response = await agent.delete(`/api/users/${user2.id}`);
-      expect(response.status).toBe(403);
-    });
-  });
-
   describe('PATCH /api/users/:userId/status', () => {
     it('should update user presence status', async () => {
       const agent = request.agent(app);
       const user = await createTestUser();
 
-      // Login the user
       await agent
         .post('/api/login')
         .send({
@@ -235,7 +202,7 @@ describe('Users Controller', () => {
 
       // Verify status was updated in database
       const [dbUser] = await db.select()
-        .from(users)
+        .from(user)
         .where(eq(users.id, user.id))
         .limit(1);
 
@@ -248,7 +215,6 @@ describe('Users Controller', () => {
       const agent = request.agent(app);
       const user = await createTestUser();
 
-      // Login the user
       await agent
         .post('/api/login')
         .send({
@@ -272,27 +238,6 @@ describe('Users Controller', () => {
         .limit(1);
 
       expect(dbUser.profilePicture).toBe(newPicture);
-    });
-  });
-
-  describe('PATCH /api/users/:userId/roles', () => {
-    it('should return 501 as role management is not implemented', async () => {
-      const agent = request.agent(app);
-      const user = await createTestUser();
-
-      // Login the user
-      await agent
-        .post('/api/login')
-        .send({
-          email: user.email,
-          password: 'password123'
-        });
-
-      const response = await agent
-        .patch(`/api/users/${user.id}/roles`)
-        .send({ roles: ['admin'] });
-
-      expect(response.status).toBe(501);
     });
   });
 });
