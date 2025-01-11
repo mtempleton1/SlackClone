@@ -488,7 +488,23 @@ describe('Messages Controller', () => {
       expect(parentMessage[0].content).toBe('Parent message');
 
       // Create reply messages and verify
-      const replies = await db.insert(messages)
+      // Create reply messages and verify
+      const replies = await db.select({
+        id: messages.id,
+        content: messages.content,
+        userId: messages.userId,
+        channelId: messages.channelId,
+        parentId: messages.parentId,
+        user: users
+      })
+      .from(messages)
+      .leftJoin(users, eq(messages.userId, users.id))
+      .where(
+        eq(messages.parentId, parentMessage[0].id)
+      )
+      .orderBy(asc(messages.id));
+
+      await db.insert(messages)
         .values([{
           content: 'Reply 1',
           userId: user.id,
@@ -499,8 +515,7 @@ describe('Messages Controller', () => {
           userId: user.id,
           channelId: channel.body.id,
           parentId: parentMessage[0].id
-        }])
-        .returning();
+        }]);
       expect(replies.length).toBe(2);
       expect(replies[0].parentId).toBe(parentMessage[0].id);
       expect(replies[1].parentId).toBe(parentMessage[0].id);
