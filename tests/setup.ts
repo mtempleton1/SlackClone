@@ -1,6 +1,6 @@
 /// <reference types="jest" />
 import { db } from '@db';
-import { users, workspaces, channels, messages, emojis, userWorkspaces, userChannels, messageReactions, files } from '@db/schema';
+import { users, workspaces, channels, messages, emojis, userWorkspaces, userChannels, messageReactions, files, organizations } from '@db/schema';
 import { sql } from 'drizzle-orm';
 
 // Increase test timeout
