@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Paperclip, Send, Smile, MessageCircle, PlusCircle } from "lucide-react";
+import { Paperclip, Send, Smile, MessageCircle, PlusCircle, X, Image, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { io, Socket } from "socket.io-client";
 import { ThreadView } from "./ThreadView";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 
@@ -34,6 +33,13 @@ interface Message {
     count: number;
     lastReply?: string;
   };
+  attachments?: Array<{
+    id: string;
+    type: "image" | "file";
+    url: string;
+    name: string;
+    size?: number;
+  }>;
 }
 
 export function MessageArea() {
@@ -41,70 +47,32 @@ export function MessageArea() {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [messageForReaction, setMessageForReaction] = useState<Message | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const channelId = 1; // TODO: Get from route or props
-
-  // Set up socket connection
-  useEffect(() => {
-    const newSocket = io(window.location.origin);
-
-    newSocket.on("connect", () => {
-      console.log("Connected to WebSocket server");
-      newSocket.emit("joinChannel", channelId);
-    });
-
-    newSocket.on("message", (message: Message) => {
-      queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
-        if (!oldMessages) return [message];
-        return [...oldMessages, message];
-      });
-    });
-
-    newSocket.on("reaction", ({ messageId, reaction }) => {
-      queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
-        if (!oldMessages) return [];
-        return oldMessages.map((msg) => {
-          if (msg.id === messageId) {
-            return {
-              ...msg,
-              reactions: msg.reactions 
-                ? [...msg.reactions, reaction]
-                : [reaction],
-            };
-          }
-          return msg;
-        });
-      });
-    });
-
-    setSocket(newSocket);
-
-    return () => {
-      if (newSocket) {
-        newSocket.emit("leaveChannel", channelId);
-        newSocket.disconnect();
-      }
-    };
-  }, [channelId, queryClient]);
 
   const { data: messages } = useQuery<Message[]>({
     queryKey: ["/api/messages"],
   });
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async ({ content, files }: { content: string; files?: File[] }) => {
+      const formData = new FormData();
+      formData.append("content", content);
+      formData.append("channelId", channelId.toString());
+
+      if (files?.length) {
+        files.forEach(file => {
+          formData.append("files", file);
+        });
+      }
+
       const response = await fetch("/api/messages", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content,
-          channelId,
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -114,11 +82,12 @@ export function MessageArea() {
       return response.json();
     },
     onSuccess: (newMessage) => {
-      socket?.emit("sendMessage", newMessage);
       queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
         if (!oldMessages) return [newMessage];
         return [...oldMessages, newMessage];
       });
+      setMessageInput("");
+      setSelectedFiles([]);
     },
     onError: () => {
       toast({
@@ -146,7 +115,6 @@ export function MessageArea() {
       return response.json();
     },
     onSuccess: (reaction, { messageId }) => {
-      socket?.emit("reaction", { messageId, reaction });
       queryClient.setQueryData<Message[]>(["/api/messages"], (oldMessages) => {
         if (!oldMessages) return [];
         return oldMessages.map((msg) => {
@@ -174,9 +142,20 @@ export function MessageArea() {
   });
 
   const handleSendMessage = async () => {
-    if (!messageInput.trim()) return;
-    await sendMessageMutation.mutateAsync(messageInput.trim());
-    setMessageInput("");
+    if (!messageInput.trim() && !selectedFiles.length) return;
+    await sendMessageMutation.mutateAsync({
+      content: messageInput.trim(),
+      files: selectedFiles,
+    });
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedFiles(prev => [...prev, ...files]);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleOpenThread = (message: Message) => {
@@ -195,6 +174,14 @@ export function MessageArea() {
         emoji: emojiData.emoji,
       });
     }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
@@ -218,6 +205,36 @@ export function MessageArea() {
                 </div>
 
                 <p className="mt-1">{message.content}</p>
+
+                {message.attachments && message.attachments.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    {message.attachments.map((attachment) => (
+                      <div
+                        key={attachment.id}
+                        className="flex items-center gap-2 p-2 rounded-md bg-accent/10"
+                      >
+                        {attachment.type === "image" ? (
+                          <Image className="h-4 w-4" />
+                        ) : (
+                          <FileText className="h-4 w-4" />
+                        )}
+                        <a
+                          href={attachment.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          {attachment.name}
+                        </a>
+                        {attachment.size && (
+                          <span className="text-xs text-muted-foreground">
+                            ({formatFileSize(attachment.size)})
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <div className="flex items-center gap-2 mt-2">
                   {message.reactions && message.reactions.length > 0 && (
@@ -266,9 +283,51 @@ export function MessageArea() {
         </div>
       </ScrollArea>
 
-      <div className="border-t border-border p-4">
+      <div className="border-t p-4">
+        {selectedFiles.length > 0 && (
+          <div className="mb-2 space-y-2">
+            {selectedFiles.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 p-2 rounded-md bg-accent/10"
+              >
+                {file.type.startsWith('image/') ? (
+                  <Image className="h-4 w-4" />
+                ) : (
+                  <FileText className="h-4 w-4" />
+                )}
+                <span className="text-sm flex-1 truncate">{file.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  ({formatFileSize(file.size)})
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  onClick={() => handleRemoveFile(index)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="shrink-0">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            className="hidden"
+            multiple
+          />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            onClick={() => fileInputRef.current?.click()}
+          >
             <Paperclip className="h-5 w-5" />
           </Button>
 
@@ -293,7 +352,7 @@ export function MessageArea() {
             variant="default"
             size="icon"
             onClick={handleSendMessage}
-            disabled={!messageInput.trim() || sendMessageMutation.isPending}
+            disabled={(!messageInput.trim() && !selectedFiles.length) || sendMessageMutation.isPending}
             className="shrink-0"
           >
             <Send className="h-5 w-5" />
