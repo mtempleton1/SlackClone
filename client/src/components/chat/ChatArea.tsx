@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { MessageDisplayArea } from "./MessageDisplayArea";
 import { MessageInput } from "./MessageInput";
 import { ThreadViewer } from "./ThreadViewer";
@@ -11,15 +11,32 @@ interface ChatAreaProps {
 }
 
 export const ChatArea: FC<ChatAreaProps> = ({ className, channelId = 1 }) => {
+  const [selectedMessageId, setSelectedMessageId] = useState<string | undefined>();
+
+  const handleThreadOpen = (messageId: string) => {
+    setSelectedMessageId(messageId);
+  };
+
+  const handleThreadClose = () => {
+    setSelectedMessageId(undefined);
+  };
+
   return (
     <div className={cn("flex flex-row h-full", className)}>
       <div className="flex-1 flex flex-col h-full">
         <ScrollArea className="flex-1">
-          <MessageDisplayArea channelId={channelId} />
+          <MessageDisplayArea 
+            channelId={channelId} 
+            onThreadClick={handleThreadOpen}
+          />
         </ScrollArea>
         <MessageInput channelId={channelId} />
       </div>
-      <ThreadViewer />
+      <ThreadViewer 
+        isOpen={!!selectedMessageId}
+        selectedMessageId={selectedMessageId}
+        onClose={handleThreadClose}
+      />
     </div>
   );
 };

@@ -18,9 +18,13 @@ interface Message {
 
 interface MessageDisplayAreaProps {
   channelId?: number;
+  onThreadClick?: (messageId: string) => void;
 }
 
-export const MessageDisplayArea: FC<MessageDisplayAreaProps> = ({ channelId = 1 }) => {
+export const MessageDisplayArea: FC<MessageDisplayAreaProps> = ({ 
+  channelId = 1,
+  onThreadClick 
+}) => {
   const { data: messages, isLoading } = useQuery<Message[]>({
     queryKey: [`/api/channels/${channelId}/messages`],
   });
@@ -48,6 +52,7 @@ export const MessageDisplayArea: FC<MessageDisplayAreaProps> = ({ channelId = 1 
           <MessageBubble
             key={message.id}
             message={message}
+            onThreadClick={() => onThreadClick?.(message.id)}
           />
         ))}
       </div>

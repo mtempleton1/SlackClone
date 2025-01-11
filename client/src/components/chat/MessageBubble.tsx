@@ -18,16 +18,21 @@ interface MessageBubbleProps {
     }>;
   };
   onThreadClick?: () => void;
+  hideThread?: boolean;
 }
 
-export const MessageBubble: FC<MessageBubbleProps> = ({ message, onThreadClick }) => {
+export const MessageBubble: FC<MessageBubbleProps> = ({ 
+  message, 
+  onThreadClick,
+  hideThread = false
+}) => {
   return (
     <div className="group hover:bg-accent/5 transition-colors rounded-lg px-4 py-2">
       <div className="flex gap-4">
         <Avatar className="h-8 w-8">
           <div className="h-full w-full rounded-full bg-primary/10 flex items-center justify-center">
             <span className="text-sm font-medium text-primary">
-              U
+              {String(message.userId)[0].toUpperCase()}
             </span>
           </div>
         </Avatar>
@@ -43,10 +48,12 @@ export const MessageBubble: FC<MessageBubbleProps> = ({ message, onThreadClick }
             <div className="flex items-center gap-2">
               <EmojiReactionDisplay messageId={message.id} />
             </div>
-            <MessageActions 
-              message={message} 
-              onThreadClick={onThreadClick}
-            />
+            {!hideThread && (
+              <MessageActions 
+                message={message} 
+                onThreadClick={onThreadClick}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -7,9 +7,15 @@ import { useToast } from "@/hooks/use-toast";
 
 interface MessageInputProps {
   channelId?: number;
+  threadId?: string;
+  placeholder?: string;
 }
 
-export const MessageInput: FC<MessageInputProps> = ({ channelId = 1 }) => {
+export const MessageInput: FC<MessageInputProps> = ({ 
+  channelId,
+  threadId,
+  placeholder = "Type a message..." 
+}) => {
   const [messageText, setMessageText] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -20,13 +26,24 @@ export const MessageInput: FC<MessageInputProps> = ({ channelId = 1 }) => {
     mutationFn: async () => {
       const formData = new FormData();
       formData.append("content", messageText);
-      formData.append("channelId", String(channelId));
+
+      if (channelId) {
+        formData.append("channelId", String(channelId));
+      }
+
+      if (threadId) {
+        formData.append("threadId", threadId);
+      }
 
       attachments.forEach((file) => {
         formData.append("files", file);
       });
 
-      const response = await fetch("/api/messages", {
+      const endpoint = threadId 
+        ? `/api/threads/${threadId}/messages`
+        : "/api/messages";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         body: formData,
       });
@@ -40,7 +57,11 @@ export const MessageInput: FC<MessageInputProps> = ({ channelId = 1 }) => {
     onSuccess: () => {
       setMessageText("");
       setAttachments([]);
-      queryClient.invalidateQueries({ queryKey: [`/api/channels/${channelId}/messages`] });
+      if (threadId) {
+        queryClient.invalidateQueries({ queryKey: [`/api/threads/${threadId}/messages`] });
+      } else if (channelId) {
+        queryClient.invalidateQueries({ queryKey: [`/api/channels/${channelId}/messages`] });
+      }
     },
     onError: () => {
       toast({
@@ -94,7 +115,7 @@ export const MessageInput: FC<MessageInputProps> = ({ channelId = 1 }) => {
               handleSendMessage();
             }
           }}
-          placeholder="Type a message..."
+          placeholder={placeholder}
           className="flex-1"
         />
         <Button
