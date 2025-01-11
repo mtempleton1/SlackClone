@@ -34,6 +34,11 @@ interface Thread {
   createdAt: string;
 }
 
+interface MessageThreadResponse {
+  id: string;
+  messageId: string;
+}
+
 export const ThreadViewer: FC<ThreadViewerProps> = ({ 
   isOpen = false, 
   selectedMessageId,
@@ -42,19 +47,33 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // First fetch the thread ID for the selected message
   const { 
-    data: thread, 
-    isLoading: threadLoading,
-    error: threadError 
-  } = useQuery<Thread>({
-    queryKey: [`/api/threads/${selectedMessageId}`],
+    data: messageThread,
+    isLoading: messageThreadLoading,
+    error: messageThreadError 
+  } = useQuery<MessageThreadResponse>({
+    queryKey: [`/api/messages/${selectedMessageId}/thread`],
     enabled: isOpen && !!selectedMessageId,
     retry: false,
     throwOnError: false,
   });
 
+  // Then fetch the thread details using the thread ID
   const { 
-    data: threadMessages = [], 
+    data: thread,
+    isLoading: threadLoading,
+    error: threadError 
+  } = useQuery<Thread>({
+    queryKey: [`/api/threads/${messageThread?.id}`],
+    enabled: isOpen && !!messageThread?.id,
+    retry: false,
+    throwOnError: false,
+  });
+
+  // Finally fetch thread messages
+  const { 
+    data: threadMessages = [],
     isLoading: messagesLoading 
   } = useQuery<ThreadMessage[]>({
     queryKey: [`/api/threads/${thread?.id}/messages`],
@@ -65,15 +84,15 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
 
   if (!isOpen) return null;
 
-  const isLoading = threadLoading || messagesLoading;
-  const hasError = !!threadError;
+  const isLoading = messageThreadLoading || threadLoading || messagesLoading;
+  const hasError = !!messageThreadError || !!threadError;
 
   return (
     <Card className="w-96 border-l h-full flex flex-col">
       <div className="p-4 border-b flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">Thread</h2>
-          {thread?.replyCount > 0 && (
+          {thread && thread.replyCount > 0 && (
             <p className="text-sm text-muted-foreground">
               {thread.replyCount} {thread.replyCount === 1 ? 'reply' : 'replies'}
             </p>
@@ -106,7 +125,10 @@ export const ThreadViewer: FC<ThreadViewerProps> = ({
               variant="ghost" 
               size="sm" 
               className="mt-2"
-              onClick={() => queryClient.invalidateQueries({ queryKey: [`/api/threads/${selectedMessageId}`] })}
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: [`/api/messages/${selectedMessageId}/thread`] });
+                queryClient.invalidateQueries({ queryKey: [`/api/threads/${messageThread?.id}`] });
+              }}
             >
               Try again
             </Button>
